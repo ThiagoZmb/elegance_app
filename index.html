@@ -1,1 +1,43 @@
-
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="login-container">
+    <h1>Acesso ao Sistema</h1>
+    <form id="loginForm">
+      <div class="input-group">
+        <label for="username">Usuário:</label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username" 
+          required 
+          autocomplete="off"
+          placeholder="Digite seu usuário"
+        >
+      </div>
+      
+      <div class="input-group">
+        <label for="password">Senha:</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          required
+          placeholder="Digite sua senha"
+        >
+      </div>
+      
+      <button type="submit" id="loginBtn">Entrar</button>
+    </form>
+    <div id="message" class="message"></div>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
