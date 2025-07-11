@@ -4,7 +4,6 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
   const password = document.getElementById('password').value;
   const resDiv = document.getElementById('result');
 
-  // Troque pela URL do seu backend no Render!
   const apiUrl = 'https://app-cek0.onrender.com/login';
 
   try {
@@ -15,7 +14,8 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     });
     const data = await res.json();
     if (data.success) {
-      resDiv.textContent = 'Login realizado com sucesso!';
+      // Redireciona para a página de bem-vindo
+      window.location.href = "bemvindo.html";
     } else {
       resDiv.textContent = 'Usuário ou senha inválidos.';
     }
