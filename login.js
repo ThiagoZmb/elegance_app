@@ -2,6 +2,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
   e.preventDefault();
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
+  const razao_social = document.getElementById('razao_social').value;
   const resDiv = document.getElementById('result');
 
   const apiUrl = 'https://app-cek0.onrender.com/login';
@@ -10,7 +11,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     const res = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ username, password, razao_social })
     });
     const data = await res.json();
     if (data.success) {
