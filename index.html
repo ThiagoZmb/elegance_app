@@ -357,20 +357,7 @@
     <div id="result" class="result"></div>
   </div>
 
-  <script src="login.js" defer></script>
   <script>
-    // Função para mostrar mensagens
-    function showMessage(message, type) {
-      const resultDiv = document.getElementById('result');
-      resultDiv.textContent = message;
-      resultDiv.className = `result ${type}`;
-      resultDiv.classList.add('show');
-      
-      setTimeout(() => {
-        resultDiv.classList.remove('show');
-      }, 3000);
-    }
-
     // Função para mostrar loading
     function showLoading(show) {
       const loading = document.querySelector('.loading');
@@ -390,43 +377,37 @@
       }
     }
 
-    // Função para redirecionar após login bem-sucedido
-    function redirectToPrincipal() {
-      showMessage('Login realizado com sucesso! Redirecionando...', 'success');
-      setTimeout(() => {
-        window.location.href = 'pagina_principal.html';
-      }, 1500);
-    }
-
-    // Event listener para o formulário
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+    // Interceptar o submit para adicionar loading
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('loginForm');
+      const originalSubmit = form.addEventListener;
       
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-      
-      // Mostrar loading
-      showLoading(true);
-      
-      // Chama a função de validação do arquivo login.js
-      // Assumindo que existe uma função validateLogin no arquivo externo
-      if (typeof validateLogin === 'function') {
-        const isValid = validateLogin(username, password);
+      form.addEventListener('submit', function(e) {
+        showLoading(true);
         
+        // Observar mudanças no div result para parar o loading
+        const resultDiv = document.getElementById('result');
+        const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList' || mutation.type === 'characterData') {
+              showLoading(false);
+              observer.disconnect();
+            }
+          });
+        });
+        
+        observer.observe(resultDiv, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+        
+        // Fallback para parar loading após 10 segundos
         setTimeout(() => {
           showLoading(false);
-          
-          if (isValid) {
-            redirectToPrincipal();
-          } else {
-            showMessage('Usuário ou senha incorretos.', 'error');
-          }
-        }, 1000);
-      } else {
-        // Fallback caso a função não exista
-        showLoading(false);
-        showMessage('Erro: Função de validação não encontrada.', 'error');
-      }
+          observer.disconnect();
+        }, 10000);
+      });
     });
 
     // Efeito de focus nos inputs
@@ -461,5 +442,6 @@
     `;
     document.head.appendChild(style);
   </script>
+  <script src="login.js" defer></script>
 </body>
 </html>
