@@ -272,34 +272,6 @@
     </div>
   </div>
 
-  <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-      const resultDiv = document.getElementById('result');
-      
-      // Simulação de login
-      if(username === 'admin' && password === 'admin123') {
-        resultDiv.textContent = 'Login realizado com sucesso! Redirecionando...';
-        resultDiv.className = 'success';
-        
-        // Simulação de redirecionamento
-        setTimeout(() => {
-          resultDiv.textContent = 'Redirecionamento concluído!';
-        }, 2000);
-      } else {
-        resultDiv.textContent = 'Credenciais inválidas. Tente novamente.';
-        resultDiv.className = 'error';
-        
-        // Reset após 3 segundos
-        setTimeout(() => {
-          resultDiv.className = '';
-          resultDiv.style.display = 'none';
-        }, 3000);
-      }
-    });
-  </script>
+ 
 </body>
 </html>
