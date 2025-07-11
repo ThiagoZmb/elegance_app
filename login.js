@@ -5,7 +5,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
   const resDiv = document.getElementById('result');
 
   // Troque pela URL do seu backend no Render!
-  const apiUrl = 'https://app-4pp5.onrender.com/login';
+  const apiUrl = 'https://app-cek0.onrender.com/login';
 
   try {
     const res = await fetch(apiUrl, {
