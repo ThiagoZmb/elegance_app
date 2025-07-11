@@ -8,11 +8,11 @@ app.use(express.json());
 
 // Use variáveis de ambiente em produção
 const dbConfig = {
-  host: process.env.DB_HOST || '192.168.15.80',
-  user: process.env.DB_USER || 'admin',
-  password: process.env.DB_PASS || '04t28b03p',
+  host: process.env.DB_HOST || 'db-elegance-v4.mysql.uhserver.com',
+  user: process.env.DB_USER || 'tfz',
+  password: process.env.DB_PASS || '@04t28b03p',
   port: process.env.DB_PORT || 3306,
-  database: process.env.DB_NAME || 'db_elegance'
+  database: process.env.DB_NAME || 'db_elegance_v4'
 };
 
 app.post('/login', async (req, res) => {
