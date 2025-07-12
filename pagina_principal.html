@@ -441,8 +441,8 @@
             <div class="logo">Elegance</div>
             <div class="header-right">
                 <div class="user-profile">
-                    <div class="user-avatar">A</div>
-                    <span>Administrador</span>
+                    <div class="user-avatar" id="user-avatar">A</div>
+                    <span id="user-name">Carregando...</span>
                 </div>
             </div>
         </header>
@@ -460,7 +460,7 @@
         <!-- Conteúdo Principal -->
         <main>
             <section class="welcome-section">
-                <h1 class="welcome-title">Bem-vindo de volta! 👋</h1>
+                <h1 class="welcome-title">Bem-vindo de volta, <span id="welcome-name">Carregando...</span>! 👋</h1>
                 <p class="welcome-subtitle">Aqui está o resumo das atividades recentes da sua empresa.</p>
             </section>
 
@@ -506,5 +506,30 @@
             © 2024 Elegance - Todos os direitos reservados
         </div>
     </div>
+
+    <script>
+        // Quando a página carregar, recupera a razão social do sessionStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            // Recupera a razão social armazenada
+            const razaoSocial = sessionStorage.getItem('razao_social');
+            
+            if (razaoSocial) {
+                // Atualiza o nome do usuário no cabeçalho
+                document.getElementById('user-name').textContent = razaoSocial;
+                
+                // Atualiza o nome na mensagem de boas-vindas
+                document.getElementById('welcome-name').textContent = razaoSocial;
+                
+                // Atualiza o avatar com a primeira letra da razão social
+                const firstLetter = razaoSocial.charAt(0).toUpperCase();
+                document.getElementById('user-avatar').textContent = firstLetter;
+            } else {
+                // Se não houver razão social, redireciona para a página de login após 2 segundos
+                setTimeout(() => {
+                    window.location.href = "https://thiagozmb.github.io/elegance_app/index.html";
+                }, 2000);
+            }
+        });
+    </script>
 </body>
 </html>
