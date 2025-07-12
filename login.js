@@ -45,6 +45,8 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       // Armazena a razão social no sessionStorage
       sessionStorage.setItem('razao_social', data.razao_social);
 
+      //const temp = document.getElementById('razao_social').value.trim();
+       //resDiv.textContent = temp;
       
       // Redirecionar após pequeno delay para feedback visual
       setTimeout(() => {
