@@ -47,7 +47,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 
       // Redirecionar após pequeno delay para feedback visual
       setTimeout(() => {
-        window.location.href = "https://thiagozmb.github.io/elegance_app/.pagina_principal.html";
+        window.location.href = "https://thiagozmb.github.io/elegance_app/pagina_principal.html";
       }, 1500);
     } else {
       resDiv.textContent = data.message || 'Usuário ou senha inválidos.';
