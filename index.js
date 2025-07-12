@@ -15,12 +15,17 @@ app.post('/login', async (req, res) => {
   try {
     const conn = await mysql.createConnection(dbConfig);
     const [rows] = await conn.execute(
-      'SELECT * FROM cliente_usuarios WHERE nome = ? AND senha = ?',
+      'SELECT RAZAO_SOCIAL FROM cliente_usuarios WHERE nome = ? AND senha = ?',
       [username, password]
     );
     await conn.end();
+    
     if (rows.length > 0) {
-      res.json({ success: true });
+      // Retorna a RAZAO_SOCIAL no sucesso
+      res.json({ 
+        success: true,
+        razao_social: rows[0].RAZAO_SOCIAL 
+      });
     } else {
       res.json({ success: false });
     }
