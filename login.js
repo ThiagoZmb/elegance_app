@@ -46,9 +46,9 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       sessionStorage.setItem('razao_social', data.razao_social);
 
       // Redirecionar após pequeno delay para feedback visual
-      setTimeout(() => {
+      //setTimeout(() => {
         window.location.href = "https://thiagozmb.github.io/elegance_app/pagina_principal.html";
-      }, 1500);
+      //}, 1500);
     } else {
       resDiv.textContent = data.message || 'Usuário ou senha inválidos.';
       resDiv.className = 'result error show';
