@@ -22,7 +22,8 @@ app.post('/login', async (req, res) => {
     
     if (rows.length > 0) {
       // Acessa a coluna independente de ser maiúscula ou minúscula
-      const razao_social = rows[0].RAZAO_SOCIAL || rows[0].razao_social;
+      //const razao_social = rows[0].RAZAO_SOCIAL || rows[0].razao_social;
+      const razao_social = rows[0].RAZAO_SOCIAL;
       
       res.json({ 
         success: true,
