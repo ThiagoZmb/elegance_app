@@ -40,6 +40,11 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     if (data.success) {
       resDiv.textContent = 'Login bem-sucedido! Redirecionando...';
       resDiv.className = 'result success show';
+
+
+      // Armazena a razão social no sessionStorage
+      sessionStorage.setItem('razao_social', data.razao_social);
+
       
       // Redirecionar após pequeno delay para feedback visual
       setTimeout(() => {
