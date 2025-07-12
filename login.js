@@ -48,7 +48,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       
       // Redirecionar após pequeno delay para feedback visual
       setTimeout(() => {
-        window.location.href = "pagina_principal.html";
+        window.location.href = ".pagina_principal.html";
       }, 1500);
     } else {
       resDiv.textContent = data.message || 'Usuário ou senha inválidos.';
