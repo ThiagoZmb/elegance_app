@@ -15,7 +15,7 @@ app.post('/login', async (req, res) => {
   try {
     const conn = await mysql.createConnection(dbConfig);
     const [rows] = await conn.execute(
-      'SELECT RAZAO_SOCIAL FROM cliente_usuarios WHERE nome = ? AND senha = ?',
+      'SELECT * FROM cliente_usuarios WHERE nome = ? AND senha = ?',
       [username, password]
     );
     await conn.end();
