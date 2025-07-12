@@ -169,25 +169,7 @@
         }
     </style>
     
-    <!-- Script para carregar o nome da empresa -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Recupera o nome da empresa do localStorage
-            const empresa = localStorage.getItem('empresa');
-            
-            if (empresa) {
-                // Atualiza o elemento na página
-                document.querySelector('.logo').textContent = empresa;
-                
-                // Atualiza também o rodapé
-                const footer = document.querySelector('footer p');
-                footer.innerHTML = footer.innerHTML.replace('Empresa XYZ', empresa);
-            } else {
-                // Caso não tenha empresa, redireciona para login
-                window.location.href = "login.html";
-            }
-        });
-    </script>
+  
 </head>
 <body>
     <div class="container">
