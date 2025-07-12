@@ -21,10 +21,12 @@ app.post('/login', async (req, res) => {
     await conn.end();
     
     if (rows.length > 0) {
-      // Retorna a RAZAO_SOCIAL no sucesso
+      // Acessa a coluna independente de ser maiúscula ou minúscula
+      const razao_social = rows[0].RAZAO_SOCIAL || rows[0].razao_social;
+      
       res.json({ 
         success: true,
-        razao_social: rows[0].RAZAO_SOCIAL 
+        razao_social: razao_social
       });
     } else {
       res.json({ success: false });
