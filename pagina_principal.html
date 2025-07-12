@@ -3,185 +3,454 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elegance</title>
+    <title>Elegance - Dashboard</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        :root {
+            --primary-color: #8B0000;
+            --primary-light: rgba(139, 0, 0, 0.1);
+            --primary-dark: #600000;
+            --secondary-color: #f8f9fa;
+            --accent-color: #ff6b6b;
+            --text-dark: #2c3e50;
+            --text-light: #6c757d;
+            --white: #ffffff;
+            --border-color: #e9ecef;
+            --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.06);
+            --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --shadow-heavy: 0 10px 40px rgba(0, 0, 0, 0.15);
+            --gradient-primary: linear-gradient(135deg, #8B0000 0%, #600000 100%);
+            --gradient-card: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
         }
 
         body {
-            background-color: #f4f4f4;
-            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-dark);
+            overflow-x: hidden;
         }
 
         .container {
             display: grid;
-            grid-template-columns: 250px 1fr;
-            grid-template-rows: 70px 1fr 50px;
+            grid-template-columns: 280px 1fr;
+            grid-template-rows: 80px 1fr;
             grid-template-areas:
                 "header header"
-                "sidebar main"
-                "footer footer";
+                "sidebar main";
             min-height: 100vh;
+            position: relative;
         }
 
-        /* Header */
+        /* Header Moderno */
         header {
             grid-area: header;
-            background-color: rgb(139, 0, 0);
+            background: var(--gradient-primary);
             color: white;
             display: flex;
             align-items: center;
-            padding: 0 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: var(--shadow-medium);
+            position: relative;
+            z-index: 1000;
         }
 
         .logo {
-            font-size: 24px;
-            font-weight: bold;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        /* Sidebar */
+        .logo::before {
+            content: "◆";
+            font-size: 24px;
+            opacity: 0.8;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        /* Sidebar Moderno */
         .sidebar {
             grid-area: sidebar;
-            background-color: white;
-            padding: 20px;
-            border-right: 1px solid #ddd;
+            background: var(--white);
+            padding: 30px 0;
+            border-right: 1px solid var(--border-color);
+            box-shadow: var(--shadow-light);
+            position: relative;
+            overflow-y: auto;
         }
 
         .menu-title {
-            color: rgb(139, 0, 0);
-            margin-bottom: 20px;
-            font-size: 18px;
-            font-weight: 500;
+            color: var(--text-light);
+            margin: 0 30px 25px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .menu-item {
-            padding: 12px 15px;
-            margin-bottom: 5px;
-            border-radius: 4px;
+            padding: 15px 30px;
+            margin: 0 20px 8px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .menu-item::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            opacity: 0;
+            transition: all 0.3s ease;
         }
 
         .menu-item:hover {
-            background-color: rgba(139, 0, 0, 0.1);
+            background: var(--primary-light);
+            transform: translateX(5px);
+            color: var(--primary-color);
         }
 
-        /* Main Content */
+        .menu-item:hover::before {
+            opacity: 1;
+        }
+
+        .menu-item.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .menu-item.active::before {
+            background: white;
+            opacity: 1;
+        }
+
+        /* Main Content Moderno */
         main {
             grid-area: main;
-            padding: 30px;
-            background-color: #f9f9f9;
+            padding: 40px;
+            background: transparent;
+            overflow-y: auto;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .welcome-section {
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .welcome-title {
-            font-size: 28px;
-            margin-bottom: 10px;
-            color: rgb(139, 0, 0);
+            font-size: 36px;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: var(--text-light);
+            font-weight: 400;
         }
 
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
         }
 
         .card {
-            background-color: white;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            transition: transform 0.3s;
+            background: var(--gradient-card);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            border-radius: 20px 20px 0 0;
         }
 
         .card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
         }
 
         .card-title {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: rgb(139, 0, 0);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--primary-color);
         }
 
         .card-value {
-            font-size: 32px;
-            font-weight: bold;
-            color: #444;
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .card-change {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .card-change.positive {
+            color: #28a745;
+        }
+
+        .card-change.negative {
+            color: #dc3545;
         }
 
         .stats-section {
-            background-color: white;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            border-radius: 20px 20px 0 0;
         }
 
         .section-title {
-            font-size: 22px;
-            margin-bottom: 20px;
-            color: rgb(139, 0, 0);
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: var(--text-dark);
+            font-weight: 600;
         }
 
         .stats-placeholder {
-            height: 300px;
-            background-color: #e9e9e9;
-            border-radius: 4px;
+            height: 350px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #777;
+            color: var(--text-light);
             font-style: italic;
+            font-size: 18px;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Footer */
-        footer {
-            grid-area: footer;
-            background-color: rgb(50, 50, 50);
-            color: #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
+        .stats-placeholder::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2s infinite;
         }
 
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Footer Moderno */
+        .footer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--white);
+            padding: 12px 20px;
+            border-radius: 50px;
+            box-shadow: var(--shadow-medium);
+            font-size: 12px;
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
             .container {
                 grid-template-columns: 1fr;
                 grid-template-areas:
                     "header"
-                    "main"
-                    "footer";
+                    "main";
             }
             
             .sidebar {
                 display: none;
             }
+
+            .header-right {
+                display: none;
+            }
+
+            main {
+                padding: 20px;
+            }
+
+            .welcome-title {
+                font-size: 28px;
+            }
+
+            .cards-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .stats-section {
+                padding: 20px;
+            }
+        }
+
+        /* Micro-animations */
+        .card-value {
+            animation: countUp 1s ease-out;
+        }
+
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--secondary-color);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
         }
     </style>
-    
-  
 </head>
 <body>
     <div class="container">
-        <!-- Cabeçalho -->
+        <!-- Header Moderno -->
         <header>
-            <div class="logo">Carregando...</div>
+            <div class="logo">Elegance</div>
+            <div class="header-right">
+                <div class="user-profile">
+                    <div class="user-avatar">A</div>
+                    <span>Administrador</span>
+                </div>
+            </div>
         </header>
 
-        <!-- Menu Lateral -->
+        <!-- Sidebar Moderno -->
         <div class="sidebar">
-            <div class="menu-title">MENU PRINCIPAL</div>
-            <div class="menu-item">Dashboard</div>
+            <div class="menu-title">Menu Principal</div>
+            <div class="menu-item active">Dashboard</div>
             <div class="menu-item">Clientes</div>
             <div class="menu-item">Projetos</div>
             <div class="menu-item">Relatórios</div>
@@ -191,37 +460,51 @@
         <!-- Conteúdo Principal -->
         <main>
             <section class="welcome-section">
-                <h1 class="welcome-title">Bem-vindo, Administrador!</h1>
-                <p>Aqui está o resumo das atividades recentes da empresa.</p>
+                <h1 class="welcome-title">Bem-vindo de volta! 👋</h1>
+                <p class="welcome-subtitle">Aqui está o resumo das atividades recentes da sua empresa.</p>
             </section>
 
             <section class="cards-container">
                 <div class="card">
-                    <h3 class="card-title">Vendas</h3>
+                    <div class="card-header">
+                        <h3 class="card-title">Vendas</h3>
+                        <div class="card-icon">💰</div>
+                    </div>
                     <div class="card-value">R$ 254.850</div>
+                    <div class="card-change positive">+12% em relação ao mês anterior</div>
                 </div>
+                
                 <div class="card">
-                    <h3 class="card-title">Novos Clientes</h3>
+                    <div class="card-header">
+                        <h3 class="card-title">Novos Clientes</h3>
+                        <div class="card-icon">👥</div>
+                    </div>
                     <div class="card-value">24</div>
+                    <div class="card-change positive">+18% em relação ao mês anterior</div>
                 </div>
+                
                 <div class="card">
-                    <h3 class="card-title">Tarefas Pendentes</h3>
+                    <div class="card-header">
+                        <h3 class="card-title">Tarefas Pendentes</h3>
+                        <div class="card-icon">📋</div>
+                    </div>
                     <div class="card-value">12</div>
+                    <div class="card-change negative">-3% em relação ao mês anterior</div>
                 </div>
             </section>
 
             <section class="stats-section">
                 <h2 class="section-title">Métricas de Desempenho</h2>
                 <div class="stats-placeholder">
-                    Gráficos de desempenho serão exibidos aqui
+                    📊 Gráficos interativos de desempenho serão exibidos aqui
                 </div>
             </section>
         </main>
 
-        <!-- Rodapé -->
-        <footer>
-            <p>&copy; 2023 Empresa XYZ - Todos os direitos reservados</p>
-        </footer>
+        <!-- Footer Moderno -->
+        <div class="footer">
+            © 2024 Elegance - Todos os direitos reservados
+        </div>
     </div>
 </body>
 </html>
