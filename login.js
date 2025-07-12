@@ -46,7 +46,8 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       sessionStorage.setItem('razao_social', data.razao_social);
 
       const temp = sessionStorage.getItem('razao_social').value.trim();
-       resDiv.textContent = temp;
+      resDiv.textContent = temp;
+      resDiv.className = 'result success show';
       
       // Redirecionar após pequeno delay para feedback visual
       setTimeout(() => {
