@@ -6,18 +6,18 @@ app.get('/pedidos', async (req, res) => {
     // Busca os últimos 50 pedidos ordenados por data
     const [rows] = await conn.execute(`
       SELECT 
-        id_orc AS numero,
-        cliente AS cliente,
-        cliente_final AS clienteFinal,
-        DATE_FORMAT(data_orc, '%d/%m/%Y') AS data,
-        DATE_FORMAT(data_pronto, '%d/%m/%Y') AS prontoEm,
-        valor_total AS valor,
-        observacao AS observacao,
-        situacao AS situacao,
-        financeiro AS financeiro,
-        DATE_FORMAT(data_entrega, '%d/%m/%Y') AS dataEntrega
+        NUMERO AS numero,
+        RAZAO_SOCIAL AS cliente,
+        CLIENTE_FINAL AS clienteFinal,
+        DATE_FORMAT(DATA, '%d/%m/%Y') AS data,
+        DATE_FORMAT(DATA_PRONTO, '%d/%m/%Y') AS prontoEm,
+        VALOR_TOTAL AS valor,
+        OBS_GERAL AS observacao,
+        SITUACAO AS situacao,
+        FINANCEIRO AS financeiro,
+        DATE_FORMAT(DATA_ENTREGA, '%d/%m/%Y') AS dataEntrega
       FROM ped_orc 
-      ORDER BY data_orc DESC
+      ORDER BY DATA DESC
       LIMIT 50
     `);
     
