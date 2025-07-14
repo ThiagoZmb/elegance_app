@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elegance Dashboard</title>
+    <title>Elegance Dashboard - Controle de Pedidos</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -224,7 +224,7 @@
 
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 30px;
             margin-bottom: 50px;
         }
@@ -304,18 +304,18 @@
             color: var(--danger-color);
         }
 
-        /* Lista de Itens */
-        .list-container {
+        /* Tabela de Pedidos */
+        .table-container {
             background: var(--white);
             border-radius: 20px;
-            padding: 40px;
+            padding: 30px;
             box-shadow: var(--shadow-light);
             border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
         }
 
-        .list-container::before {
+        .table-container::before {
             content: "";
             position: absolute;
             top: 0;
@@ -326,17 +326,20 @@
             border-radius: 20px 20px 0 0;
         }
 
-        .list-header {
+        .table-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
         }
 
-        .list-title {
+        .table-title {
             font-size: 24px;
             color: var(--text-dark);
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .search-filter-container {
@@ -393,206 +396,113 @@
             color: white;
         }
 
-        .items-list {
-            display: grid;
-            gap: 20px;
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
 
-        .list-item {
+        .orders-table th {
             background: var(--secondary-color);
-            border-radius: 16px;
-            padding: 20px;
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
-            transition: all 0.3s ease;
-            border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
-            animation: slideInItem 0.4s ease-out;
-        }
-
-        @keyframes slideInItem {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .list-item:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-light);
-            background: var(--white);
-        }
-
-        .item-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 14px;
-            background: var(--primary-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: var(--primary-color);
-            flex-shrink: 0;
-        }
-
-        .item-content {
-            flex-grow: 1;
-        }
-
-        .item-title {
-            font-size: 18px;
+            padding: 15px 12px;
+            text-align: left;
             font-weight: 600;
-            margin-bottom: 8px;
+            color: var(--text-dark);
+            border-bottom: 2px solid var(--border-color);
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .orders-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
             color: var(--text-dark);
         }
 
-        .item-desc {
-            font-size: 14px;
-            color: var(--text-light);
-            margin-bottom: 12px;
-            line-height: 1.5;
+        .orders-table tr:hover {
+            background: var(--secondary-color);
         }
 
-        .item-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-        }
-
-        .item-date {
-            color: var(--text-light);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .item-status {
+        .status-badge {
             padding: 5px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
         }
 
-        .status-completed {
-            background-color: rgba(40, 167, 69, 0.1);
-            color: var(--success-color);
-        }
-
-        .status-pending {
-            background-color: rgba(255, 193, 7, 0.1);
-            color: var(--warning-color);
-        }
-
-        .status-delayed {
-            background-color: rgba(220, 53, 69, 0.1);
-            color: var(--danger-color);
-        }
-
-        .status-inprogress {
+        .status-producao {
             background-color: rgba(23, 162, 184, 0.1);
             color: var(--info-color);
         }
 
-        /* Footer Moderno */
-        .footer {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--white);
-            padding: 12px 20px;
-            border-radius: 50px;
-            box-shadow: var(--shadow-medium);
+        .status-pronto {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-entregue {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-retirado {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: var(--text-light);
+        }
+
+        .financial-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .financial-receber {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+
+        .financial-recebido {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+
+        .order-number {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .client-name {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .price-value {
+            font-weight: 600;
+            color: var(--success-color);
+        }
+
+        .date-cell {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .obs-cell {
             font-size: 12px;
             color: var(--text-light);
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(10px);
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        /* Responsive Design */
-        @media (max-width: 992px) {
-            .search-box input {
-                width: 200px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
-            .container {
-                grid-template-columns: 1fr;
-                grid-template-areas:
-                    "header"
-                    "main";
-            }
-            
-            .sidebar {
-                display: none;
-            }
-
-            .header-right {
-                display: none;
-            }
-
-            main {
-                padding: 20px;
-            }
-
-            .welcome-title {
-                font-size: 28px;
-            }
-
-            .cards-container {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .card {
-                padding: 20px;
-            }
-
-            .list-container {
-                padding: 20px;
-            }
-
-            .list-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-
-            .search-filter-container {
-                width: 100%;
-            }
-
-            .search-box {
-                flex-grow: 1;
-            }
-
-            .search-box input {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .item-meta {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-        }
-
-        /* Micro-animations */
-        .card-value {
-            animation: countUp 1s ease-out;
-        }
-
-        @keyframes countUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .highlighted-row {
+            background-color: rgba(255, 255, 0, 0.1);
         }
 
         /* Scrollbar personalizada */
@@ -612,6 +522,44 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--primary-dark);
         }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .orders-table {
+                font-size: 12px;
+            }
+            
+            .orders-table th,
+            .orders-table td {
+                padding: 10px 8px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "header"
+                    "main";
+            }
+            
+            .sidebar {
+                display: none;
+            }
+
+            main {
+                padding: 20px;
+            }
+
+            .table-container {
+                padding: 20px;
+                overflow-x: auto;
+            }
+
+            .orders-table {
+                min-width: 800px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -621,8 +569,8 @@
             <div class="logo">Elegance</div>
             <div class="header-right">
                 <div class="user-profile">
-                    <div class="user-avatar" id="user-avatar">A</div>
-                    <span id="user-name">Carregando...</span>
+                    <div class="user-avatar" id="user-avatar">E</div>
+                    <span id="user-name">Empresa XYZ</span>
                 </div>
             </div>
         </header>
@@ -630,198 +578,234 @@
         <!-- Sidebar Moderno -->
         <div class="sidebar">
             <div class="menu-title">Menu Principal</div>
-            <div class="menu-item active">Dashboard</div>
+            <div class="menu-item">Dashboard</div>
+            <div class="menu-item active">Pedidos</div>
             <div class="menu-item">Clientes</div>
-            <div class="menu-item">Projetos</div>
+            <div class="menu-item">Produtos</div>
+            <div class="menu-item">Financeiro</div>
             <div class="menu-item">Relatórios</div>
-            <div class="menu-item">Configurações</div>
         </div>
 
         <!-- Conteúdo Principal -->
         <main>
             <section class="welcome-section">
-                <h1 class="welcome-title">Bem-vindo de volta, <span id="welcome-name">Carregando...</span>! 👋</h1>
-                <p class="welcome-subtitle">Aqui está o resumo das atividades recentes da sua empresa.</p>
+                <h1 class="welcome-title">Controle de Pedidos 📋</h1>
+                <p class="welcome-subtitle">Gerencie todos os seus pedidos de forma organizada e eficiente.</p>
             </section>
 
             <section class="cards-container">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Vendas</h3>
+                        <h3 class="card-title">Pedidos Hoje</h3>
+                        <div class="card-icon">📦</div>
+                    </div>
+                    <div class="card-value">15</div>
+                    <div class="card-change positive">+3 novos pedidos</div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Em Produção</h3>
+                        <div class="card-icon">⚙️</div>
+                    </div>
+                    <div class="card-value">28</div>
+                    <div class="card-change negative">-2 finalizados</div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Prontos</h3>
+                        <div class="card-icon">✅</div>
+                    </div>
+                    <div class="card-value">8</div>
+                    <div class="card-change positive">+4 finalizados</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Faturamento</h3>
                         <div class="card-icon">💰</div>
                     </div>
-                    <div class="card-value">R$ 254.850</div>
-                    <div class="card-change positive">+12% em relação ao mês anterior</div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Novos Clientes</h3>
-                        <div class="card-icon">👥</div>
-                    </div>
-                    <div class="card-value">24</div>
-                    <div class="card-change positive">+18% em relação ao mês anterior</div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Tarefas Pendentes</h3>
-                        <div class="card-icon">📋</div>
-                    </div>
-                    <div class="card-value">12</div>
-                    <div class="card-change negative">-3% em relação ao mês anterior</div>
+                    <div class="card-value">R$ 12.450</div>
+                    <div class="card-change positive">+15% este mês</div>
                 </div>
             </section>
 
-            <section class="list-container">
-                <div class="list-header">
-                    <h2 class="list-title">Lista de Tarefas</h2>
+            <section class="table-container">
+                <div class="table-header">
+                    <h2 class="table-title">
+                        <i class="fas fa-clipboard-list"></i>
+                        Lista de Pedidos
+                    </h2>
                     <div class="search-filter-container">
                         <div class="search-box">
-                            <input type="text" placeholder="Buscar tarefas...">
+                            <input type="text" placeholder="Buscar pedidos..." id="search-input">
                         </div>
                         <button class="filter-btn">
+                            <i class="fas fa-filter"></i>
                             <span>Filtros</span>
-                            <span>▼</span>
                         </button>
                     </div>
                 </div>
                 
-                <div class="items-list">
-                    <div class="list-item">
-                        <div class="item-icon">📊</div>
-                        <div class="item-content">
-                            <h3 class="item-title">Relatório Trimestral</h3>
-                            <p class="item-desc">Preparar relatório financeiro do trimestre para apresentação à diretoria.</p>
-                            <div class="item-meta">
-                                <span class="item-date">📅 15/07/2025 - 10:00</span>
-                                <span class="item-status status-inprogress">Em Andamento</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="list-item">
-                        <div class="item-icon">📱</div>
-                        <div class="item-content">
-                            <h3 class="item-title">Atualização do App</h3>
-                            <p class="item-desc">Implementar novas funcionalidades na versão 2.5 do aplicativo móvel.</p>
-                            <div class="item-meta">
-                                <span class="item-date">📅 18/07/2025 - 14:30</span>
-                                <span class="item-status status-pending">Pendente</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="list-item">
-                        <div class="item-icon">💼</div>
-                        <div class="item-content">
-                            <h3 class="item-title">Reunião com Cliente</h3>
-                            <p class="item-desc">Apresentar proposta de novos serviços para o cliente ABC Corporação.</p>
-                            <div class="item-meta">
-                                <span class="item-date">📅 12/07/2025 - 09:00</span>
-                                <span class="item-status status-completed">Concluído</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="list-item">
-                        <div class="item-icon">📝</div>
-                        <div class="item-content">
-                            <h3 class="item-title">Contrato de Parceria</h3>
-                            <p class="item-desc">Revisar e finalizar contrato de parceria com a empresa XYZ Solutions.</p>
-                            <div class="item-meta">
-                                <span class="item-date">📅 10/07/2025 - 16:00</span>
-                                <span class="item-status status-delayed">Atrasado</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="list-item">
-                        <div class="item-icon">🎯</div>
-                        <div class="item-content">
-                            <h3 class="item-title">Planejamento Estratégico</h3>
-                            <p class="item-desc">Definir metas e objetivos estratégicos para o próximo semestre.</p>
-                            <div class="item-meta">
-                                <span class="item-date">📅 20/07/2025 - 11:00</span>
-                                <span class="item-status status-pending">Pendente</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <!-- Footer Moderno -->
-        <div class="footer">
-            © 2024 Elegance - Todos os direitos reservados
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Simulação de dados do usuário
-            const razaoSocial = "Empresa XYZ";
-            
-            // Atualiza cabeçalho
-            const userNameElement = document.getElementById('user-name');
-            if (userNameElement) {
-                userNameElement.textContent = razaoSocial;
-            }
-            
-            // Atualiza saudação
-            const welcomeNameElement = document.getElementById('welcome-name');
-            if (welcomeNameElement) {
-                welcomeNameElement.textContent = razaoSocial;
-            }
-            
-            // Atualiza avatar
-            const userAvatarElement = document.getElementById('user-avatar');
-            if (userAvatarElement) {
-                userAvatarElement.textContent = razaoSocial.charAt(0).toUpperCase();
-            }
-            
-            // Adiciona funcionalidade de busca
-            const searchInput = document.querySelector('.search-box input');
-            if (searchInput) {
-                searchInput.addEventListener('input', function() {
-                    const searchTerm = this.value.toLowerCase();
-                    const items = document.querySelectorAll('.list-item');
-                    
-                    items.forEach(item => {
-                        const title = item.querySelector('.item-title').textContent.toLowerCase();
-                        const desc = item.querySelector('.item-desc').textContent.toLowerCase();
-                        if (title.includes(searchTerm) || desc.includes(searchTerm)) {
-                            item.style.display = 'flex';
-                        } else {
-                            item.style.display = 'none';
-                        }
-                    });
-                });
-            }
-            
-            // Animação para os cards
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-            });
-            
-            setTimeout(() => {
-                cards.forEach((card, index) => {
-                    setTimeout(() => {
-                        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                        card.style.opacity = '1';
-                        card.style.transform = 'translateY(0)';
-                    }, 200 * index);
-                });
-            }, 300);
-            
-            // Animação para os itens da lista
-            const listItems = document.querySelectorAll('.list-item');
-            listItems.forEach((item, index) => {
-                item.style.animationDelay = `${index * 0.1}s`;
-            });
-        });
-    </script>
-</body>
-</html>
+                <div style="max-height: 500px; overflow-y: auto;">
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Número</th>
+                                <th>Cliente</th>
+                                <th>Cliente Final</th>
+                                <th>Data</th>
+                                <th>Pronto em</th>
+                                <th>Valor</th>
+                                <th>Observação</th>
+                                <th>Situação</th>
+                                <th>Financeiro</th>
+                                <th>Data Entrega</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-tbody">
+                            <tr>
+                                <td class="order-number">22382</td>
+                                <td class="client-name">Lume Móveis Planejados</td>
+                                <td>Leonardo</td>
+                                <td class="date-cell">12/07/2025</td>
+                                <td class="date-cell">18/07/2025</td>
+                                <td class="price-value">R$ 3.177,07</td>
+                                <td class="obs-cell">-</td>
+                                <td><span class="status-badge status-producao">Em Produção</span></td>
+                                <td><span class="financial-badge financial-receber">A Receber</span></td>
+                                <td class="date-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td class="order-number">22381</td>
+                                <td class="client-name">Lume Móveis Planejados</td>
+                                <td>Gida Romanhe</td>
+                                <td class="date-cell">12/07/2025</td>
+                                <td class="date-cell">18/07/2025</td>
+                                <td class="price-value">R$ 979,35</td>
+                                <td class="obs-cell">-</td>
+                                <td><span class="status-badge status-producao">Em Produção</span></td>
+                                <td><span class="financial-badge financial-receber">A Receber</span></td>
+                                <td class="date-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td class="order-number">22380</td>
+                                <td class="client-name">P & G Comércio de Móveis Ltda ME</td>
+                                <td>Natacha Damazio</td>
+                                <td class="date-cell">12/07/2025</td>
+                                <td class="date-cell">17/07/2025</td>
+                                <td class="price-value">R$ 1.789,69</td>
+                                <td class="obs-cell">-</td>
+                                <td><span class="status-badge status-producao">Em Produção</span></td>
+                                <td><span class="financial-badge financial-receber">A Receber</span></td>
+                                <td class="date-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td class="order-number">22379</td>
+                                <td class="client-name">LMO Modulados Ltda EPP</td>
+                                <td>Natalia</td>
+                                <td class="date-cell">11/07/2025</td>
+                                <td class="date-cell">14/07/2025</td>
+                                <td class="price-value">R$ 729,72</td>
+                                <td class="obs-cell">-</td>
+                                <td><span class="status-badge status-producao">Em Produção</span></td>
+                                <td><span class="financial-badge financial-receber">A Receber</span></td>
+                                <td class="date-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td class="order-number">22378</td>
+                                <td class="client-name">Serra Design Ltda Me</td>
+                                <td>ALFREDO SANTANA</td>
+                                <td class="date-cell">08/07/2025</td>
+                                <td class="date-cell">14/07/2025</td>
+                                <td class="price-value">R$ 824,55</td>
+                                <td class="obs-cell">19244</td>
+                                <td><span class="status-badge status-producao">Em Produção</span></td>
+                                <td><span class="financial-badge financial-receber">A Receber</span></td>
+                                <td class="date-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td class="order-number">22377</td>
+                                <td class="client-name">Serra Design Ltda Me</td>
+                                <td>Denner</td>
+                                <td class="date-cell">11/07/2025</td>
+                                <td class="date-cell">24/07/2025</td>
+                                <td class="price-value">R$ 6.921,59</td>
+                                <td class="obs-cell">18975</td>
+                                <td><span class="status-badge status-producao">Em Produção</span></td>
+                                <td><span class="financial-badge financial-receber">A Receber</span></td>
+                                <td class="date-cell">-</td>
+                            </tr>
+                            <tr class="highlighted-row">
+                                <td class="order-number">22367</td>
+                                <td class="client-name">Roosevelt Fittner do Nascimento</td>
+                                <td>Roberta</td>
+                                <td class="date-cell">09/07/2025</td>
+                                <td class="date-cell">10/07/2025</td>
+                                <td class="price-value">R$ 871,80</td>
+                                <td class="obs-cell">-</td>
+                                <td><span class="status-badge status-pronto">Pronto</span></td>
+                                <td><span class="financial-badge financial-receber">A Receber</span></td>
+                                <td class="date-cell">-</td>
+                            </tr>
+                            <tr class="highlighted-row">
+                                <td class="order-number">22363</td>
+                                <td class="client-name">P & G Comércio de Móveis Ltda ME</td>
+                                <td>CLAUDECIR</td>
+                                <td class="date-cell">08/07/2025</td>
+                                <td class="date-cell">11/07/2025</td>
+                                <td class="price-value">R$ 1.200,65</td>
+                                <td class="obs-cell">-</td>
+                                <td><span class="status-badge status-pronto">Pronto</span></td>
+                                <td><span class="financial-badge financial-receber">A Receber</span></td>
+                                <td class="date-cell">-</td>
+                            </tr>
+                            <tr class="highlighted-row">
+                                <td class="order-number">22362</td>
+                                <td class="client-name">Mq Comércio de Móveis e Decoração</td>
+                                <td>Componei/Black/Lane</td>
+                                <td class="date-cell">07/07/2025</td>
+                                <td class="date-cell">09/07/2025</td>
+                                <td class="price-value">R$ 104,96</td>
+                                <td class="obs-cell">-</td>
+                                <td><span class="status-badge status-pronto">Pronto</span></td>
+                                <td><span class="financial-badge financial-receber">A Receber</span></td>
+                                <td class="date-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td class="order-number">22361</td>
+                                <td class="client-name">Daf Junior Apta Marcenaria Ltda</td>
+                                <td>Carol Tanure</td>
+                                <td class="date-cell">04/07/2025</td>
+                                <td class="date-cell">18/07/2025</td>
+                                <td class="price-value">R$ 1.130,82</td>
+                                <td class="obs-cell">-</td>
+                                <td><span class="status-badge status-producao">Em Produção</span></td>
+                                <td><span class="financial-badge financial-receber">A Receber</span></td>
+                                <td class="date-cell">-</td>
+                            </tr>
+                            <tr class="highlighted-row">
+                                <td class="order-number">22360</td>
+                                <td class="client-name">Belan Marcenaria Projetos e Decoração</td>
+                                <td>Isabella</td>
+                                <td class="date-cell">04/07/2025</td>
+                                <td class="date-cell">10/07/2025</td>
+                                <td class="price-value">R$ 3.646,27</td>
+                                <td class="obs-cell">-</td>
+                                <td><span class="status-badge status-pronto">Pronto</span></td>
+                                <td><span class="financial-badge financial-receber">A Receber</span></td>
+                                <td class="date-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td class="order-number">22359</td>
+                                <td class="client-name">Estante Brasil Comercio Industria Ltda</td>
+                                <td>-</td>
+                                <td class="date-cell">04/07/2025</td>
+                                <td class="date-cell">17/07/2025</td>
+                                <td class="price-value">R$ 4.601,30</td>
+                                <td class="obs-cell">NF 21345</td>
+                                <td><span class="status-badge status-retirado">Retirado</span></td>
+                                <td><span class="financial-badge financial-recebido">Recebido</span></td>
+                                <td class="date-cell">2025-07-07</td>
+                            </tr>
