@@ -5,7 +5,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
   const password = document.getElementById('password').value.trim();
   const resDiv = document.getElementById('result');
   
-  // Validação básica
+  // Validação básica 
   if (!username || !password) {
     resDiv.textContent = 'Por favor, preencha todos os campos.';
     resDiv.className = 'result error show';
