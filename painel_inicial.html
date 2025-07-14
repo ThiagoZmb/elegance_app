@@ -677,8 +677,8 @@
                         <h3 class="card-title">Pedidos Hoje</h3>
                         <div class="card-icon">📦</div>
                     </div>
-                    <div class="card-value" id="today-orders">15</div>
-                    <div class="card-change positive" id="today-change">+3 novos pedidos</div>
+                    <div class="card-value" id="today-orders">0</div>
+                    <div class="card-change" id="today-change">Carregando...</div>
                 </div>
                 
                 <div class="card">
@@ -686,8 +686,8 @@
                         <h3 class="card-title">Em Produção</h3>
                         <div class="card-icon">⚙️</div>
                     </div>
-                    <div class="card-value" id="production-orders">28</div>
-                    <div class="card-change negative" id="production-change">-2 finalizados</div>
+                    <div class="card-value" id="production-orders">0</div>
+                    <div class="card-change" id="production-change">Carregando...</div>
                 </div>
                 
                 <div class="card">
@@ -695,8 +695,8 @@
                         <h3 class="card-title">Prontos</h3>
                         <div class="card-icon">✅</div>
                     </div>
-                    <div class="card-value" id="ready-orders">8</div>
-                    <div class="card-change positive" id="ready-change">+4 finalizados</div>
+                    <div class="card-value" id="ready-orders">0</div>
+                    <div class="card-change" id="ready-change">Carregando...</div>
                 </div>
 
                 <div class="card">
@@ -704,8 +704,8 @@
                         <h3 class="card-title">Faturamento</h3>
                         <div class="card-icon">💰</div>
                     </div>
-                    <div class="card-value" id="revenue">R$ 12.450</div>
-                    <div class="card-change positive" id="revenue-change">+15% este mês</div>
+                    <div class="card-value" id="revenue">R$ 0,00</div>
+                    <div class="card-change" id="revenue-change">Carregando...</div>
                 </div>
             </section>
 
@@ -738,9 +738,9 @@
                         <div class="search-box">
                             <input type="text" placeholder="Buscar pedidos..." id="search-input">
                         </div>
-                        <button class="filter-btn">
-                            <i class="fas fa-filter"></i>
-                            <span>Filtros</span>
+                        <button class="filter-btn" id="refresh-btn">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Atualizar</span>
                         </button>
                     </div>
                 </div>
@@ -776,55 +776,27 @@
             return 'R$ ' + parseFloat(value).toFixed(2).replace('.', ',');
         }
 
-        // Função para carregar pedidos
+        // Função para carregar pedidos do banco de dados
         async function loadPedidos() {
             try {
                 // Mostrar loading
                 document.getElementById('table-loading').style.display = 'flex';
                 
-                // Simular requisição ao backend (em produção, substituir pela URL real)
-                // const res = await fetch('https://app-cek0.onrender.com/pedidos');
-                // const pedidos = await res.json();
+                // Atualizar indicadores de carregamento
+                document.querySelectorAll('.card-change').forEach(el => {
+                    el.textContent = 'Carregando...';
+                    el.className = 'card-change';
+                });
                 
-                // Dados de exemplo para demonstração
-                const pedidos = [
-                    { numero: 22382, cliente: "Lume Móveis Planejados", clienteFinal: "Leonardo", 
-                      data: "12/07/2025", prontoEm: "18/07/2025", valor: 3177.07, 
-                      observacao: "-", situacao: "Em Producao", financeiro: "A Receber", dataEntrega: "-" },
-                    { numero: 22381, cliente: "Lume Móveis Planejados", clienteFinal: "Gida Romanhe", 
-                      data: "12/07/2025", prontoEm: "18/07/2025", valor: 979.35, 
-                      observacao: "-", situacao: "Em Producao", financeiro: "A Receber", dataEntrega: "-" },
-                    { numero: 22380, cliente: "P & G Comércio de Móveis Ltda ME", clienteFinal: "Natacha Damazio", 
-                      data: "12/07/2025", prontoEm: "17/07/2025", valor: 1789.69, 
-                      observacao: "-", situacao: "Em Producao", financeiro: "A Receber", dataEntrega: "-" },
-                    { numero: 22379, cliente: "LMO Modulados Ltda EPP", clienteFinal: "Natalia", 
-                      data: "11/07/2025", prontoEm: "14/07/2025", valor: 729.72, 
-                      observacao: "-", situacao: "Em Producao", financeiro: "A Receber", dataEntrega: "-" },
-                    { numero: 22378, cliente: "Serra Design Ltda Me", clienteFinal: "ALFREDO SANTANA", 
-                      data: "08/07/2025", prontoEm: "14/07/2025", valor: 824.55, 
-                      observacao: "19244", situacao: "Em Producao", financeiro: "A Receber", dataEntrega: "-" },
-                    { numero: 22377, cliente: "Serra Design Ltda Me", clienteFinal: "Denner", 
-                      data: "11/07/2025", prontoEm: "24/07/2025", valor: 6921.59, 
-                      observacao: "18975", situacao: "Em Producao", financeiro: "A Receber", dataEntrega: "-" },
-                    { numero: 22367, cliente: "Roosevelt Fittner do Nascimento", clienteFinal: "Roberta", 
-                      data: "09/07/2025", prontoEm: "10/07/2025", valor: 871.80, 
-                      observacao: "-", situacao: "Pronto", financeiro: "A Receber", dataEntrega: "-" },
-                    { numero: 22363, cliente: "P & G Comércio de Móveis Ltda ME", clienteFinal: "CLAUDECIR", 
-                      data: "08/07/2025", prontoEm: "11/07/2025", valor: 1200.65, 
-                      observacao: "-", situacao: "Pronto", financeiro: "A Receber", dataEntrega: "-" },
-                    { numero: 22362, cliente: "Mq Comércio de Móveis e Decoração", clienteFinal: "Componei/Black/Lane", 
-                      data: "07/07/2025", prontoEm: "09/07/2025", valor: 104.96, 
-                      observacao: "-", situacao: "Pronto", financeiro: "A Receber", dataEntrega: "-" },
-                    { numero: 22361, cliente: "Daf Junior Apta Marcenaria Ltda", clienteFinal: "Carol Tanure", 
-                      data: "04/07/2025", prontoEm: "18/07/2025", valor: 1130.82, 
-                      observacao: "-", situacao: "Em Producao", financeiro: "A Receber", dataEntrega: "-" },
-                    { numero: 22360, cliente: "Belan Marcenaria Projetos e Decoração", clienteFinal: "Isabella", 
-                      data: "04/07/2025", prontoEm: "10/07/2025", valor: 3646.27, 
-                      observacao: "-", situacao: "Pronto", financeiro: "A Receber", dataEntrega: "-" },
-                    { numero: 22359, cliente: "Estante Brasil Comercio Industria Ltda", clienteFinal: "-", 
-                      data: "04/07/2025", prontoEm: "17/07/2025", valor: 4601.30, 
-                      observacao: "NF 21345", situacao: "Retirado", financeiro: "Recebido", dataEntrega: "07/07/2025" }
-                ];
+                // Fazer requisição para o endpoint de pedidos
+                const res = await fetch('https://app-cek0.onrender.com/pedidos');
+                
+                // Verificar se a resposta é válida
+                if (!res.ok) {
+                    throw new Error(`Erro HTTP: ${res.status}`);
+                }
+                
+                const pedidos = await res.json();
                 
                 // Atualizar cards de resumo
                 updateSummaryCards(pedidos);
@@ -835,63 +807,90 @@
                 const tbody = document.getElementById('orders-tbody');
                 tbody.innerHTML = '';
 
-                pedidos.forEach(pedido => {
-                    const row = document.createElement('tr');
-                    
-                    // Destacar linhas com status "Pronto"
-                    if (pedido.situacao === 'Pronto') {
-                        row.classList.add('highlighted-row');
-                    }
+                if (pedidos.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 30px; color: var(--text-light);">Nenhum pedido encontrado</td></tr>`;
+                } else {
+                    pedidos.forEach(pedido => {
+                        const row = document.createElement('tr');
+                        
+                        // Destacar linhas com status "Pronto"
+                        if (pedido.situacao === 'Pronto') {
+                            row.classList.add('highlighted-row');
+                        }
 
-                    // Determinar classes CSS para situação e financeiro
-                    const situacaoClass = `status-${pedido.situacao.toLowerCase().replace(' ', '-')}`;
-                    const financeiroClass = `financial-${pedido.financeiro.toLowerCase().replace(' ', '-')}`;
+                        // Determinar classes CSS para situação e financeiro
+                        const situacaoClass = `status-${pedido.situacao.toLowerCase().replace(' ', '-')}`;
+                        const financeiroClass = `financial-${pedido.financeiro.toLowerCase().replace(' ', '-')}`;
 
-                    row.innerHTML = `
-                        <td class="order-number">${pedido.numero}</td>
-                        <td class="client-name">${pedido.cliente}</td>
-                        <td>${pedido.clienteFinal || '-'}</td>
-                        <td class="date-cell">${pedido.data}</td>
-                        <td class="date-cell">${pedido.prontoEm || '-'}</td>
-                        <td class="price-value">${formatCurrency(pedido.valor)}</td>
-                        <td class="obs-cell">${pedido.observacao || '-'}</td>
-                        <td><span class="status-badge ${situacaoClass}">${pedido.situacao}</span></td>
-                        <td><span class="financial-badge ${financeiroClass}">${pedido.financeiro}</span></td>
-                        <td class="date-cell">${pedido.dataEntrega || '-'}</td>
-                    `;
+                        row.innerHTML = `
+                            <td class="order-number">${pedido.numero}</td>
+                            <td class="client-name">${pedido.cliente}</td>
+                            <td>${pedido.clienteFinal || '-'}</td>
+                            <td class="date-cell">${pedido.data}</td>
+                            <td class="date-cell">${pedido.prontoEm || '-'}</td>
+                            <td class="price-value">${formatCurrency(pedido.valor)}</td>
+                            <td class="obs-cell">${pedido.observacao || '-'}</td>
+                            <td><span class="status-badge ${situacaoClass}">${pedido.situacao}</span></td>
+                            <td><span class="financial-badge ${financeiroClass}">${pedido.financeiro}</span></td>
+                            <td class="date-cell">${pedido.dataEntrega || '-'}</td>
+                        `;
 
-                    tbody.appendChild(row);
-                });
+                        tbody.appendChild(row);
+                    });
+                }
                 
                 // Esconder loading
                 document.getElementById('table-loading').style.display = 'none';
                 
-            } catch (error) {
-                console.error('Erro ao carregar pedidos:', error);
-                alert('Erro ao carregar dados. Tente recarregar a página.');
+            } catch (err) {
+                console.error('Erro ao carregar pedidos:', err);
+                
+                // Atualizar UI com mensagem de erro
                 document.getElementById('table-loading').style.display = 'none';
+                document.querySelectorAll('.card-change').forEach(el => {
+                    el.textContent = 'Erro ao carregar dados';
+                    el.className = 'card-change negative';
+                });
+                
+                document.getElementById('orders-tbody').innerHTML = `
+                    <tr>
+                        <td colspan="10" style="text-align: center; padding: 30px; color: var(--danger-color);">
+                            Erro ao carregar dados: ${err.message || 'Verifique a conexão com o servidor'}
+                        </td>
+                    </tr>
+                `;
             }
         }
 
         // Atualizar cards de resumo
         function updateSummaryCards(pedidos) {
             // Pedidos de hoje
-            const todayOrders = pedidos.filter(p => p.data === '15/07/2025').length;
+            const today = new Date();
+            const todayFormatted = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth()+1).toString().padStart(2, '0')}/${today.getFullYear()}`;
+            const todayOrders = pedidos.filter(p => p.data === todayFormatted).length;
             document.getElementById('today-orders').textContent = todayOrders;
             document.getElementById('today-change').textContent = todayOrders > 0 ? 
                 `+${todayOrders} novos pedidos` : 'Sem novos pedidos hoje';
+            document.getElementById('today-change').className = todayOrders > 0 ? 
+                'card-change positive' : 'card-change';
             
             // Pedidos em produção
-            const productionOrders = pedidos.filter(p => p.situacao === 'Em Producao').length;
+            const productionOrders = pedidos.filter(p => p.situacao.toLowerCase().includes('producao')).length;
             document.getElementById('production-orders').textContent = productionOrders;
+            document.getElementById('production-change').textContent = 'Em andamento';
+            document.getElementById('production-change').className = 'card-change';
             
             // Pedidos prontos
             const readyOrders = pedidos.filter(p => p.situacao === 'Pronto').length;
             document.getElementById('ready-orders').textContent = readyOrders;
+            document.getElementById('ready-change').textContent = 'Aguardando retirada';
+            document.getElementById('ready-change').className = 'card-change';
             
             // Faturamento
             const revenue = pedidos.reduce((sum, p) => sum + p.valor, 0);
             document.getElementById('revenue').textContent = formatCurrency(revenue);
+            document.getElementById('revenue-change').textContent = 'Total geral';
+            document.getElementById('revenue-change').className = 'card-change';
         }
 
         // Renderizar gráficos
@@ -899,7 +898,7 @@
             // Gráfico de pizza - Distribuição de status
             const statusCtx = document.getElementById('status-chart').getContext('2d');
             const statusCounts = {
-                'Em Producao': pedidos.filter(p => p.situacao === 'Em Producao').length,
+                'Em Producao': pedidos.filter(p => p.situacao.toLowerCase().includes('producao')).length,
                 'Pronto': pedidos.filter(p => p.situacao === 'Pronto').length,
                 'Entregue': pedidos.filter(p => p.situacao === 'Entregue').length,
                 'Retirado': pedidos.filter(p => p.situacao === 'Retirado').length
@@ -930,6 +929,17 @@
                                 padding: 20,
                                 usePointStyle: true
                             }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
                         }
                     }
                 }
@@ -937,10 +947,23 @@
             
             // Gráfico de barras - Pedidos por dia
             const ordersCtx = document.getElementById('orders-chart').getContext('2d');
-            const dates = ['09/07', '10/07', '11/07', '12/07', '13/07', '14/07', '15/07'];
-            const ordersPerDay = dates.map(date => 
-                pedidos.filter(p => p.data.includes(date)).length
-            );
+            
+            // Calcular pedidos dos últimos 7 dias
+            const dates = [];
+            const ordersData = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateStr = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth()+1).toString().padStart(2, '0')}`;
+                
+                dates.push(dateStr);
+                
+                // Contar pedidos para este dia
+                const fullDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth()+1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+                const count = pedidos.filter(p => p.data === fullDate).length;
+                ordersData.push(count);
+            }
             
             new Chart(ordersCtx, {
                 type: 'bar',
@@ -948,7 +971,7 @@
                     labels: dates,
                     datasets: [{
                         label: 'Pedidos',
-                        data: ordersPerDay,
+                        data: ordersData,
                         backgroundColor: 'rgba(139, 0, 0, 0.7)',
                         borderRadius: 5
                     }]
@@ -966,6 +989,16 @@
                             beginAtZero: true,
                             ticks: {
                                 precision: 0
+                            },
+                            title: {
+                                display: true,
+                                text: 'Número de Pedidos'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Data'
                             }
                         }
                     }
@@ -991,6 +1024,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadPedidos();
             setupSearch();
+            
+            // Botão para recarregar dados
+            document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
         });
     </script>
 </body>
