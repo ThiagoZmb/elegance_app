@@ -42,9 +42,6 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       resDiv.textContent = 'Login bem-sucedido!';
       resDiv.className = 'result success show';
       
-      // Armazena a razão social no sessionStorage
-      sessionStorage.setItem('razao_social', data.razao_social);
-      
       // Remover qualquer mensagem de boas-vindas existente
       const existingWelcome = document.getElementById('welcome-message');
       if (existingWelcome) {
@@ -80,7 +77,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       `;
       
       const welcomeHeading = document.createElement('h2');
-      welcomeHeading.textContent = `Bem-vindo, ${data.razao_social}!`;
+      welcomeHeading.textContent = `Bem-vindo!`;
       welcomeHeading.style.cssText = `
         color: #8B0000;
         margin-bottom: 20px;
@@ -130,7 +127,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       // Forçar reflow para garantir a animação
       welcomeDiv.offsetHeight;
       
-      // Redirecionar após 3 segundos
+      // Redirecionar após 1 segundo
       setTimeout(() => {
         window.location.href = "https://thiagozmb.github.io/elegance_app/painel_inicial.html";
       }, 1000);
