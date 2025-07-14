@@ -508,33 +508,26 @@
     </div>
 
    
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-        // Recupera a razão social armazenada
-        const razaoSocial = sessionStorage.getItem('razao_social');
-        
-        if (razaoSocial) {
-            // Atualiza o nome do usuário no cabeçalho
-            document.getElementById('user-name').textContent = razaoSocial;
-            
-            // Atualiza o nome na mensagem de boas-vindas
-            document.getElementById('welcome-name').textContent = razaoSocial;
-            
-            // Atualiza o avatar com a primeira letra da razão social
-            const firstLetter = razaoSocial.charAt(0).toUpperCase();
-            document.getElementById('user-avatar').textContent = firstLetter;
-        } else {
-            // Exibe mensagem de erro se os dados estiverem faltando
-            document.getElementById('user-name').textContent = 'Dados não encontrados';
-            document.getElementById('welcome-name').textContent = 'Usuário';
-            
-            // Redireciona para login após 3 segundos
-            setTimeout(() => {
-                window.location.href = "https://thiagozmb.github.io/elegance_app/index.html";
-            }, 3000);
-        }
-    });
-
-    </script>
+       <script>
+document.addEventListener('DOMContentLoaded', function() {
+  const razaoSocial = sessionStorage.getItem('razao_social');
+  
+  if (razaoSocial) {
+    // Atualiza cabeçalho
+    document.getElementById('user-name').textContent = razaoSocial;
+    
+    // Atualiza SAUDAÇÃO (corrigido!)
+    document.getElementById('welcome-name').textContent = razaoSocial;
+    
+    // Atualiza avatar
+    document.getElementById('user-avatar').textContent = razaoSocial.charAt(0).toUpperCase();
+  } else {
+    // Tratamento de erro
+    setTimeout(() => {
+      window.location.href = "https://thiagozmb.github.io/elegance_app/index.html";
+    }, 3000);
+  }
+});
+</script>
 </body>
 </html>
