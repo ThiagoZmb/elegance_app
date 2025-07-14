@@ -508,29 +508,32 @@
     </div>
 
    
-       <script>
+   <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // 1. Verifique se o sessionStorage está funcionando
-  console.log('SessionStorage completo:', sessionStorage);
-  
-  // 2. Recupere a razão social
   const razaoSocial = sessionStorage.getItem('razao_social');
-  console.log('Razão social recuperada:', razaoSocial); // LOG CRÍTICO
   
   if (razaoSocial) {
-    // 3. Atualize TODOS os elementos
-    document.getElementById('user-name').textContent = razaoSocial;
-    document.getElementById('welcome-name').textContent = razaoSocial;
-    document.getElementById('user-avatar').textContent = razaoSocial.charAt(0).toUpperCase();
+    // Atualiza cabeçalho
+    const userNameElement = document.getElementById('user-name');
+    if (userNameElement) {
+      userNameElement.textContent = razaoSocial;
+    }
+    
+    // Atualiza saudação
+    const welcomeNameElement = document.getElementById('welcome-name');
+    if (welcomeNameElement) {
+      welcomeNameElement.textContent = razaoSocial;
+    }
+    
+    // Atualiza avatar
+    const userAvatarElement = document.getElementById('user-avatar');
+    if (userAvatarElement) {
+      userAvatarElement.textContent = razaoSocial.charAt(0).toUpperCase();
+    }
   } else {
     console.error('Razão social não encontrada no sessionStorage');
     
-    // 4. Feedback visual imediato
-    document.getElementById('user-name').textContent = 'Visitante';
-    document.getElementById('welcome-name').textContent = 'Usuário';
-    document.getElementById('user-avatar').textContent = '?';
-    
-    // 5. Redirecionamento com timeout mais curto
+    // Redireciona para login após 1.5 segundos
     setTimeout(() => {
       window.location.href = "https://thiagozmb.github.io/elegance_app/index.html";
     }, 1500);
