@@ -813,8 +813,8 @@
                     pedidos.forEach(pedido => {
                         const row = document.createElement('tr');
                         
-                        // Destacar linhas com status "Pronto"
-                        if (pedido.situacao === 'Pronto') {
+                        // Destacar linhas com status "Em Produção"
+                        if (pedido.situacao === 'Em Produção') {
                             row.classList.add('highlighted-row');
                         }
 
