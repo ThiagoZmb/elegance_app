@@ -11,7 +11,7 @@ app.get('/pedidos', async (req, res) => {
         CLIENTE_FINAL AS clienteFinal,
         DATE_FORMAT(DATA, '%d/%m/%Y') AS data,
         DATE_FORMAT(DATA_PRONTO, '%d/%m/%Y') AS prontoEm,
-        VALOR_TOTAL AS valor,
+        TOTAL AS valor,
         OBS_GERAL AS observacao,
         SITUACAO AS situacao,
         FINANCEIRO AS financeiro,
