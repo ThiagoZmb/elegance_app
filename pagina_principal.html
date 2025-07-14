@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elegance Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Elegance - Dashboard</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         :root {
@@ -28,18 +27,12 @@
             --shadow-heavy: 0 10px 40px rgba(0, 0, 0, 0.15);
             --gradient-primary: linear-gradient(135deg, #8B0000 0%, #600000 100%);
             --gradient-card: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --info-color: #17a2b8;
         }
 
         body {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             color: var(--text-dark);
             overflow-x: hidden;
-            min-height: 100vh;
-            padding: 20px;
         }
 
         .container {
@@ -49,12 +42,8 @@
             grid-template-areas:
                 "header header"
                 "sidebar main";
-            min-height: calc(100vh - 40px);
+            min-height: 100vh;
             position: relative;
-            background: var(--white);
-            border-radius: 20px;
-            box-shadow: var(--shadow-heavy);
-            overflow: hidden;
         }
 
         /* Header Moderno */
@@ -297,15 +286,14 @@
         }
 
         .card-change.positive {
-            color: var(--success-color);
+            color: #28a745;
         }
 
         .card-change.negative {
-            color: var(--danger-color);
+            color: #dc3545;
         }
 
-        /* Lista de Itens */
-        .list-container {
+        .stats-section {
             background: var(--white);
             border-radius: 20px;
             padding: 40px;
@@ -315,7 +303,7 @@
             overflow: hidden;
         }
 
-        .list-container::before {
+        .stats-section::before {
             content: "";
             position: absolute;
             top: 0;
@@ -326,173 +314,41 @@
             border-radius: 20px 20px 0 0;
         }
 
-        .list-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .list-title {
+        .section-title {
             font-size: 24px;
+            margin-bottom: 30px;
             color: var(--text-dark);
             font-weight: 600;
         }
 
-        .search-filter-container {
-            display: flex;
-            gap: 15px;
-        }
-
-        .search-box {
-            position: relative;
-        }
-
-        .search-box input {
-            padding: 12px 15px 12px 40px;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            width: 250px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            background-color: var(--secondary-color);
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
-        }
-
-        .search-box::before {
-            content: "🔍";
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-light);
-            font-size: 16px;
-        }
-
-        .filter-btn {
-            padding: 12px 20px;
-            background: var(--primary-light);
-            color: var(--primary-color);
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .filter-btn:hover {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .items-list {
-            display: grid;
-            gap: 20px;
-        }
-
-        .list-item {
-            background: var(--secondary-color);
+        .stats-placeholder {
+            height: 350px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-radius: 16px;
-            padding: 20px;
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
-            transition: all 0.3s ease;
-            border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
-            animation: slideInItem 0.4s ease-out;
-        }
-
-        @keyframes slideInItem {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .list-item:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-light);
-            background: var(--white);
-        }
-
-        .item-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 14px;
-            background: var(--primary-light);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            color: var(--primary-color);
-            flex-shrink: 0;
-        }
-
-        .item-content {
-            flex-grow: 1;
-        }
-
-        .item-title {
+            color: var(--text-light);
+            font-style: italic;
             font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-dark);
+            position: relative;
+            overflow: hidden;
         }
 
-        .item-desc {
-            font-size: 14px;
-            color: var(--text-light);
-            margin-bottom: 12px;
-            line-height: 1.5;
+        .stats-placeholder::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2s infinite;
         }
 
-        .item-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-        }
-
-        .item-date {
-            color: var(--text-light);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .item-status {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .status-completed {
-            background-color: rgba(40, 167, 69, 0.1);
-            color: var(--success-color);
-        }
-
-        .status-pending {
-            background-color: rgba(255, 193, 7, 0.1);
-            color: var(--warning-color);
-        }
-
-        .status-delayed {
-            background-color: rgba(220, 53, 69, 0.1);
-            color: var(--danger-color);
-        }
-
-        .status-inprogress {
-            background-color: rgba(23, 162, 184, 0.1);
-            color: var(--info-color);
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
         /* Footer Moderno */
@@ -511,17 +367,7 @@
         }
 
         /* Responsive Design */
-        @media (max-width: 992px) {
-            .search-box input {
-                width: 200px;
-            }
-        }
-
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
             .container {
                 grid-template-columns: 1fr;
                 grid-template-areas:
@@ -554,34 +400,8 @@
                 padding: 20px;
             }
 
-            .list-container {
+            .stats-section {
                 padding: 20px;
-            }
-
-            .list-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-
-            .search-filter-container {
-                width: 100%;
-            }
-
-            .search-box {
-                flex-grow: 1;
-            }
-
-            .search-box input {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .item-meta {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
             }
         }
 
@@ -673,80 +493,10 @@
                 </div>
             </section>
 
-            <section class="list-container">
-                <div class="list-header">
-                    <h2 class="list-title">Lista de Tarefas</h2>
-                    <div class="search-filter-container">
-                        <div class="search-box">
-                            <input type="text" placeholder="Buscar tarefas...">
-                        </div>
-                        <button class="filter-btn">
-                            <span>Filtros</span>
-                            <span>▼</span>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="items-list">
-                    <div class="list-item">
-                        <div class="item-icon">📊</div>
-                        <div class="item-content">
-                            <h3 class="item-title">Relatório Trimestral</h3>
-                            <p class="item-desc">Preparar relatório financeiro do trimestre para apresentação à diretoria.</p>
-                            <div class="item-meta">
-                                <span class="item-date">📅 15/07/2025 - 10:00</span>
-                                <span class="item-status status-inprogress">Em Andamento</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="list-item">
-                        <div class="item-icon">📱</div>
-                        <div class="item-content">
-                            <h3 class="item-title">Atualização do App</h3>
-                            <p class="item-desc">Implementar novas funcionalidades na versão 2.5 do aplicativo móvel.</p>
-                            <div class="item-meta">
-                                <span class="item-date">📅 18/07/2025 - 14:30</span>
-                                <span class="item-status status-pending">Pendente</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="list-item">
-                        <div class="item-icon">💼</div>
-                        <div class="item-content">
-                            <h3 class="item-title">Reunião com Cliente</h3>
-                            <p class="item-desc">Apresentar proposta de novos serviços para o cliente ABC Corporação.</p>
-                            <div class="item-meta">
-                                <span class="item-date">📅 12/07/2025 - 09:00</span>
-                                <span class="item-status status-completed">Concluído</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="list-item">
-                        <div class="item-icon">📝</div>
-                        <div class="item-content">
-                            <h3 class="item-title">Contrato de Parceria</h3>
-                            <p class="item-desc">Revisar e finalizar contrato de parceria com a empresa XYZ Solutions.</p>
-                            <div class="item-meta">
-                                <span class="item-date">📅 10/07/2025 - 16:00</span>
-                                <span class="item-status status-delayed">Atrasado</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="list-item">
-                        <div class="item-icon">🎯</div>
-                        <div class="item-content">
-                            <h3 class="item-title">Planejamento Estratégico</h3>
-                            <p class="item-desc">Definir metas e objetivos estratégicos para o próximo semestre.</p>
-                            <div class="item-meta">
-                                <span class="item-date">📅 20/07/2025 - 11:00</span>
-                                <span class="item-status status-pending">Pendente</span>
-                            </div>
-                        </div>
-                    </div>
+            <section class="stats-section">
+                <h2 class="section-title">Métricas de Desempenho</h2>
+                <div class="stats-placeholder">
+                    📊 Gráficos interativos de desempenho serão exibidos aqui
                 </div>
             </section>
         </main>
@@ -757,71 +507,40 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Simulação de dados do usuário
-            const razaoSocial = "Empresa XYZ";
-            
-            // Atualiza cabeçalho
-            const userNameElement = document.getElementById('user-name');
-            if (userNameElement) {
-                userNameElement.textContent = razaoSocial;
-            }
-            
-            // Atualiza saudação
-            const welcomeNameElement = document.getElementById('welcome-name');
-            if (welcomeNameElement) {
-                welcomeNameElement.textContent = razaoSocial;
-            }
-            
-            // Atualiza avatar
-            const userAvatarElement = document.getElementById('user-avatar');
-            if (userAvatarElement) {
-                userAvatarElement.textContent = razaoSocial.charAt(0).toUpperCase();
-            }
-            
-            // Adiciona funcionalidade de busca
-            const searchInput = document.querySelector('.search-box input');
-            if (searchInput) {
-                searchInput.addEventListener('input', function() {
-                    const searchTerm = this.value.toLowerCase();
-                    const items = document.querySelectorAll('.list-item');
-                    
-                    items.forEach(item => {
-                        const title = item.querySelector('.item-title').textContent.toLowerCase();
-                        const desc = item.querySelector('.item-desc').textContent.toLowerCase();
-                        if (title.includes(searchTerm) || desc.includes(searchTerm)) {
-                            item.style.display = 'flex';
-                        } else {
-                            item.style.display = 'none';
-                        }
-                    });
-                });
-            }
-            
-            // Animação para os cards
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-            });
-            
-            setTimeout(() => {
-                cards.forEach((card, index) => {
-                    setTimeout(() => {
-                        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                        card.style.opacity = '1';
-                        card.style.transform = 'translateY(0)';
-                    }, 200 * index);
-                });
-            }, 300);
-            
-            // Animação para os itens da lista
-            const listItems = document.querySelectorAll('.list-item');
-            listItems.forEach((item, index) => {
-                item.style.animationDelay = `${index * 0.1}s`;
-            });
-        });
-    </script>
+   
+   <script>
+document.addEventListener('DOMContentLoaded', function() {
+  const razaoSocial = sessionStorage.getItem('razao_social');
+  
+  if (razaoSocial) {
+    // Atualiza cabeçalho
+    const userNameElement = document.getElementById('user-name');
+    if (userNameElement) {
+      userNameElement.textContent = razaoSocial;
+    }
+    
+    // Atualiza saudação
+    const welcomeNameElement = document.getElementById('welcome-name');
+    if (welcomeNameElement) {
+      welcomeNameElement.textContent = razaoSocial;
+    }
+    
+    // Atualiza avatar
+    const userAvatarElement = document.getElementById('user-avatar');
+    if (userAvatarElement) {
+      userAvatarElement.textContent = razaoSocial.charAt(0).toUpperCase();
+    }
+  } else {
+    console.error('Razão social não encontrada no sessionStorage');
+    
+    // Redireciona para login após 1.5 segundos
+    setTimeout(() => {
+      window.location.href = "https://thiagozmb.github.io/elegance_app/index.html";
+    }, 1500);
+  }
+});
+</script>
+
+    
 </body>
 </html>
