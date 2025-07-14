@@ -15,15 +15,19 @@ app.post('/login', async (req, res) => {
   try {
     const conn = await mysql.createConnection(dbConfig);
     const [rows] = await conn.execute(
-      'SELECT * FROM cliente_usuarios WHERE NOME = ? AND SENHA = ?',
+      'SELECT * FROM cliente_usuarios WHERE nome = ? AND senha = ?',
       [username, password]
     );
     await conn.end();
     
     if (rows.length > 0) {
-      // Acessa a coluna independente de ser maiúscula ou minúscula
-      const razao_social = rows[0].RAZAO_SOCIAL || rows[0].razao_social;
-      //const razao_social = rows[0].RAZAO_SOCIAL;
+      // SOLUÇÃO DEFINITIVA PARA CASE SENSITIVITY
+      const user = rows[0];
+      const razao_social = user.RAZAO_SOCIAL || user.razao_social || user.Razao_Social;
+      
+      // Adicione logs para depuração
+      console.log('Dados do usuário:', user);
+      console.log('Razão social encontrada:', razao_social);
       
       res.json({ 
         success: true,
@@ -33,11 +37,9 @@ app.post('/login', async (req, res) => {
       res.json({ success: false });
     }
   } catch (err) {
+    console.error('Erro no login:', err);
     res.status(500).json({ success: false, error: 'Erro de servidor' });
   }
 });
 
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
+
