@@ -36,28 +36,93 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     }
     
     const data = await res.json();
-    console.log('Resposta da API:', data); // LOG IMPORTANTE
-
+    console.log('Resposta da API:', data); // Log para depuração
     
     if (data.success) {
-      resDiv.textContent = 'Login bem-sucedido! Redirecionando...';
+      resDiv.textContent = 'Login bem-sucedido!';
       resDiv.className = 'result success show';
-
-
-     console.log('Razão social recebida:', data.razao_social); // LOG
-     sessionStorage.setItem('razao_social', data.razao_social);
       
-      // Redirecionar após pequeno delay para feedback visual
+      // Armazena a razão social no sessionStorage
+      sessionStorage.setItem('razao_social', data.razao_social);
+      
+      // Criar e exibir a mensagem de boas-vindas
+      const welcomeDiv = document.createElement('div');
+      welcomeDiv.id = 'welcome-message';
+      welcomeDiv.innerHTML = `
+        <div class="welcome-content">
+          <h2>Bem-vindo, ${data.razao_social}!</h2>
+          <p>Redirecionando para o painel principal...</p>
+          <div class="loading-spinner"></div>
+        </div>
+      `;
+      document.body.appendChild(welcomeDiv);
+      
+      // Adicionar estilos para a mensagem de boas-vindas
+      const style = document.createElement('style');
+      style.textContent = `
+        #welcome-message {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.8);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 10000;
+          backdrop-filter: blur(5px);
+        }
+        .welcome-content {
+          background: white;
+          padding: 40px;
+          border-radius: 20px;
+          text-align: center;
+          max-width: 500px;
+          box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+          animation: fadeIn 0.5s ease-out;
+        }
+        .welcome-content h2 {
+          color: #8B0000;
+          margin-bottom: 20px;
+          font-size: 32px;
+        }
+        .welcome-content p {
+          font-size: 18px;
+          color: #333;
+          margin-bottom: 30px;
+        }
+        .loading-spinner {
+          width: 50px;
+          height: 50px;
+          border: 5px solid rgba(139, 0, 0, 0.2);
+          border-top: 5px solid #8B0000;
+          border-radius: 50%;
+          margin: 0 auto;
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      // Redirecionar após 3 segundos
       setTimeout(() => {
         window.location.href = "https://thiagozmb.github.io/elegance_app/pagina_principal.html";
-      }, 1500);
+      }, 3000);
+      
     } else {
       resDiv.textContent = data.message || 'Usuário ou senha inválidos.';
       resDiv.className = 'result error show';
       showLoading(false);
     }
   } catch (err) {
-    console.error('Erro completo:', err); // LOG DETALHADO
     resDiv.textContent = 'Erro ao conectar ao servidor. Tente novamente.';
     resDiv.className = 'result error show';
     showLoading(false);
