@@ -132,7 +132,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       
       // Redirecionar após 3 segundos
       setTimeout(() => {
-        window.location.href = "https://thiagozmb.github.io/elegance_app/painel_inicial.htm";
+        window.location.href = "https://thiagozmb.github.io/elegance_app/painel_inicial.html";
       }, 1000);
       
     } else {
