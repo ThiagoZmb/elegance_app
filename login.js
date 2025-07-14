@@ -132,8 +132,8 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       
       // Redirecionar após 3 segundos
       setTimeout(() => {
-        window.location.href = ".pagina_principal.html";
-      }, 3000);
+        window.location.href = "pagina_principal.html";
+      }, 1000);
       
     } else {
       resDiv.textContent = data.message || 'Usuário ou senha inválidos.';
