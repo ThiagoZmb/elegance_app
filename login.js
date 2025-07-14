@@ -36,14 +36,16 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     }
     
     const data = await res.json();
+    console.log('Resposta da API:', data); // LOG IMPORTANTE
+
     
     if (data.success) {
       resDiv.textContent = 'Login bem-sucedido! Redirecionando...';
       resDiv.className = 'result success show';
 
 
-      // Armazena a razão social no sessionStorage
-      sessionStorage.setItem('razao_social', data.razao_social);
+     console.log('Razão social recebida:', data.razao_social); // LOG
+     sessionStorage.setItem('razao_social', data.razao_social);
       
       // Redirecionar após pequeno delay para feedback visual
       setTimeout(() => {
@@ -55,6 +57,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       showLoading(false);
     }
   } catch (err) {
+    console.error('Erro completo:', err); // LOG DETALHADO
     resDiv.textContent = 'Erro ao conectar ao servidor. Tente novamente.';
     resDiv.className = 'result error show';
     showLoading(false);
