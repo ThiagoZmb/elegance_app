@@ -1,7 +1,7 @@
 app.use(cors());
 app.use(express.json());
 
-// Use variáveis de ambiente em produção
+// Configuração do banco de dados
 const dbConfig = {
   host: process.env.DB_HOST || 'db-elegance-v4.mysql.uhserver.com',
   user: process.env.DB_USER || 'tfz',
@@ -10,9 +10,8 @@ const dbConfig = {
   database: process.env.DB_NAME || 'db_elegance_v4'
 };
 
-
-// VERSÃO COM FALLBACK GARANTIDO
-app.post('/login-guaranteed', async (req, res) => {
+// Endpoint de login simplificado
+app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
     const conn = await mysql.createConnection(dbConfig);
@@ -23,29 +22,10 @@ app.post('/login-guaranteed', async (req, res) => {
     await conn.end();
     
     if (rows.length > 0) {
-      const user = rows[0];
-      
-      // Converte undefined/null para string vazia e depois aplica fallback
-      const razao_social = (
-        user.RAZAO_SOCIAL || 
-        user.razao_social || 
-        user.Razao_Social ||
-        user.EMPRESA ||
-        user.empresa ||
-        user.NOME_EMPRESA ||
-        user.nome_empresa ||
-        user.NOME_FANTASIA ||
-        user.nome_fantasia ||
-        user.NOME ||
-        user.nome ||
-        'Não informado'
-      ).toString().trim() || 'Não informado';
-      
-      res.json({ 
-        success: true,
-        razao_social: razao_social
-      });
+      // Login válido - retorna apenas sucesso sem dados extras
+      res.json({ success: true });
     } else {
+      // Credenciais inválidas
       res.json({ success: false });
     }
   } catch (err) {
