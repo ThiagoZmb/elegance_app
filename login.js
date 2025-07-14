@@ -36,7 +36,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     }
     
     const data = await res.json();
-    console.log('Resposta da API:', data); // Log para depuração
+    console.log('Resposta da API:', data);
     
     if (data.success) {
       resDiv.textContent = 'Login bem-sucedido!';
@@ -45,72 +45,90 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       // Armazena a razão social no sessionStorage
       sessionStorage.setItem('razao_social', data.razao_social);
       
-      // Criar e exibir a mensagem de boas-vindas
+      // Remover qualquer mensagem de boas-vindas existente
+      const existingWelcome = document.getElementById('welcome-message');
+      if (existingWelcome) {
+        existingWelcome.remove();
+      }
+      
+      // Criar a estrutura da mensagem de boas-vindas
       const welcomeDiv = document.createElement('div');
       welcomeDiv.id = 'welcome-message';
-      welcomeDiv.innerHTML = `
-        <div class="welcome-content">
-          <h2>Bem-vindo, ${data.razao_social}!</h2>
-          <p>Redirecionando para o painel principal...</p>
-          <div class="loading-spinner"></div>
-        </div>
+      welcomeDiv.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        backdrop-filter: blur(10px);
+        animation: fadeIn 0.5s ease-out;
       `;
-      document.body.appendChild(welcomeDiv);
       
-      // Adicionar estilos para a mensagem de boas-vindas
+      const welcomeContent = document.createElement('div');
+      welcomeContent.style.cssText = `
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        max-width: 500px;
+        box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+      `;
+      
+      const welcomeHeading = document.createElement('h2');
+      welcomeHeading.textContent = `Bem-vindo, ${data.razao_social}!`;
+      welcomeHeading.style.cssText = `
+        color: #8B0000;
+        margin-bottom: 20px;
+        font-size: 32px;
+      `;
+      
+      const welcomeText = document.createElement('p');
+      welcomeText.textContent = 'Redirecionando para o painel principal...';
+      welcomeText.style.cssText = `
+        font-size: 18px;
+        color: #333;
+        margin-bottom: 30px;
+      `;
+      
+      const spinner = document.createElement('div');
+      spinner.style.cssText = `
+        width: 50px;
+        height: 50px;
+        border: 5px solid rgba(139, 0, 0, 0.2);
+        border-top: 5px solid #8B0000;
+        border-radius: 50%;
+        margin: 0 auto;
+        animation: spin 1s linear infinite;
+      `;
+      
+      // Adicionar estilos de animação globalmente
       const style = document.createElement('style');
       style.textContent = `
-        #welcome-message {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0, 0, 0, 0.8);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 10000;
-          backdrop-filter: blur(5px);
-        }
-        .welcome-content {
-          background: white;
-          padding: 40px;
-          border-radius: 20px;
-          text-align: center;
-          max-width: 500px;
-          box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
-          animation: fadeIn 0.5s ease-out;
-        }
-        .welcome-content h2 {
-          color: #8B0000;
-          margin-bottom: 20px;
-          font-size: 32px;
-        }
-        .welcome-content p {
-          font-size: 18px;
-          color: #333;
-          margin-bottom: 30px;
-        }
-        .loading-spinner {
-          width: 50px;
-          height: 50px;
-          border: 5px solid rgba(139, 0, 0, 0.2);
-          border-top: 5px solid #8B0000;
-          border-radius: 50%;
-          margin: 0 auto;
-          animation: spin 1s linear infinite;
-        }
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-20px); }
-          to { opacity: 1; transform: translateY(0); }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
       `;
       document.head.appendChild(style);
+      
+      // Montar a estrutura
+      welcomeContent.appendChild(welcomeHeading);
+      welcomeContent.appendChild(welcomeText);
+      welcomeContent.appendChild(spinner);
+      welcomeDiv.appendChild(welcomeContent);
+      document.body.appendChild(welcomeDiv);
+      
+      // Forçar reflow para garantir a animação
+      welcomeDiv.offsetHeight;
       
       // Redirecionar após 3 segundos
       setTimeout(() => {
@@ -130,22 +148,13 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
   }
 });
 
-// Função para mostrar/ocultar loading com verificação de elementos
+// Função para mostrar/ocultar loading
 function showLoading(show) {
   const loading = document.querySelector('.loading');
   const btnText = document.querySelector('.btn-text');
   const btn = document.querySelector('.login-btn');
   
-  // Verificar se os elementos existem antes de manipulá-los
-  if (loading) {
-    loading.style.display = show ? 'inline-block' : 'none';
-  }
-  
-  if (btnText) {
-    btnText.textContent = show ? 'Entrando...' : 'Entrar';
-  }
-  
-  if (btn) {
-    btn.disabled = show;
-  }
+  if (loading) loading.style.display = show ? 'inline-block' : 'none';
+  if (btnText) btnText.textContent = show ? 'Entrando...' : 'Entrar';
+  if (btn) btn.disabled = show;
 }
