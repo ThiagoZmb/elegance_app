@@ -11,19 +11,6 @@ const dbConfig = {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 // VERSÃO COM FALLBACK GARANTIDO
 app.post('/login-guaranteed', async (req, res) => {
   const { username, password } = req.body;
