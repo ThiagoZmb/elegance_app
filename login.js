@@ -132,7 +132,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       
       // Redirecionar após 3 segundos
       setTimeout(() => {
-        window.location.href = ".pagina_principal.html";
+        window.location.href = "pagina_principal.html";
       }, 3000);
       
     } else {
