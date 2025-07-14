@@ -44,7 +44,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 
       // Armazena a razão social no sessionStorage
       sessionStorage.setItem('razao_social', data.razao_social);
-
+      
       // Redirecionar após pequeno delay para feedback visual
       setTimeout(() => {
         window.location.href = "https://thiagozmb.github.io/elegance_app/pagina_principal.html";
