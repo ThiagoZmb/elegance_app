@@ -1030,30 +1030,6 @@
         });
 
 
-// Função para carregar dados do usuário
-function loadUserData() {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-        const user = JSON.parse(userData);
-        document.getElementById('user-name').textContent = user.nome;
-        
-        // Atualizar avatar com primeira letra do nome
-        const firstLetter = user.nome.charAt(0).toUpperCase();
-        document.getElementById('user-avatar').textContent = firstLetter;
-    } else {
-        // Se não há dados do usuário, redirecionar para login
-        window.location.href = "sua-pagina-de-login.html";
-    }
-}
-
-// E modifique seu DOMContentLoaded para chamar loadUserData() primeiro:
-document.addEventListener('DOMContentLoaded', () => {
-    loadUserData(); // ADICIONE ESTA LINHA
-    loadPedidos();
-    setupSearch();
-    
-    document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
-});
 
         
     </script>
