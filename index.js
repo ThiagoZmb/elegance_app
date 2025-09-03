@@ -7,7 +7,7 @@ const dbConfig = {
   user: process.env.DB_USER || 'tfz',
   password: process.env.DB_PASS || '@04t28b03p',
   port: process.env.DB_PORT || '3306',
-  database: process.env.DB_NAME || 'db_elegance_v44'
+  database: process.env.DB_NAME || 'db_elegance_v4'
 };
 
 // Endpoint de login modificado
