@@ -1028,6 +1028,35 @@
             // Botão para recarregar dados
             document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
         });
+
+
+// Função para carregar dados do usuário
+        function loadUserData() {
+            const userData = localStorage.getItem('user');
+            if (userData) {
+                const user = JSON.parse(userData);
+                document.getElementById('user-name').textContent = user.nome;
+                
+                // Atualizar avatar com primeira letra do nome
+                const firstLetter = user.nome.charAt(0).toUpperCase();
+                document.getElementById('user-avatar').textContent = firstLetter;
+            } else {
+                // Se não há dados do usuário, redirecionar para login
+                window.location.href = '/login.html'; // ou a URL da sua página de login
+            }
+        }
+
+        // Carregar pedidos quando a página for carregada
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserData(); // Carregar dados do usuário primeiro
+            loadPedidos();
+            setupSearch();
+            
+            // Botão para recarregar dados
+            document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
+        });
+
+        
     </script>
 </body>
 </html>
