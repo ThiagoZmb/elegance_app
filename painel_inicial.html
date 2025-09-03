@@ -783,8 +783,9 @@
         
         // Função para carregar dados do usuário
     function loadUserData() {
+         console.log('Iniciando...');
     const userData = localStorage.getItem('user');
-     console.log('Iniciando...');
+    
     if (userData) {
         const user = JSON.parse(userData);
         document.getElementById('user-name').textContent = user.nome;
