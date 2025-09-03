@@ -509,7 +509,36 @@
 
    
    <script>
-
+document.addEventListener('DOMContentLoaded', function() {
+  const razaoSocial = sessionStorage.getItem('razao_social');
+  
+  if (razaoSocial) {
+    // Atualiza cabeçalho
+    const userNameElement = document.getElementById('user-name');
+    if (userNameElement) {
+      userNameElement.textContent = razaoSocial;
+    }
+    
+    // Atualiza saudação
+    const welcomeNameElement = document.getElementById('welcome-name');
+    if (welcomeNameElement) {
+      welcomeNameElement.textContent = razaoSocial;
+    }
+    
+    // Atualiza avatar
+    const userAvatarElement = document.getElementById('user-avatar');
+    if (userAvatarElement) {
+      userAvatarElement.textContent = razaoSocial.charAt(0).toUpperCase();
+    }
+  } else {
+    console.error('Razão social não encontrada no sessionStorage');
+    
+    // Redireciona para login após 1.5 segundos
+    setTimeout(() => {
+      window.location.href = "https://thiagozmb.github.io/elegance_app/index.html";
+    }, 1500);
+  }
+});
 </script>
 
     
