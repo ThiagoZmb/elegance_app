@@ -10,7 +10,7 @@ const dbConfig = {
   database: process.env.DB_NAME || 'db_elegance_v4'
 };
 
-// Endpoint de login simplificado
+// Endpoint de login modificado
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -22,14 +22,29 @@ app.post('/login', async (req, res) => {
     await conn.end();
     
     if (rows.length > 0) {
-      // Login válido - retorna apenas sucesso sem dados extras
-      res.json({ success: true });
+      // Login válido - retorna sucesso com dados do usuário
+      res.json({ 
+        success: true,
+        user: {
+          id: rows[0].ID,
+          nome: rows[0].NOME,
+          // Adicione outros campos se necessário
+        },
+        message: 'Login realizado com sucesso'
+      });
     } else {
       // Credenciais inválidas
-      res.json({ success: false });
+      res.json({ 
+        success: false, 
+        message: 'Usuário ou senha inválidos.' 
+      });
     }
   } catch (err) {
     console.error('Erro no login:', err);
-    res.status(500).json({ success: false, error: 'Erro de servidor' });
+    res.status(500).json({ 
+      success: false, 
+      error: 'Erro de servidor',
+      message: 'Erro interno do servidor. Tente novamente.' 
+    });
   }
 });
