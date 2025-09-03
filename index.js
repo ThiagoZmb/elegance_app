@@ -10,6 +10,8 @@ const dbConfig = {
   database: process.env.DB_NAME || 'db_elegance_v4'
 };
 
+const usuario = null;
+
 // Endpoint de login modificado
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -25,11 +27,8 @@ app.post('/login', async (req, res) => {
       // Login válido - retorna sucesso com dados do usuário
       res.json({ 
         success: true,
-        user: {
-          id: rows[0].ID,
-          nome: rows[0].NOME,
-          // Adicione outros campos se necessário
-        },
+        usuario:{rows[0].NOME},
+        
         message: 'Login realizado com sucesso !!!'
         console.log('Login realizado com sucesso !!!')
       });
