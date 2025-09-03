@@ -791,7 +791,7 @@ function loadUserData() {
         document.getElementById('user-avatar').textContent = firstLetter;
     } else {
         // Se não há dados do usuário, redirecionar para login
-        window.location.href = "https://thiagozmb.github.io/elegance_app/index.html";
+        //window.location.href = "https://thiagozmb.github.io/elegance_app/index.html";
     }
 }
 
@@ -1050,7 +1050,7 @@ function loadUserData() {
 
         // E modifique seu DOMContentLoaded para chamar loadUserData() primeiro:
 document.addEventListener('DOMContentLoaded', () => {
-    // loadUserData();
+    loadUserData();
     loadPedidos();
     setupSearch();
     
