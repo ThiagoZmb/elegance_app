@@ -795,22 +795,6 @@ function loadUserData() {
     }
 }
 
-// E modifique seu DOMContentLoaded para chamar loadUserData() primeiro:
-document.addEventListener('DOMContentLoaded', () => {
-    loadUserData(); // ADICIONE ESTA LINHA
-    loadPedidos();
-    setupSearch();
-    
-    document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
-});
-
-
-
-
-
-
-
-
 
 
 
@@ -1064,14 +1048,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Carregar pedidos quando a página for carregada
-        document.addEventListener('DOMContentLoaded', () => {
-            loadPedidos();
-            setupSearch();
-            
-            // Botão para recarregar dados
-            document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
-        });
+        // E modifique seu DOMContentLoaded para chamar loadUserData() primeiro:
+document.addEventListener('DOMContentLoaded', () => {
+    loadUserData(); // ADICIONE ESTA LINHA
+    loadPedidos();
+    setupSearch();
+    
+    document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
+});
 
 
 
