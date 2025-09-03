@@ -39,8 +39,8 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     const data = await res.json();
     console.log('Resposta da API:', data);
 
-    if (data.user && data.user.nome) {
-  console.log('Nome do usuário:', data.user.nome);
+    if (data.usuario && data.usuario.nome) {
+  console.log('Nome do usuário:', data.usuario.nome);
     } else {
   console.log('Nome não encontrado');
     }
