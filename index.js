@@ -26,8 +26,7 @@ app.post('/login', async (req, res) => {
     if (rows.length > 0) {
       // Login válido - retorna sucesso com dados do usuário
       res.json({ 
-        success: true,
-        console.log('Login realizado com sucesso !!!')
+       
       });
     } else {
       // Credenciais inválidas
