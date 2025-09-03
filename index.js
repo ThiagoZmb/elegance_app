@@ -27,7 +27,7 @@ app.post('/login', async (req, res) => {
       // Login válido - retorna sucesso com dados do usuário
       res.json({ 
         success: true,
-        usuario:{rows[0].NOME},
+        usuario:rows[0].NOME},
         
         message: 'Login realizado com sucesso !!!'
         console.log('Login realizado com sucesso !!!')
