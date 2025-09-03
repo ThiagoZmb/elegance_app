@@ -42,7 +42,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     if (data.usuario && data.usuario.nome) {
   console.log('Nome do usuário:', data.usuario.nome);
     } else {
-  console.log('Nome não encontrado !');
+  console.log('Nome não encontrado');
     }
 
     
