@@ -30,7 +30,7 @@ app.post('/login', async (req, res) => {
           nome: rows[0].NOME,
           // Adicione outros campos se necessário
         },
-        message: 'Login realizado com sucesso'
+        message: 'Login realizado com sucesso !!!'
       });
     } else {
       // Credenciais inválidas
