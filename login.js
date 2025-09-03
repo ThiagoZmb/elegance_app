@@ -39,6 +39,12 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     console.log('Resposta da API:', data);
     
     if (data.success) {
+      // NOVO: Salvar dados do usuário no localStorage
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+        console.log('Dados do usuário salvos:', data.user);
+      }
+      
       resDiv.textContent = 'Login bem-sucedido!';
       resDiv.className = 'result success show';
       
@@ -77,7 +83,9 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       `;
       
       const welcomeHeading = document.createElement('h2');
-      welcomeHeading.textContent = `Bem-vindo!`;
+      // MODIFICADO: Usar o nome do usuário na mensagem de boas-vindas
+      const userName = data.user ? data.user.nome : 'Usuário';
+      welcomeHeading.textContent = `Bem-vindo, ${userName}!`;
       welcomeHeading.style.cssText = `
         color: #8B0000;
         margin-bottom: 20px;
@@ -155,3 +163,18 @@ function showLoading(show) {
   if (btnText) btnText.textContent = show ? 'Entrando...' : 'Entrar';
   if (btn) btn.disabled = show;
 }
+
+// NOVO: Função para verificar se o usuário já está logado (opcional)
+// Você pode chamar esta função quando a página de login carregar
+function checkExistingLogin() {
+  const userData = localStorage.getItem('user');
+  if (userData) {
+    // Usuário já está logado, pode redirecionar direto
+    console.log('Usuário já logado:', JSON.parse(userData));
+    // Descomente a linha abaixo se quiser redirecionar automaticamente
+    // window.location.href = "https://thiagozmb.github.io/elegance_app/painel_inicial.html";
+  }
+}
+
+// Verificar login existente quando a página carregar
+document.addEventListener('DOMContentLoaded', checkExistingLogin);
