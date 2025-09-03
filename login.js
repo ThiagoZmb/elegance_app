@@ -37,6 +37,9 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     
     const data = await res.json();
     console.log('Resposta da API:', data);
+    console.log('Resposta completa da API:', data);
+    console.log('Dados do usuário:', data.user);
+    console.log('Campos disponíveis:', Object.keys(data.user || {}));
     
     if (data.success) {
       // NOVO: Salvar dados do usuário no localStorage
