@@ -31,12 +31,14 @@ app.post('/login', async (req, res) => {
           // Adicione outros campos se necessário
         },
         message: 'Login realizado com sucesso !!!'
+        console.log('Login realizado com sucesso !!!')
       });
     } else {
       // Credenciais inválidas
       res.json({ 
         success: false, 
         message: 'Usuário ou senha inválidos.' 
+        
       });
     }
   } catch (err) {
