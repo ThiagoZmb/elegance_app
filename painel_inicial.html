@@ -788,7 +788,7 @@
     if (userData) {
         const user = JSON.parse(userData);
         document.getElementById('user-name').textContent = user.nome;
-        console.error(user.nome);
+        console.log(user.nome);
         
         // Atualizar avatar com primeira letra do nome
         const firstLetter = user.nome.charAt(0).toUpperCase();
