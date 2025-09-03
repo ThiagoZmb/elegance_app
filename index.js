@@ -21,15 +21,21 @@ app.post('/login', async (req, res) => {
     );
     await conn.end();
     
-    if (rows.length > 0) {
-      // Login válido - retorna apenas sucesso sem dados extras
-      res.json({ success: true });
-    } else {
-      // Credenciais inválidas
-      res.json({ success: false });
-    }
-  } catch (err) {
-    console.error('Erro no login:', err);
-    res.status(500).json({ success: false, error: 'Erro de servidor' });
-  }
-});
+   if (rows.length > 0) {
+     // Login válido - retorna o nome e a empresa
+     const user = rows[0];
+     res.json({ 
+       success: true, 
+       user: {
+         nome: user.NOME,
+         empresa: user.RAZAO_SOCIAL // Supondo que a coluna se chame EMPRESA
+       }
+     });
+   } else {
+     // Credenciais inválidas
+     res.json({ success: false });
+   }
+ } catch (err) {
+   console.error('Erro no login:', err);
+   res.status(500).json({ success: false, error: 'Erro de servidor' });
+ }
