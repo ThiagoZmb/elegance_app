@@ -35,8 +35,15 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       throw new Error(`Erro HTTP: ${res.status}`);
     }
     
+
     const data = await res.json();
-    console.log('Resposta da API:', data.user.nome);
+    console.log('Resposta da API:', data);
+
+    if (data.user && data.user.nome) {
+  console.log('Nome do usuário:', data.user.nome);
+    } else {
+  console.log('Nome não encontrado');
+    }
 
     
     if (data.success) {
