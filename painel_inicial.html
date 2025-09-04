@@ -805,6 +805,23 @@
 
 
         
+
+        function teste(){
+            fetch('/pedidos')
+  .then(res => res.json())
+  .then(data => {
+    console.log('Pedidos:', data.pedidos);
+    console.log('Total do mês atual:', data.totalMesAtual);
+  })
+  .catch(err => console.error('Erro na requisição:', err));
+        }
+
+
+
+
+
+        
+        
         // Função para formatar valor monetário
         function formatCurrency(value) {
             return 'R$ ' + parseFloat(value).toFixed(2).replace('.', ',');
@@ -1059,7 +1076,7 @@ document.addEventListener('DOMContentLoaded', () => {
     //loadUserData();
     //loadPedidos();
     setupSearch();
-    
+    teste();
     document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
 });
 
