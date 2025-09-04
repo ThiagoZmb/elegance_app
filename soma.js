@@ -19,6 +19,8 @@ app.get('/pedidos', async (req, res) => {
     // 3. Montagem do JSON de resposta
     res.json({
       totalMesAtual: somaMes[0].totalMesAtual || 0
+      console.log('Total do mês atual:', totalMesAtual);
+
     });
 
   } catch (err) {
