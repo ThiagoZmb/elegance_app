@@ -808,12 +808,26 @@
 
         function teste(){
             fetch('/pedidos')
-  .then(res => res.json())
-  .then(data => {
-    console.log('Pedidos:', data.pedidos);
-    console.log('Total do mês atual:', data.totalMesAtual);
-  })
-  .catch(err => console.error('Erro na requisição:', err));
+    .then(res => {
+      console.log('Status:', res.status);
+      console.log('Content-Type:', res.headers.get('content-type'));
+      
+      if (!res.ok) {
+        throw new Error(`Erro HTTP: ${res.status}`);
+      }
+      
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Resposta não é JSON válido');
+      }
+      
+      return res.json();
+    })
+    .then(data => {
+      console.log('Pedidos:', data.pedidos);
+      console.log('Total do mês atual:', data.totalMesAtual);
+    })
+    .catch(err => console.error('Erro na requisição:', err));
         }
 
 
@@ -1071,12 +1085,17 @@
             });
         }
 
-        // E modifique seu DOMContentLoaded para chamar loadUserData() primeiro:
+
+
+
+
+
+        
 document.addEventListener('DOMContentLoaded', () => {
     //loadUserData();
     //loadPedidos();
     setupSearch();
-    //teste();
+    teste();
     document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
 });
 
