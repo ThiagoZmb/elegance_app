@@ -7,12 +7,14 @@ app.get('/api/pedidos', async (req, res) => {
       SELECT
         SUM(TOTAL) AS totalMesAtual
       FROM ped_orc
-      WHERE
-        MONTH(DATA) = MONTH(CURRENT_DATE())
-        AND YEAR(DATA) = YEAR(CURRENT_DATE())
+      
     `);
     
     await conn.end();
+    //WHERE
+    //MONTH(DATA) = MONTH(CURRENT_DATE())
+    //AND YEAR(DATA) = YEAR(CURRENT_DATE())
+
     
     const totalMesAtual = somaMes[0].totalMesAtual || 0;
     
