@@ -1,4 +1,4 @@
-app.get('/api/pedidos', async (req, res) => {
+app.get('/pedidos', async (req, res) => {
   try {
     const conn = await mysql.createConnection(dbConfig);
    
