@@ -38,8 +38,8 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 
     const data = await res.json();
     console.log('Resposta da API:', data);
-    const userName = data.user.nome;
-    console.log(userName);
+    //const userName = data.user.nome;
+    //console.log(userName);
 
 
 
