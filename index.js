@@ -106,8 +106,7 @@ app.get('/dados_pedidos', async (req, res) => {
         p.FINANCEIRO as financeiro,
         DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
       FROM ped_orc p
-      LEFT JOIN cadastro_clientes c ON p.RAZAO_SOCIAL = c.RAZAO_SOCIAL
-      ORDER BY p.DATA DESC, p.NUMERO DESC
+     
     `);
     
     await conn.end();
