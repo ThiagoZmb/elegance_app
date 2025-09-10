@@ -21,7 +21,7 @@ const dbConfig = {
   database: process.env.DB_NAME || 'db_elegance_v4'
 };
 
-// Endpoint de login
+// Endpoint de login (modificado para retornar a empresa)
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -31,14 +31,14 @@ app.post('/login', async (req, res) => {
       [username, password]
     );
     await conn.end();
-    
+
     if (rows.length > 0) {
       const user = rows[0];
       res.json({ 
         success: true, 
         user: {
           nome: user.NOME,
-          empresa: user.RAZAO_SOCIAL
+          empresa: user.RAZAO_SOCIAL // ← Garantir que esta informação está disponível
         }
       });
     } else {
@@ -48,7 +48,44 @@ app.post('/login', async (req, res) => {
     console.error('Erro no login:', err);
     res.status(500).json({ success: false, error: 'Erro de servidor' });
   }
-}); // ← FECHAMENTO DO ENDPOINT LOGIN (estava faltando)
+});
+
+// Endpoint para buscar dados dos pedidos (modificado com filtro)
+app.get('/dados_pedidos', async (req, res) => {
+  try {
+    // Obter a empresa do usuário a partir dos parâmetros de consulta
+    const { empresa } = req.query;
+
+    if (!empresa) {
+      return res.status(400).json({ error: 'Parâmetro empresa é obrigatório' });
+    }
+
+    const conn = await mysql.createConnection(dbConfig);
+
+    // Query modificada com WHERE clause
+    const [rows] = await conn.execute(`
+      SELECT 
+        p.NUMERO as numero,
+        p.RAZAO_SOCIAL as cliente,
+        p.CLIENTE_FINAL as clienteFinal,
+        DATE_FORMAT(p.DATA, '%d/%m/%Y') as data,
+        DATE_FORMAT(p.DATA_PRONTO, '%d/%m/%Y') as prontoEm,
+        p.TOTAL as valor,
+        p.OBS_GERAL as observacao,
+        p.SITUACAO as situacao,
+        p.FINANCEIRO as financeiro,
+        DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
+      FROM ped_orc p
+      WHERE p.RAZAO_SOCIAL = ?  -- ← Filtro adicionado aqui
+    `, [empresa]);  // ← Parâmetro da query
+
+    await conn.end();
+    res.json(rows);
+  } catch (err) {
+    console.error('Erro ao buscar pedidos:', err);
+    res.status(500).json({ error: 'Erro de servidor' });
+  }
+});
 
 
 
@@ -87,7 +124,7 @@ app.listen(PORT, () => {
 
 
 
-app.get('/dados_pedidos', async (req, res) => {
+app.get('/dados_pedidos_rj', async (req, res) => {
   try {
     const { empresa } = req.query;
     
