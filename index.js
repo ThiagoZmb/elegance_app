@@ -2,6 +2,7 @@ const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
 
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -11,6 +12,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Configuração do banco de dados
 const dbConfig = {
