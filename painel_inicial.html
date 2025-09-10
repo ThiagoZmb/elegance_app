@@ -782,7 +782,7 @@
 
         
         // Função para carregar dados do usuário
-    function loadUserData() {
+    function carregarDadosUsuario() {
         console.log('Carregando dados do usuário atual');
         
     const userData = localStorage.getItem('user');
@@ -1093,9 +1093,9 @@
 
         
 document.addEventListener('DOMContentLoaded', () => {
-    loadUserData();
+    carregarDadosUsuario();
     //loadPedidos();
-    teste();
+    //teste();
     setupSearch();
     
     document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
