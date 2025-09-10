@@ -1,6 +1,17 @@
 app.use(cors());
 app.use(express.json());
 
+
+// CORS
+app.use(cors({
+  origin: ['https://thiagozmb.github.io']
+}));
+
+
+
+
+
+
 // Configuração do banco de dados
 const dbConfig = {
   host: process.env.DB_HOST || 'db-elegance-v4.mysql.uhserver.com',
