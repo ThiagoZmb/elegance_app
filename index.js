@@ -83,3 +83,39 @@ app.get('/pedidos', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
+
+
+
+
+// Endpoint para buscar dados dos pedidos
+app.get('/dados_pedidos', async (req, res) => {
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    
+    // Query para buscar os pedidos
+    const [rows] = await conn.execute(`
+      SELECT 
+        p.NUMERO as numero,
+        c.RAZAO_SOCIAL as cliente,
+        p.CLIENTE_FINAL as clienteFinal,
+        DATE_FORMAT(p.DATA, '%d/%m/%Y') as data,
+        DATE_FORMAT(p.PRONTO_EM, '%d/%m/%Y') as prontoEm,
+        p.VALOR as valor,
+        p.OBSERVACAO as observacao,
+        p.SITUACAO as situacao,
+        p.FINANCEIRO as financeiro,
+        DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
+      FROM ped_orc p
+      LEFT JOIN cadastro_clientes c ON p.RAZAO_SOCIAL = c.RAZAO_SOCIAL
+      ORDER BY p.DATA DESC, p.NUMERO DESC
+    `);
+    
+    res.json(rows);
+  } catch (err) {
+    console.error('Erro ao buscar pedidos:', err);
+    res.status(500).json({ error: 'Erro de servidor' });
+  } finally {
+    if (conn) conn.release();
+  }
+});
