@@ -646,7 +646,7 @@
     <div class="container">
         <!-- Header Moderno -->
         <header>
-            <div class="logo">Elegance</div>
+            <div class="logo">id="user-empresa"</div>
             <div class="header-right">
                 <div class="user-profile">
                     <div class="user-avatar" id="user-avatar">E</div>
@@ -790,6 +790,8 @@
     if (userData) {
         const user = JSON.parse(userData);
         document.getElementById('user-name').textContent = user.nome;
+        document.getElementById('user-empresa').textContent = user.empresa;
+        
         console.log(user.nome);
         
         // Atualizar avatar com primeira letra do nome
