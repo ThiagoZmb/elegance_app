@@ -101,7 +101,7 @@ app.get('/dados_pedidos', async (req, res) => {
         DATE_FORMAT(p.DATA, '%d/%m/%Y') as data,
         DATE_FORMAT(p.DATA_PRONTO, '%d/%m/%Y') as prontoEm,
         p.TOTAL as valor,
-        p.OBSERVACAO as observacao,
+        p.OBS_GERAL as observacao,
         p.SITUACAO as situacao,
         p.FINANCEIRO as financeiro,
         DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
