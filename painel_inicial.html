@@ -781,28 +781,7 @@
 
 
         
-        // Função para carregar dados do usuário
-    function carregarDadosUsuario() {
-        console.log('Carregando dados do usuário atual');
         
-    const userData = localStorage.getItem('user');
-    
-    if (userData) {
-        const user = JSON.parse(userData);
-        // Preencher os elementos
-        document.getElementById('user-empresa').textContent = user.empresa || 'Empresa';
-        document.getElementById('user-name').textContent = user.nome || 'Usuário';
-        
-        console.log(user.nome);
-        
-        // Atualizar avatar com primeira letra do nome
-        const firstLetter = user.nome.charAt(0).toUpperCase();
-        document.getElementById('user-avatar').textContent = firstLetter;
-    } else {
-        // Se não há dados do usuário, redirecionar para login
-        //window.location.href = "https://thiagozmb.github.io/elegance_app/index.html";
-    }
-}
 
 
 
@@ -1057,7 +1036,28 @@
         }
 
 
-
+// Função para carregar dados do usuário
+    function carregarDadosUsuario() {
+        console.log('Carregando dados do usuário atual');
+        
+    const userData = localStorage.getItem('user');
+    
+    if (userData) {
+        const user = JSON.parse(userData);
+        // Preencher os elementos
+        document.getElementById('user-empresa').textContent = user.empresa || 'Empresa';
+        document.getElementById('user-name').textContent = user.nome || 'Usuário';
+        
+        console.log(user.nome);
+        
+        // Atualizar avatar com primeira letra do nome
+        const firstLetter = user.nome.charAt(0).toUpperCase();
+        document.getElementById('user-avatar').textContent = firstLetter;
+    } else {
+        // Se não há dados do usuário, redirecionar para login
+        //window.location.href = "https://thiagozmb.github.io/elegance_app/index.html";
+    }
+}
 
         
  function teste(){
