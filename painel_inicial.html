@@ -1,8 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elegance Dashboard - Controle de Pedidos</title>
@@ -581,6 +579,18 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Mensagem de erro */
+        .error-message {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         /* Scrollbar personalizada */
         ::-webkit-scrollbar {
             width: 6px;
@@ -646,14 +656,14 @@
     <div class="container">
         <!-- Header Moderno -->
         <header>
-    <div class="logo" id="user-empresa"><!-- Empresa será preenchida aqui --></div>
-    <div class="header-right">
-        <div class="user-profile">
-            <div class="user-avatar" id="user-avatar">E</div>
-            <span id="user-name">Empresa XXX</span>
-        </div>
-    </div>
-</header>
+            <div class="logo" id="user-empresa"><!-- Empresa será preenchida aqui --></div>
+            <div class="header-right">
+                <div class="user-profile">
+                    <div class="user-avatar" id="user-avatar">E</div>
+                    <span id="user-name">Empresa XXX</span>
+                </div>
+            </div>
+        </header>
 
         <!-- Sidebar Moderno -->
         <div class="sidebar">
@@ -747,7 +757,7 @@
                     </div>
                 </div>
                 
-                <div style="max-height: 500px; overflow-y: auto;">
+                <div id="table-content" style="max-height: 500px; overflow-y: auto;">
                     <table class="orders-table">
                         <thead>
                             <tr>
@@ -773,19 +783,6 @@
     </div>
 
     <script>
-
-
-
-
-
-
-
-        
-        
-
-
-
-        
         // Função para formatar valor monetário
         function formatCurrency(value) {
             return 'R$ ' + parseFloat(value).toFixed(2).replace('.', ',');
@@ -1035,75 +1032,37 @@
             });
         }
 
-
-// Função para carregar dados do usuário
-    function carregarDadosUsuario() {
-        console.log('Carregando dados do usuário atual');
-        
-    const userData = localStorage.getItem('user');
-    
-    if (userData) {
-        const user = JSON.parse(userData);
-        // Preencher os elementos
-        document.getElementById('user-empresa').textContent = user.empresa || 'Empresa';
-        document.getElementById('user-name').textContent = user.nome || 'Usuário';
-        
-        console.log(user.nome);
-        
-        // Atualizar avatar com primeira letra do nome
-        const firstLetter = user.nome.charAt(0).toUpperCase();
-        document.getElementById('user-avatar').textContent = firstLetter;
-    } else {
-        // Se não há dados do usuário, redirecionar para login
-        //window.location.href = "https://thiagozmb.github.io/elegance_app/index.html";
-    }
-}
-
-        
- function teste(){
-    // Use a URL do seu projeto Render (a mesma do login)
-    fetch('https://app-cek0.onrender.com/pedidos')
-        
-        .then(res => {
-            console.log('Status!:', res.status);
+        // Função para carregar dados do usuário
+        function carregarDadosUsuario() {
+            console.log('Carregando dados do usuário atual');
             
+            const userData = localStorage.getItem('user');
             
-            if (!res.ok) {
-                throw new Error(`Erro HTTP: ${res.status}`);
+            if (userData) {
+                const user = JSON.parse(userData);
+                // Preencher os elementos
+                document.getElementById('user-empresa').textContent = user.empresa || 'Empresa';
+                document.getElementById('user-name').textContent = user.nome || 'Usuário';
+                
+                console.log(user.nome);
+                
+                // Atualizar avatar com primeira letra do nome
+                const firstLetter = user.nome.charAt(0).toUpperCase();
+                document.getElementById('user-avatar').textContent = firstLetter;
+            } else {
+                // Se não há dados do usuário, redirecionar para login
+                //window.location.href = "https://thiagozmb.github.io/elegance_app/index.html";
             }
+        }
+
+        // Inicialização quando o DOM estiver carregado
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarDadosUsuario();
+            loadPedidos();
+            setupSearch();
             
-            const contentType = res.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                throw new Error('Resposta não é JSON válido');
-            }
-            
-            return res.json();
-        })
-        .then(data => {
-            console.log('Dados recebidos:', data);
-            // Corrigido: data é o array, não data.pedidos
-            if (data.length > 0) {
-                console.log('Razão social:', data[0].razaosocial);
-            }
-        })
-        .catch(err => console.error('Erro na requisição:', err));
-}
-
-
-
-        
-document.addEventListener('DOMContentLoaded', () => {
-    carregarDadosUsuario();
-    loadPedidos();
-    //teste();
-    setupSearch();
-    
-    document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
-});
-
-
-
-        
+            document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
+        });
     </script>
 </body>
 </html>
