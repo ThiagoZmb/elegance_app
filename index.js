@@ -1,16 +1,16 @@
-app.use(cors());
-app.use(express.json());
+const express = require('express');
+const mysql = require('mysql2/promise');
+const cors = require('cors');
 
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-// CORS
+// CORS (apenas uma vez)
 app.use(cors({
   origin: ['https://thiagozmb.github.io']
 }));
 
-
-
-
-
+app.use(express.json());
 
 // Configuração do banco de dados
 const dbConfig = {
@@ -21,10 +21,7 @@ const dbConfig = {
   database: process.env.DB_NAME || 'db_elegance_v4'
 };
 
-
-
-
-// Endpoint de login simplificado
+// Endpoint de login
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -35,40 +32,34 @@ app.post('/login', async (req, res) => {
     );
     await conn.end();
     
-   if (rows.length > 0) {
-     // Login válido - retorna o nome e a empresa
-     const user = rows[0];
-     res.json({ 
-       success: true, 
-       user: {
-         nome: user.NOME,
-         empresa: user.RAZAO_SOCIAL // Supondo que a coluna se chame EMPRESA
-       }
-     });
-   } else {
-     // Credenciais inválidas
-     res.json({ success: false });
-   }
- } catch (err) {
-   console.error('Erro no login:', err);
-   res.status(500).json({ success: false, error: 'Erro de servidor' });
- }
-
-
-
+    if (rows.length > 0) {
+      const user = rows[0];
+      res.json({ 
+        success: true, 
+        user: {
+          nome: user.NOME,
+          empresa: user.RAZAO_SOCIAL
+        }
+      });
+    } else {
+      res.json({ success: false });
+    }
+  } catch (err) {
+    console.error('Erro no login:', err);
+    res.status(500).json({ success: false, error: 'Erro de servidor' });
+  }
+}); // ← FECHAMENTO DO ENDPOINT LOGIN (estava faltando)
 
 // Endpoint para buscar pedidos
 app.get('/pedidos', async (req, res) => {
   try {
     const conn = await mysql.createConnection(dbConfig);
     
-    // Busca os últimos 50 pedidos ordenados por data
     const [rows] = await conn.execute(`
       SELECT 
         RAZAO_SOCIAL AS razaosocial
       FROM ped_orc 
       WHERE NUMERO='22570'
-     
     `);
     
     await conn.end();
@@ -79,4 +70,7 @@ app.get('/pedidos', async (req, res) => {
   }
 });
 
-  
+// Iniciar servidor
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
