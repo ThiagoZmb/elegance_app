@@ -38,7 +38,7 @@ app.post('/login', async (req, res) => {
         success: true, 
         user: {
           nome: user.NOME,
-          empresa: user.RAZAO_SOCIAL // ← Garantir que esta informação está disponível
+          empresa: user.RAZAO_SOCIAL 
         }
       });
     } else {
@@ -76,9 +76,8 @@ app.get('/dados_pedidos', async (req, res) => {
         p.FINANCEIRO as financeiro,
         DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
       FROM ped_orc p
-      WHERE p.RAZAO_SOCIAL = ?  -- ← Filtro adicionado aqui
-    `, [empresa]);  // ← Parâmetro da query
-
+      WHERE p.RAZAO_SOCIAL = ? 
+    `, [empresa]);  
     await conn.end();
     res.json(rows);
   } catch (err) {
