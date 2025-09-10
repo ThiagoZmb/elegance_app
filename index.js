@@ -21,6 +21,9 @@ const dbConfig = {
   database: process.env.DB_NAME || 'db_elegance_v4'
 };
 
+
+
+
 // Endpoint de login simplificado
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -50,3 +53,30 @@ app.post('/login', async (req, res) => {
    console.error('Erro no login:', err);
    res.status(500).json({ success: false, error: 'Erro de servidor' });
  }
+
+
+
+
+// Endpoint para buscar pedidos
+app.get('/pedidos', async (req, res) => {
+  try {
+    const conn = await mysql.createConnection(dbConfig);
+    
+    // Busca os últimos 50 pedidos ordenados por data
+    const [rows] = await conn.execute(`
+      SELECT 
+        RAZAO_SOCIAL AS razaosocial
+      FROM ped_orc 
+      WHERE NUMERO='22570'
+     
+    `);
+    
+    await conn.end();
+    res.json(rows);
+  } catch (err) {
+    console.error('Erro ao buscar pedidos:', err);
+    res.status(500).json({ error: 'Erro de servidor' });
+  }
+});
+
+  
