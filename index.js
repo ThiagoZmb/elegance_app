@@ -21,7 +21,7 @@ const dbConfig = {
   database: process.env.DB_NAME || 'db_elegance_v4'
 };
 
-// Endpoint de login
+// Endpoint de login modificado para salvar na session
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -34,6 +34,13 @@ app.post('/login', async (req, res) => {
     
     if (rows.length > 0) {
       const user = rows[0];
+      
+      // Salva os dados do usuário na session
+      req.session.user = {
+        nome: user.NOME,
+        empresa: user.RAZAO_SOCIAL
+      };
+      
       res.json({ 
         success: true, 
         user: {
@@ -48,8 +55,47 @@ app.post('/login', async (req, res) => {
     console.error('Erro no login:', err);
     res.status(500).json({ success: false, error: 'Erro de servidor' });
   }
-}); // ← FECHAMENTO DO ENDPOINT LOGIN (estava faltando)
+});
 
+// Middleware para verificar se o usuário está logado
+function requireLogin(req, res, next) {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Usuário não autenticado' });
+  }
+  next();
+}
+
+// Endpoint de dados dos pedidos com filtro automático
+app.get('/dados_pedidos', requireLogin, async (req, res) => {
+  try {
+    const empresa = req.session.user.empresa;
+    
+    const conn = await mysql.createConnection(dbConfig);
+    
+    // Query para buscar os pedidos filtrados pela empresa do usuário logado
+    const [rows] = await conn.execute(`
+      SELECT 
+        p.NUMERO as numero,
+        p.RAZAO_SOCIAL as cliente,
+        p.CLIENTE_FINAL as clienteFinal,
+        DATE_FORMAT(p.DATA, '%d/%m/%Y') as data,
+        DATE_FORMAT(p.DATA_PRONTO, '%d/%m/%Y') as prontoEm,
+        p.TOTAL as valor,
+        p.OBS_GERAL as observacao,
+        p.SITUACAO as situacao,
+        p.FINANCEIRO as financeiro,
+        DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
+      FROM ped_orc p
+      WHERE p.RAZAO_SOCIAL = ?
+    `, [empresa]);
+    
+    await conn.end();
+    res.json(rows);
+  } catch (err) {
+    console.error('Erro ao buscar pedidos:', err);
+    res.status(500).json({ error: 'Erro de servidor' });
+  }
+});
 
 
 
@@ -82,37 +128,4 @@ app.get('/pedidos', async (req, res) => {
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
-});
-
-
-
-
-// Endpoint para buscar dados dos pedidos
-app.get('/dados_pedidos', async (req, res) => {
-  try {
-    const conn = await mysql.createConnection(dbConfig);
-    
-    // Query para buscar os pedidos
-   const [rows] = await conn.execute(`
-      SELECT 
-        p.NUMERO as numero,
-        p.RAZAO_SOCIAL as cliente,
-        p.CLIENTE_FINAL as clienteFinal,
-        DATE_FORMAT(p.DATA, '%d/%m/%Y') as data,
-        DATE_FORMAT(p.DATA_PRONTO, '%d/%m/%Y') as prontoEm,
-        p.TOTAL as valor,
-        p.OBS_GERAL as observacao,
-        p.SITUACAO as situacao,
-        p.FINANCEIRO as financeiro,
-        DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
-      FROM ped_orc p
-      WHERE p.RAZAO_SOCIAL = ?
-    `, [empresa]);
-    
-    await conn.end();
-    res.json(rows);
-  } catch (err) {
-    console.error('Erro ao buscar pedidos:', err);
-    res.status(500).json({ error: 'Erro de servidor' });
-  }
 });
