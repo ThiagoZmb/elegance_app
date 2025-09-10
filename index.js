@@ -93,7 +93,7 @@ app.get('/dados_pedidos', async (req, res) => {
     const conn = await mysql.createConnection(dbConfig);
     
     // Query para buscar os pedidos
-    const [rows] = await conn.execute(`
+   const [rows] = await conn.execute(`
       SELECT 
         p.NUMERO as numero,
         p.RAZAO_SOCIAL as cliente,
@@ -106,9 +106,8 @@ app.get('/dados_pedidos', async (req, res) => {
         p.FINANCEIRO as financeiro,
         DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
       FROM ped_orc p
-      
-     
-    `);
+      WHERE p.RAZAO_SOCIAL = ?
+    `, [empresa]);
     
     await conn.end();
     res.json(rows);
