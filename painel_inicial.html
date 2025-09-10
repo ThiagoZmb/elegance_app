@@ -810,49 +810,8 @@
                 
                 const pedidos = await res.json();
                 
-                // Atualizar cards de resumo
-                updateSummaryCards(pedidos);
-                
-                // Renderizar gráficos
-                renderCharts(pedidos);
-                
-                const tbody = document.getElementById('orders-tbody');
-                tbody.innerHTML = '';
-
-                if (pedidos.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 30px; color: var(--text-light);">Nenhum pedido encontrado</td></tr>`;
-                } else {
-                    pedidos.forEach(pedido => {
-                        const row = document.createElement('tr');
-                        
-                        // Destacar linhas com status "Em Produção"
-                        if (pedido.situacao === 'Em Produção') {
-                            row.classList.add('highlighted-row');
-                        }
-
-                        // Determinar classes CSS para situação e financeiro
-                        const situacaoClass = `status-${pedido.situacao.toLowerCase().replace(' ', '-')}`;
-                        const financeiroClass = `financial-${pedido.financeiro.toLowerCase().replace(' ', '-')}`;
-
-                        row.innerHTML = `
-                            <td class="order-number">${pedido.numero}</td>
-                            <td class="client-name">${pedido.cliente}</td>
-                            <td>${pedido.clienteFinal || '-'}</td>
-                            <td class="date-cell">${pedido.data}</td>
-                            <td class="date-cell">${pedido.prontoEm || '-'}</td>
-                            <td class="price-value">${formatCurrency(pedido.valor)}</td>
-                            <td class="obs-cell">${pedido.observacao || '-'}</td>
-                            <td><span class="status-badge ${situacaoClass}">${pedido.situacao}</span></td>
-                            <td><span class="financial-badge ${financeiroClass}">${pedido.financeiro}</span></td>
-                            <td class="date-cell">${pedido.dataEntrega || '-'}</td>
-                        `;
-
-                        tbody.appendChild(row);
-                    });
-                }
-                
-                // Esconder loading
-                document.getElementById('table-loading').style.display = 'none';
+                 console.log(pedidos.cliente);
+               
                 
             } catch (err) {
                 console.error('Erro ao carregar pedidos:', err);
