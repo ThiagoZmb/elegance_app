@@ -100,7 +100,7 @@ app.get('/dados_pedidos', async (req, res) => {
         c.RAZAO_SOCIAL as cliente,
         p.CLIENTE_FINAL as clienteFinal,
         DATE_FORMAT(p.DATA, '%d/%m/%Y') as data,
-        DATE_FORMAT(p.PRONTO_EM, '%d/%m/%Y') as prontoEm,
+        DATE_FORMAT(p.DATA_PRONTO, '%d/%m/%Y') as prontoEm,
         p.VALOR as valor,
         p.OBSERVACAO as observacao,
         p.SITUACAO as situacao,
