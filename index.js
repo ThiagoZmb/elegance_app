@@ -95,10 +95,19 @@ app.get('/dados_pedidos', async (req, res) => {
     // Query para buscar os pedidos
     const [rows] = await conn.execute(`
       SELECT 
-        
-        RAZAO_SOCIAL as cliente
-       
-      FROM ped_orc 
+        p.NUMERO as numero,
+        p.RAZAO_SOCIAL as cliente,
+        p.CLIENTE_FINAL as clienteFinal,
+        DATE_FORMAT(p.DATA, '%d/%m/%Y') as data,
+        DATE_FORMAT(p.DATA_PRONTO, '%d/%m/%Y') as prontoEm,
+        p.TOTAL as valor,
+        p.OBSERVACAO as observacao,
+        p.SITUACAO as situacao,
+        p.FINANCEIRO as financeiro,
+        DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
+      FROM ped_orc p
+      LEFT JOIN cadastro_clientes c ON p.RAZAO_SOCIAL = c.RAZAO_SOCIAL
+      ORDER BY p.DATA DESC, p.NUMERO DESC
      
     `);
     
