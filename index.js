@@ -89,9 +89,8 @@ app.listen(PORT, () => {
 
 // Endpoint para buscar dados dos pedidos
 app.get('/dados_pedidos', async (req, res) => {
-  let conn;
   try {
-    conn = await pool.getConnection();
+    const conn = await mysql.createConnection(dbConfig);
     
     // Query para buscar os pedidos
     const [rows] = await conn.execute(`
@@ -111,11 +110,10 @@ app.get('/dados_pedidos', async (req, res) => {
       ORDER BY p.DATA DESC, p.NUMERO DESC
     `);
     
+    await conn.end();
     res.json(rows);
   } catch (err) {
     console.error('Erro ao buscar pedidos:', err);
     res.status(500).json({ error: 'Erro de servidor' });
-  } finally {
-    if (conn) conn.release();
   }
 });
