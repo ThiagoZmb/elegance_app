@@ -50,6 +50,15 @@ app.post('/login', async (req, res) => {
   }
 }); // ← FECHAMENTO DO ENDPOINT LOGIN (estava faltando)
 
+
+
+
+
+
+
+
+
+
 // Endpoint para buscar pedidos
 app.get('/pedidos', async (req, res) => {
   try {
