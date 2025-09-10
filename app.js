@@ -6,8 +6,9 @@ app.get('/pedidos', async (req, res) => {
     // Busca os últimos 50 pedidos ordenados por data
     const [rows] = await conn.execute(`
       SELECT 
-        NUMERO AS numero
+        RAZAO_SOCIAL AS razaosocial
       FROM ped_orc 
+      WHERE NUMERO='22570'
      
     `);
     
