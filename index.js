@@ -139,7 +139,7 @@ app.get('/dados_pedidos_rj', async (req, res) => {
         DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
       FROM ped_orc p
       INNER JOIN cadastro_clientes c ON p.RAZAO_SOCIAL = c.RAZAO_SOCIAL
-      WHERE c.ESTADO = 'RJ'
+      WHERE c.ESTADO = 'RJ' AND p.TIPO='Pedido'
       ORDER BY p.DATA DESC
     `);
     
