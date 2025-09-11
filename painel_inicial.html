@@ -788,27 +788,7 @@
             return 'R$ ' + parseFloat(value).toFixed(2).replace('.', ',');
         }
 
-        // Função para redirecionar para login
-        function redirectToLogin() {
-            // Limpar dados do localStorage
-            localStorage.removeItem('userData');
-            // Redirecionar para página de login ou recarregar página
-            window.location.href = 'login.html'; // Ajuste conforme sua estrutura
-        }
-
-        // Função para verificar se o usuário está logado antes de carregar pedidos
-        function checkAuthAndLoadPedidos() {
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            
-            if (!userData || !userData.empresa) {
-                console.warn('Usuário não autenticado');
-                redirectToLogin();
-                return;
-            }
-            // Se estiver autenticado, continue carregando os pedidos
-            loadPedidos();
-        }
-
+      
         // Função para carregar pedidos do banco de dados
         async function loadPedidos() {
             try {
