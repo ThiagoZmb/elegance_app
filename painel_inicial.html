@@ -877,6 +877,7 @@
 
         // Atualizar cards de resumo
         function updateSummaryCards(pedidos) {
+            
             // Pedidos de hoje
             const today = new Date();
             const todayFormatted = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth()+1).toString().padStart(2, '0')}/${today.getFullYear()}`;
@@ -890,7 +891,7 @@
             // Pedidos em produção
             const productionOrders = pedidos.filter(p => p.situacao.toLowerCase().includes('Em Produção')).length;
             document.getElementById('production-orders').textContent = productionOrders;
-            document.getElementById('production-change').textContent = 'Em andamento';
+            document.getElementById('production-change').textContent = 'Em Produção';
             document.getElementById('production-change').className = 'card-change';
             
             // Pedidos prontos
