@@ -150,10 +150,10 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       // Forçar reflow para garantir a animação
       welcomeDiv.offsetHeight;
       
-      // Redirecionar após 2 segundos para melhor UX
+      // Redirecionar após 1 segundos para melhor UX
       setTimeout(() => {
         window.location.href = "https://thiagozmb.github.io/elegance_app/painel_inicial.html";
-      }, 2000);
+      }, 1000);
       
     } else {
       resDiv.textContent = data.message || 'Usuário, senha ou CNPJ inválidos.';
@@ -202,7 +202,7 @@ function checkExistingLogin() {
       
       setTimeout(() => {
         window.location.href = "https://thiagozmb.github.io/elegance_app/painel_inicial.html";
-      }, 1500);
+      }, 500);
     } else {
       // Login expirado, limpar dados
       clearUserData();
