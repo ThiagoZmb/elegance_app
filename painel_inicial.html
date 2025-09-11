@@ -803,131 +803,91 @@
 
 
 
-        
-       // Função para carregar pedidos do banco de dados
-async function loadPedidos() {
-    try {
-        // Mostrar loading
-        document.getElementById('table-loading').style.display = 'flex';
-        
-        // Atualizar indicadores de carregamento
-        document.querySelectorAll('.card-change').forEach(el => {
-            el.textContent = 'Carregando...';
-            el.className = 'card-change';
-        });
-        
-        // Recuperar os dados do usuário do localStorage
-        const userData = JSON.parse(localStorage.getItem('userData'));
-        
-        if (!userData || !userData.empresa) {
-            throw new Error('Dados do usuário não encontrados. Faça login novamente.');
-        }
-        
-        console.log('Carregando pedidos para empresa:', userData.empresa);
-        
-        // Fazer requisição para o endpoint de pedidos com parâmetro empresa
-        const res = await fetch(`https://app-cek0.onrender.com/dados_pedidos?empresa=${encodeURIComponent(userData.empresa)}`);
-        
-        // Verificar se a resposta é válida
-        if (!res.ok) {
-            const errorData = await res.json().catch(() => ({}));
-            throw new Error(errorData.error || `Erro HTTP: ${res.status}`);
-        }
-        
-        const pedidos = await res.json();
-        
-        console.log(`Carregados ${pedidos.length} pedidos`);
-        
-        // Atualizar cards de resumo
-        updateSummaryCards(pedidos);
-        
-        // Renderizar gráficos
-        renderCharts(pedidos);
-        
-        const tbody = document.getElementById('orders-tbody');
-        tbody.innerHTML = '';
-
-        if (pedidos.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="10" style="text-align: center; padding: 30px; color: var(--text-light);">
-                        Nenhum pedido encontrado para a empresa: ${userData.empresa}
-                    </td>
-                </tr>
-            `;
-        } else {
-            pedidos.forEach(pedido => {
-                const row = document.createElement('tr');
+    // Função para carregar pedidos do banco de dados
+        async function loadPedidos() {
+            try {
+                // Mostrar loading
+                document.getElementById('table-loading').style.display = 'flex';
                 
-                // Destacar linhas com status "Em Produção"
-                if (pedido.situacao === 'Em Produção') {
-                    row.classList.add('highlighted-row');
+                // Atualizar indicadores de carregamento
+                document.querySelectorAll('.card-change').forEach(el => {
+                    el.textContent = 'Carregando...';
+                    el.className = 'card-change';
+                });
+                
+                // Fazer requisição para o endpoint de pedidos
+                const res = await fetch('https://app-cek0.onrender.com/dados_pedidos');
+                
+                // Verificar se a resposta é válida
+                if (!res.ok) {
+                    throw new Error(`Erro HTTP: ${res.status}`);
                 }
+                
+                const pedidos = await res.json();
+                
+                // Atualizar cards de resumo
+                updateSummaryCards(pedidos);
+                
+                // Renderizar gráficos
+                renderCharts(pedidos);
+                
+                const tbody = document.getElementById('orders-tbody');
+                tbody.innerHTML = '';
 
-                // Determinar classes CSS para situação e financeiro
-                const situacaoClass = `status-${pedido.situacao.toLowerCase().replace(/\s+/g, '-')}`;
-                const financeiroClass = `financial-${pedido.financeiro.toLowerCase().replace(/\s+/g, '-')}`;
+                if (pedidos.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 30px; color: var(--text-light);">Nenhum pedido encontrado</td></tr>`;
+                } else {
+                    pedidos.forEach(pedido => {
+                        const row = document.createElement('tr');
+                        
+                        // Destacar linhas com status "Em Produção"
+                        if (pedido.situacao === 'Em Produção') {
+                            row.classList.add('highlighted-row');
+                        }
 
-                row.innerHTML = `
-                    <td class="order-number">${pedido.numero}</td>
-                    <td class="client-name">${pedido.cliente}</td>
-                    <td>${pedido.clienteFinal || '-'}</td>
-                    <td class="date-cell">${pedido.data}</td>
-                    <td class="date-cell">${pedido.prontoEm || '-'}</td>
-                    <td class="price-value">${formatCurrency(pedido.valor)}</td>
-                    <td class="obs-cell">${pedido.observacao || '-'}</td>
-                    <td><span class="status-badge ${situacaoClass}">${pedido.situacao}</span></td>
-                    <td><span class="financial-badge ${financeiroClass}">${pedido.financeiro}</span></td>
-                    <td class="date-cell">${pedido.dataEntrega || '-'}</td>
+                        // Determinar classes CSS para situação e financeiro
+                        const situacaoClass = `status-${pedido.situacao.toLowerCase().replace(' ', '-')}`;
+                        const financeiroClass = `financial-${pedido.financeiro.toLowerCase().replace(' ', '-')}`;
+
+                        row.innerHTML = `
+                            <td class="order-number">${pedido.numero}</td>
+                            <td class="client-name">${pedido.cliente}</td>
+                            <td>${pedido.clienteFinal || '-'}</td>
+                            <td class="date-cell">${pedido.data}</td>
+                            <td class="date-cell">${pedido.prontoEm || '-'}</td>
+                            <td class="price-value">${formatCurrency(pedido.valor)}</td>
+                            <td class="obs-cell">${pedido.observacao || '-'}</td>
+                            <td><span class="status-badge ${situacaoClass}">${pedido.situacao}</span></td>
+                            <td><span class="financial-badge ${financeiroClass}">${pedido.financeiro}</span></td>
+                            <td class="date-cell">${pedido.dataEntrega || '-'}</td>
+                        `;
+
+                        tbody.appendChild(row);
+                    });
+                }
+                
+                // Esconder loading
+                document.getElementById('table-loading').style.display = 'none';
+                
+            } catch (err) {
+                console.error('Erro ao carregar pedidos:', err);
+                
+                // Atualizar UI com mensagem de erro
+                document.getElementById('table-loading').style.display = 'none';
+                document.querySelectorAll('.card-change').forEach(el => {
+                    el.textContent = 'Erro ao carregar dados';
+                    el.className = 'card-change negative';
+                });
+                
+                document.getElementById('orders-tbody').innerHTML = `
+                    <tr>
+                        <td colspan="10" style="text-align: center; padding: 30px; color: var(--danger-color);">
+                            Erro ao carregar dados: ${err.message || 'Verifique a conexão com o servidor'}
+                        </td>
+                    </tr>
                 `;
-
-                tbody.appendChild(row);
-            });
+            }
         }
-        
-        // Esconder loading
-        document.getElementById('table-loading').style.display = 'none';
-        
-    } catch (err) {
-        console.error('Erro ao carregar pedidos:', err);
-        
-        // Esconder loading
-        document.getElementById('table-loading').style.display = 'none';
-        
-        // Atualizar UI com mensagem de erro
-        document.querySelectorAll('.card-change').forEach(el => {
-            el.textContent = 'Erro ao carregar dados';
-            el.className = 'card-change negative';
-        });
-        
-        // Verificar se é erro de autenticação/usuário
-        if (err.message.includes('usuário não encontrados')) {
-            document.getElementById('orders-tbody').innerHTML = `
-                <tr>
-                    <td colspan="10" style="text-align: center; padding: 30px; color: var(--danger-color);">
-                        ${err.message}
-                        <br><br>
-                        <button onclick="redirectToLogin()" style="padding: 10px 20px; background: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer;">
-                            Ir para Login
-                        </button>
-                    </td>
-                </tr>
-            `;
-        } else {
-            document.getElementById('orders-tbody').innerHTML = `
-                <tr>
-                    <td colspan="10" style="text-align: center; padding: 30px; color: var(--danger-color);">
-                        Erro ao carregar dados: ${err.message || 'Verifique a conexão com o servidor'}
-                        <br><br>
-                        <button onclick="loadPedidos()" style="padding: 10px 20px; background: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer;">
-                            Tentar Novamente
-                        </button>
-                    </td>
-                </tr>
-            `;
-        }
-    }
-}
 
 
 
