@@ -59,11 +59,7 @@ app.post('/login', async (req, res) => {
       SELECT 
         cu.NOME,
         cu.RAZAO_SOCIAL,
-        cc.CNPJ,
-        cc.ENDERECO,
-        cc.TELEFONE,
-        cc.EMAIL,
-        cc.STATUS
+        cc.CNPJ
       FROM cliente_usuarios cu
       INNER JOIN cadastro_clientes cc ON cu.RAZAO_SOCIAL = cc.RAZAO_SOCIAL
       WHERE cu.NOME = ? AND cu.SENHA = ? AND cc.CNPJ = ?
@@ -87,11 +83,7 @@ app.post('/login', async (req, res) => {
         user: {
           nome: user.NOME,
           empresa: user.RAZAO_SOCIAL,
-          cnpj: user.CNPJ,
-          endereco: user.ENDERECO || null,
-          telefone: user.TELEFONE || null,
-          email: user.EMAIL || null,
-          status: user.STATUS || 'ativo'
+          cnpj: user.CNPJ
         }
       });
       
