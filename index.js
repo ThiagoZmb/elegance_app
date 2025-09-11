@@ -59,20 +59,13 @@ app.post('/login', async (req, res) => {
 
 
 
-// Endpoint para buscar dados dos pedidos 
+// Endpoint para buscar dados dos pedidos
 app.get('/dados_pedidos', async (req, res) => {
   try {
-    // Obter a empresa do usuário a partir dos parâmetros de consulta
-    const { empresa } = req.query;
-
-    if (!empresa) {
-      return res.status(400).json({ error: 'Parâmetro empresa é obrigatório' });
-    }
-
     const conn = await mysql.createConnection(dbConfig);
-
-    // Query modificada com WHERE clause
-    const [rows] = await conn.execute(`
+    
+    // Query para buscar os pedidos
+   const [rows] = await conn.execute(`
       SELECT 
         p.NUMERO as numero,
         p.RAZAO_SOCIAL as cliente,
@@ -85,8 +78,9 @@ app.get('/dados_pedidos', async (req, res) => {
         p.FINANCEIRO as financeiro,
         DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
       FROM ped_orc p
-      WHERE p.RAZAO_SOCIAL = ? 
-    `, [empresa]);  
+      
+    `);
+    
     await conn.end();
     res.json(rows);
   } catch (err) {
@@ -94,7 +88,6 @@ app.get('/dados_pedidos', async (req, res) => {
     res.status(500).json({ error: 'Erro de servidor' });
   }
 });
-
 
 
 
