@@ -21,6 +21,12 @@ const dbConfig = {
   database: process.env.DB_NAME || 'db_elegance_v4'
 };
 
+
+
+
+
+
+
 // Endpoint de login (modificado para retornar a empresa)
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -50,7 +56,10 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Endpoint para buscar dados dos pedidos (modificado com filtro)
+
+
+
+// Endpoint para buscar dados dos pedidos 
 app.get('/dados_pedidos', async (req, res) => {
   try {
     // Obter a empresa do usuário a partir dos parâmetros de consulta
@@ -88,41 +97,6 @@ app.get('/dados_pedidos', async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-// Endpoint para buscar pedidos
-app.get('/pedidos', async (req, res) => {
-  try {
-    const conn = await mysql.createConnection(dbConfig);
-    
-    const [rows] = await conn.execute(`
-      SELECT 
-        RAZAO_SOCIAL AS razaosocial
-      FROM ped_orc 
-      WHERE NUMERO='22570'
-    `);
-    
-    await conn.end();
-    res.json(rows);
-  } catch (err) {
-    console.error('Erro ao buscar pedidos:', err);
-    res.status(500).json({ error: 'Erro de servidor' });
-  }
-});
-
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
-
-
-
-
 app.get('/dados_pedidos_rj', async (req, res) => {
   try {
     const { empresa } = req.query;
@@ -154,6 +128,44 @@ app.get('/dados_pedidos_rj', async (req, res) => {
     res.json(rows);
   } catch (err) {
     console.error('Erro ao buscar pedidos:', err);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Endpoint para buscar pedidos
+app.get('/pedidos', async (req, res) => {
+  try {
+    const conn = await mysql.createConnection(dbConfig);
+    
+    const [rows] = await conn.execute(`
+      SELECT 
+        RAZAO_SOCIAL AS razaosocial
+      FROM ped_orc 
+      WHERE NUMERO='22570'
+    `);
+    
+    await conn.end();
+    res.json(rows);
+  } catch (err) {
+    console.error('Erro ao buscar pedidos:', err);
+    res.status(500).json({ error: 'Erro de servidor' });
+  }
+});
+
+// Iniciar servidor
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
     res.status(500).json({ error: 'Erro de servidor' });
   }
 });
