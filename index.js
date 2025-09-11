@@ -38,46 +38,91 @@ const dbConfig = {
 
 
 
-// Endpoint de login com INNER JOIN
+// Backend - Endpoint de Login Corrigido
 app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, cnpj } = req.body;
+  
+  // Validação dos dados recebidos
+  if (!username || !password || !cnpj) {
+    return res.status(400).json({ 
+      success: false, 
+      message: 'Todos os campos são obrigatórios' 
+    });
+  }
+  
+  let conn;
   try {
-    const conn = await mysql.createConnection(dbConfig);
+    conn = await mysql.createConnection(dbConfig);
+    
+    // Query corrigida com INNER JOIN
     const [rows] = await conn.execute(`
       SELECT 
         cu.NOME,
         cu.RAZAO_SOCIAL,
-        cc.CNPJ
+        cc.CNPJ,
+        cc.ENDERECO,
+        cc.TELEFONE,
+        cc.EMAIL,
+        cc.STATUS
       FROM cliente_usuarios cu
       INNER JOIN cadastro_clientes cc ON cu.RAZAO_SOCIAL = cc.RAZAO_SOCIAL
       WHERE cu.NOME = ? AND cu.SENHA = ? AND cc.CNPJ = ?
     `, [username, password, cnpj]);
     
-    await conn.end();
-    
     if (rows.length > 0) {
       const user = rows[0];
+      
+      // Verificar se o cliente está ativo
+      if (user.STATUS && user.STATUS.toLowerCase() !== 'ativo') {
+        return res.json({ 
+          success: false, 
+          message: 'Conta inativa. Entre em contato com o suporte.' 
+        });
+      }
+      
+      // Login bem-sucedido
       res.json({ 
         success: true, 
+        message: 'Login realizado com sucesso',
         user: {
           nome: user.NOME,
           empresa: user.RAZAO_SOCIAL,
           cnpj: user.CNPJ,
-          // Adicione aqui outros campos da tabela cadastro_clientes conforme necessário
-          // Por exemplo:
-          // endereco: user.ENDERECO,
-          // telefone: user.TELEFONE,
-          // email: user.EMAIL
+          endereco: user.ENDERECO || null,
+          telefone: user.TELEFONE || null,
+          email: user.EMAIL || null,
+          status: user.STATUS || 'ativo'
         }
       });
+      
+      // Log do login bem-sucedido
+      console.log(`Login bem-sucedido: ${user.NOME} - CNPJ: ${user.CNPJ} - ${new Date().toISOString()}`);
+      
     } else {
-      res.json({ success: false });
+      // Credenciais inválidas
+      res.json({ 
+        success: false, 
+        message: 'Usuário, senha ou CNPJ inválidos' 
+      });
+      
+      // Log da tentativa de login falhada
+      console.log(`Tentativa de login falhada: ${username} - CNPJ: ${cnpj} - ${new Date().toISOString()}`);
     }
+    
   } catch (err) {
     console.error('Erro no login:', err);
-    res.status(500).json({ success: false, error: 'Erro de servidor' });
+    res.status(500).json({ 
+      success: false, 
+      message: 'Erro interno do servidor. Tente novamente mais tarde.',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+  } finally {
+    if (conn) {
+      await conn.end();
+    }
   }
-}); // ← FECHAMENTO DO ENDPOINT LOGIN
+});
+
 
 
 
