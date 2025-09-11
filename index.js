@@ -140,6 +140,7 @@ app.get('/dados_pedidos_rj', async (req, res) => {
       FROM ped_orc p
       INNER JOIN cadastro_clientes c ON p.RAZAO_SOCIAL = c.RAZAO_SOCIAL
       WHERE c.ESTADO = 'RJ'
+      ORDER BY p.DATA DESC
     `);
     
     await conn.end();
