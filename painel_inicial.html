@@ -929,11 +929,41 @@ console.log('Pedidos em produção:', productionOrders);
 
             
             
-            // Pedidos prontos
-            const readyOrders = pedidos.filter(p => p.situacao === 'Pronto').length;
-            document.getElementById('ready-orders').textContent = readyOrders;
-            document.getElementById('ready-change').textContent = 'Pronto';
-            document.getElementById('ready-change').className = 'card-change';
+            // Pedidos prontos com tratamento robusto
+const readyOrders = pedidos.filter(p => {
+  // Verificar se p.situacao existe e não é nulo/undefined
+  if (!p.situacao) return false;
+  
+  // Converter para string, remover espaços e converter para minúsculas
+  const situacao = String(p.situacao).trim().toLowerCase();
+  
+  // Verificar se contém "pronto" (ou variações)
+  return situacao.includes('pronto') || 
+         situacao.includes('finalizado') ||
+         situacao.includes('concluído') ||
+         situacao.includes('concluido') ||    // sem acento
+         situacao.includes('acabado') ||
+         situacao === 'ok' ||                 // caso use apenas "OK"
+         situacao === 'finish' ||             // caso use inglês
+         situacao === 'done';                 // caso use inglês
+}).length;
+
+// Atualizar o DOM com verificação de existência dos elementos
+const readyOrdersElement = document.getElementById('ready-orders');
+const readyChangeElement = document.getElementById('ready-change');
+
+if (readyOrdersElement) {
+  readyOrdersElement.textContent = readyOrders;
+}
+
+if (readyChangeElement) {
+  readyChangeElement.textContent = 'Pronto';
+  readyChangeElement.className = 'card-change';
+}
+
+// Debug: mostrar os valores de situação para identificar o problema
+console.log('Situações encontradas (Prontos):', [...new Set(pedidos.map(p => p.situacao))]);
+console.log('Pedidos prontos:', readyOrders);
 
 
 
