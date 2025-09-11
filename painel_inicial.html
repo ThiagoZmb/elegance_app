@@ -903,9 +903,9 @@
 
 
             
-           // Obter data atual (mês e ano)
+         // Obter data atual (mês e ano)
 const now = new Date();
-const currentMonth = now.getMonth();
+const currentMonth = now.getMonth() + 1; // Ajustado: Janeiro = 1 (para corresponder ao MySQL)
 const currentYear = now.getFullYear();
 
 // Filtrar pedidos do mês atual
@@ -913,34 +913,50 @@ const pedidosDoMes = pedidos.filter(p => {
   // Verifica se o pedido tem uma data válida
   if (!p.data) return false;
   
-  const date = new Date(p.data);
+  // Converter formato dd/mm/yyyy (vindo do MySQL) para Date
+  const [dia, mes, ano] = p.data.split('/');
+  
+  // Validar se a divisão funcionou corretamente
+  if (!dia || !mes || !ano) return false;
+  
+  // Criar objeto Date (mes-1 porque Date usa 0-11)
+  const date = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+  
   // Verifica se a data é válida
   if (isNaN(date.getTime())) return false;
   
-  return date.getMonth() === currentMonth && 
+  // Comparar mês e ano (getMonth() + 1 para corresponder ao formato MySQL)
+  return (date.getMonth() + 1) === currentMonth && 
          date.getFullYear() === currentYear;
 });
 
-// Soma dos valores
-const revenue = pedidosDoMes.reduce((sum, p) => sum + p.valor, 0);
+// Soma dos valores com tratamento para valores nulos
+const revenue = pedidosDoMes.reduce((sum, p) => {
+  const valor = parseFloat(p.valor) || 0;
+  return sum + valor;
+}, 0);
 
-// Atualizar o DOM
-document.getElementById('revenue').textContent = formatCurrency(revenue);
-document.getElementById('revenue-change').textContent = 'Total do mês';
-document.getElementById('revenue-change').className = 'card-change';
+// Atualizar o DOM com verificação de existência dos elementos
+const revenueElement = document.getElementById('revenue');
+const revenueChangeElement = document.getElementById('revenue-change');
+
+if (revenueElement) {
+  revenueElement.textContent = formatCurrency(revenue);
+}
+
+if (revenueChangeElement) {
+  revenueChangeElement.textContent = 'Total do mês';
+  revenueChangeElement.className = 'card-change';
+}
+
+// Debug: mostrar quantos pedidos foram encontrados
+console.log(`Pedidos do mês ${currentMonth}/${currentYear}:`, pedidosDoMes.length);
+console.log('Receita total:', revenue);
 
 
 
 
-
-
-            
-            
-// Atualizar o DOM
-document.getElementById('revenue').textContent = formatCurrency(revenue);
-document.getElementById('revenue-change').textContent = 'Total do mês';
-document.getElementById('revenue-change').className = 'card-change';
-        }
+        }//Final na function
 
 
         
