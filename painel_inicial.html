@@ -783,27 +783,33 @@
     </div>
 
     <script>
-
-        
         // Função para formatar valor monetário
         function formatCurrency(value) {
             return 'R$ ' + parseFloat(value).toFixed(2).replace('.', ',');
         }
 
+        // Função para redirecionar para login
+        function redirectToLogin() {
+            // Limpar dados do localStorage
+            localStorage.removeItem('userData');
+            // Redirecionar para página de login ou recarregar página
+            window.location.href = 'login.html'; // Ajuste conforme sua estrutura
+        }
 
+        // Função para verificar se o usuário está logado antes de carregar pedidos
+        function checkAuthAndLoadPedidos() {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            
+            if (!userData || !userData.empresa) {
+                console.warn('Usuário não autenticado');
+                redirectToLogin();
+                return;
+            }
+            // Se estiver autenticado, continue carregando os pedidos
+            loadPedidos();
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-    // Função para carregar pedidos do banco de dados
+        // Função para carregar pedidos do banco de dados
         async function loadPedidos() {
             try {
                 // Mostrar loading
@@ -889,27 +895,6 @@
             }
         }
 
-
-
-
-        
-// Função auxiliar para redirecionar para login
-function redirectToLogin() {
-    // Limpar dados do localStorage
-    localStorage.removeItem('userData');
-    // Redirecionar para página de login ou recarregar página
-    window.location.href = 'login.html'; // Ajuste conforme sua estrutura
-}
-
-// Função para verificar se o usuário está logado antes de carregar pedidos
-function checkAuthAndLoadPedidos() {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    
-    if (!userData || !userData.empresa) {
-        console.warn('Usuário não autenticado');
-        redirectToLogin();
-        return;
-    }
         // Atualizar cards de resumo
         function updateSummaryCards(pedidos) {
             // Pedidos de hoje
@@ -1080,24 +1065,22 @@ function checkAuthAndLoadPedidos() {
                 document.getElementById('user-empresa').textContent = user.empresa || 'Empresa';
                 document.getElementById('user-name').textContent = user.nome || 'Usuário';
                 
-                console.log(user.nome);
-                
                 // Atualizar avatar com primeira letra do nome
                 const firstLetter = user.nome.charAt(0).toUpperCase();
                 document.getElementById('user-avatar').textContent = firstLetter;
             } else {
                 // Se não há dados do usuário, redirecionar para login
-                //window.location.href = "https://thiagozmb.github.io/elegance_app/index.html";
+                console.warn('Usuário não encontrado no localStorage');
             }
         }
 
         // Inicialização quando o DOM estiver carregado
         document.addEventListener('DOMContentLoaded', () => {
             carregarDadosUsuario();
-            loadPedidos();
+            checkAuthAndLoadPedidos();
             setupSearch();
             
-            document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
+            document.getElementById('refresh-btn').addEventListener('click', checkAuthAndLoadPedidos);
         });
     </script>
 </body>
