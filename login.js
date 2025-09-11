@@ -1,3 +1,4 @@
+// Frontend - Script de Login Corrigido
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
   e.preventDefault();
 
@@ -27,22 +28,26 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
   try {
     const res = await fetch(apiUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
       body: JSON.stringify({ username, password, cnpj })
     });
     
     // Verificar se a resposta é válida
     if (!res.ok) {
-      throw new Error(`Erro HTTP: ${res.status}`);
+      throw new Error(`Erro HTTP: ${res.status} - ${res.statusText}`);
     }
     
-
     const data = await res.json();
    
     if (data.success) {
-      // NOVO: Salvar dados do usuário no localStorage
+      // Salvar dados do usuário no localStorage
       if (data.user) {
         localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('loginTime', new Date().toISOString());
         console.log('Dados do usuário salvos:', data.user);
       }
       
@@ -81,16 +86,18 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         text-align: center;
         max-width: 500px;
         box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+        transform: scale(0.9);
+        animation: scaleIn 0.3s ease-out 0.2s forwards;
       `;
       
       const welcomeHeading = document.createElement('h2');
-      // MODIFICADO: Usar o nome do usuário na mensagem de boas-vindas
       const userName = data.user ? data.user.nome : 'Usuário';
       welcomeHeading.textContent = `Bem-vindo, ${userName}!`;
       welcomeHeading.style.cssText = `
         color: #8B0000;
         margin-bottom: 20px;
         font-size: 32px;
+        font-weight: bold;
       `;
       
       const welcomeText = document.createElement('p');
@@ -113,18 +120,25 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       `;
       
       // Adicionar estilos de animação globalmente
-      const style = document.createElement('style');
-      style.textContent = `
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-      `;
-      document.head.appendChild(style);
+      if (!document.getElementById('login-animations')) {
+        const style = document.createElement('style');
+        style.id = 'login-animations';
+        style.textContent = `
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+          @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0.8; }
+            to { transform: scale(1); opacity: 1; }
+          }
+        `;
+        document.head.appendChild(style);
+      }
       
       // Montar a estrutura
       welcomeContent.appendChild(welcomeHeading);
@@ -136,21 +150,21 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       // Forçar reflow para garantir a animação
       welcomeDiv.offsetHeight;
       
-      // Redirecionar após 1 segundo
+      // Redirecionar após 2 segundos para melhor UX
       setTimeout(() => {
         window.location.href = "https://thiagozmb.github.io/elegance_app/painel_inicial.html";
-      }, 1000);
+      }, 2000);
       
     } else {
-      resDiv.textContent = data.message || 'Usuário ,senha ou CNPJ inválidos.';
+      resDiv.textContent = data.message || 'Usuário, senha ou CNPJ inválidos.';
       resDiv.className = 'result error show';
       showLoading(false);
     }
   } catch (err) {
+    console.error('Erro no login:', err);
     resDiv.textContent = 'Erro ao conectar ao servidor. Tente novamente.';
     resDiv.className = 'result error show';
     showLoading(false);
-    console.error('Erro no login:', err);
   }
 });
 
@@ -165,17 +179,61 @@ function showLoading(show) {
   if (btn) btn.disabled = show;
 }
 
-// NOVO: Função para verificar se o usuário já está logado (opcional)
-// Você pode chamar esta função quando a página de login carregar
+// Função para verificar se o usuário já está logado
 function checkExistingLogin() {
+  const isLoggedIn = localStorage.getItem('isLoggedIn');
   const userData = localStorage.getItem('user');
-  if (userData) {
-    // Usuário já está logado, pode redirecionar direto
-    console.log('Usuário já logado:', JSON.parse(userData));
-    // Descomente a linha abaixo se quiser redirecionar automaticamente
-    // window.location.href = "https://thiagozmb.github.io/elegance_app/painel_inicial.html";
+  const loginTime = localStorage.getItem('loginTime');
+  
+  if (isLoggedIn === 'true' && userData && loginTime) {
+    // Verificar se o login não expirou (exemplo: 24 horas)
+    const loginDate = new Date(loginTime);
+    const now = new Date();
+    const hoursDiff = (now - loginDate) / (1000 * 60 * 60);
+    
+    if (hoursDiff < 24) {
+      console.log('Usuário já logado:', JSON.parse(userData));
+      // Mostrar mensagem de redirecionamento
+      const resDiv = document.getElementById('result');
+      if (resDiv) {
+        resDiv.textContent = 'Você já está logado. Redirecionando...';
+        resDiv.className = 'result success show';
+      }
+      
+      setTimeout(() => {
+        window.location.href = "https://thiagozmb.github.io/elegance_app/painel_inicial.html";
+      }, 1500);
+    } else {
+      // Login expirado, limpar dados
+      clearUserData();
+    }
   }
 }
 
+// Função para limpar dados do usuário
+function clearUserData() {
+  localStorage.removeItem('user');
+  localStorage.removeItem('isLoggedIn');
+  localStorage.removeItem('loginTime');
+}
+
+// Função para logout (para usar em outras páginas)
+function logout() {
+  clearUserData();
+  window.location.href = "index.html"; // ou sua página de login
+}
+
 // Verificar login existente quando a página carregar
-document.addEventListener('DOMContentLoaded', checkExistingLogin);
+document.addEventListener('DOMContentLoaded', function() {
+  checkExistingLogin();
+  
+  // Adicionar evento de Enter nos campos de input
+  const inputs = document.querySelectorAll('#cnpj, #username, #password');
+  inputs.forEach(input => {
+    input.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+      }
+    });
+  });
+});
