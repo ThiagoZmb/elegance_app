@@ -898,14 +898,33 @@
             document.getElementById('ready-orders').textContent = readyOrders;
             document.getElementById('ready-change').textContent = 'Aguardando retirada';
             document.getElementById('ready-change').className = 'card-change';
+
+
             
-            // Faturamento
-            const revenue = pedidos.reduce((sum, p) => sum + p.valor, 0);
-            document.getElementById('revenue').textContent = formatCurrency(revenue);
-            document.getElementById('revenue-change').textContent = 'Total geral';
-            document.getElementById('revenue-change').className = 'card-change';
+            // Obter data atual (mês e ano)
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+
+            // Filtrar pedidos do mês atual e somar valores
+            const revenue = pedidos
+              .filter(p => {
+                const date = new Date(p.data); // Supondo que 'p.data' existe no formato Date/String
+                return date.getMonth() === currentMonth && 
+           date.getFullYear() === currentYear;
+  })
+  .reduce((sum, p) => sum + p.valor, 0);
+
+
+            
+// Atualizar o DOM
+document.getElementById('revenue').textContent = formatCurrency(revenue);
+document.getElementById('revenue-change').textContent = 'Total do mês';
+document.getElementById('revenue-change').className = 'card-change';
         }
 
+
+        
         // Renderizar gráficos
         function renderCharts(pedidos) {
             // Gráfico de pizza - Distribuição de status
