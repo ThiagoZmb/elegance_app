@@ -21,6 +21,23 @@ const dbConfig = {
   database: process.env.DB_NAME || 'db_elegance_v4'
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Endpoint de login
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -48,7 +65,7 @@ app.post('/login', async (req, res) => {
     console.error('Erro no login:', err);
     res.status(500).json({ success: false, error: 'Erro de servidor' });
   }
-}); // ← FECHAMENTO DO ENDPOINT LOGIN (estava faltando)
+}); // ← FECHAMENTO DO ENDPOINT LOGIN 
 
 
 
