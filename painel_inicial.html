@@ -1057,7 +1057,8 @@
         // Inicialização quando o DOM estiver carregado
         document.addEventListener('DOMContentLoaded', () => {
             carregarDadosUsuario();
-            checkAuthAndLoadPedidos();
+            //checkAuthAndLoadPedidos();
+            loadPedidos();
             setupSearch();
             
             document.getElementById('refresh-btn').addEventListener('click', checkAuthAndLoadPedidos);
