@@ -938,7 +938,7 @@ const readyOrders = pedidos.filter(p => {
   const situacao = String(p.situacao).trim().toLowerCase();
   
   // Verificar se contém "pronto" (ou variações)
-  return situacao.includes('Pronto') || 
+  return situacao.includes('pronto') || 
          situacao.includes('finalizado') ||
          situacao.includes('concluído') ||
          situacao.includes('concluido') ||    // sem acento
