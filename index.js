@@ -97,6 +97,14 @@ app.get('/dados_pedidos', async (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
 app.get('/dados_pedidos_rj', async (req, res) => {
   try {
     const { empresa } = req.query;
@@ -121,8 +129,8 @@ app.get('/dados_pedidos_rj', async (req, res) => {
         p.FINANCEIRO as financeiro,
         DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
       FROM ped_orc p
-      WHERE p.RAZAO_SOCIAL = ?
-    `, [empresa]);
+     
+    `);
     
     await conn.end();
     res.json(rows);
