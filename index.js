@@ -73,8 +73,7 @@ app.get('/dados_pedidos', async (req, res) => {
         p.FINANCEIRO as financeiro,
         DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
       FROM ped_orc p
-      WHERE p.TIPO='Pedido'
-      ORDER BY p.NUMERO DESC
+     
       
     `);
     
