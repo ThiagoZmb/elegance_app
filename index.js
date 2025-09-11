@@ -54,39 +54,6 @@ app.post('/login', async (req, res) => {
 
 
 
-
-
-
-
-
-// Endpoint para buscar pedidos
-app.get('/pedidos', async (req, res) => {
-  try {
-    const conn = await mysql.createConnection(dbConfig);
-    
-    const [rows] = await conn.execute(`
-      SELECT 
-        RAZAO_SOCIAL AS razaosocial
-      FROM ped_orc 
-      WHERE NUMERO='22570'
-    `);
-    
-    await conn.end();
-    res.json(rows);
-  } catch (err) {
-    console.error('Erro ao buscar pedidos:', err);
-    res.status(500).json({ error: 'Erro de servidor' });
-  }
-});
-
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
-
-
-
-
 // Endpoint para buscar dados dos pedidos
 app.get('/dados_pedidos', async (req, res) => {
   try {
@@ -106,7 +73,43 @@ app.get('/dados_pedidos', async (req, res) => {
         p.FINANCEIRO as financeiro,
         DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
       FROM ped_orc p
+      WHERE p.TIPO='Pedido'
+      ORDER BY p.NUMERO DESC
       
+    `);
+    
+    await conn.end();
+    res.json(rows);
+  } catch (err) {
+    console.error('Erro ao buscar pedidos:', err);
+    res.status(500).json({ error: 'Erro de servidor' });
+  }
+});
+
+
+
+
+// Endpoint para buscar dados dos pedidos
+app.get('/dados_pedidos_rj', async (req, res) => {
+  try {
+    const conn = await mysql.createConnection(dbConfig);
+    
+    // Query para buscar os pedidos
+   const [rows] = await conn.execute(`
+    SELECT 
+        p.NUMERO as numero,
+        p.RAZAO_SOCIAL as cliente,
+        p.CLIENTE_FINAL as clienteFinal,
+        DATE_FORMAT(p.DATA, '%d/%m/%Y') as data,
+        DATE_FORMAT(p.DATA_PRONTO, '%d/%m/%Y') as prontoEm,
+        p.TOTAL as valor,
+        p.OBS_GERAL as observacao,
+        p.SITUACAO as situacao,
+        p.FINANCEIRO as financeiro,
+        DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
+      FROM ped_orc p
+      INNER JOIN cadastro_clientes c ON p.RAZAO_SOCIAL = c.RAZAO_SOCIAL
+      WHERE c.ESTADO = 'RJ'
     `);
     
     await conn.end();
