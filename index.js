@@ -50,7 +50,7 @@ app.post('/login', async (req, res) => {
         cu.CNPJ,
         cc.*
       FROM cliente_usuarios cu
-      INNER JOIN cadastro_clientes cc ON cu.CNPJ = cc.CNPJ
+      INNER JOIN cadastro_clientes cc ON cu.RAZAO_SOCIAL = cc.RAZAO_SOCIAL
       WHERE cu.NOME = ? AND cu.SENHA = ? AND cc.CNPJ = ?
     `, [username, password, cnpj]);
     
