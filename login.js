@@ -1,14 +1,12 @@
-// Frontend - Script de Login Corrigido
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-
-  const cnpj = document.getElementById('cnpj').value.trim();
+  
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value.trim();
   const resDiv = document.getElementById('result');
   
   // Validação básica 
-  if (!username || !password || !cnpj) {
+  if (!username || !password) {
     resDiv.textContent = 'Por favor, preencha todos os campos.';
     resDiv.className = 'result error show';
     return;
@@ -28,26 +26,22 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
   try {
     const res = await fetch(apiUrl, {
       method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({ username, password, cnpj })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
     });
     
     // Verificar se a resposta é válida
     if (!res.ok) {
-      throw new Error(`Erro HTTP: ${res.status} - ${res.statusText}`);
+      throw new Error(`Erro HTTP: ${res.status}`);
     }
     
+
     const data = await res.json();
    
     if (data.success) {
-      // Salvar dados do usuário no localStorage
+      // NOVO: Salvar dados do usuário no localStorage
       if (data.user) {
         localStorage.setItem('user', JSON.stringify(data.user));
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('loginTime', new Date().toISOString());
         console.log('Dados do usuário salvos:', data.user);
       }
       
@@ -86,18 +80,16 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         text-align: center;
         max-width: 500px;
         box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
-        transform: scale(0.9);
-        animation: scaleIn 0.3s ease-out 0.2s forwards;
       `;
       
       const welcomeHeading = document.createElement('h2');
+      // MODIFICADO: Usar o nome do usuário na mensagem de boas-vindas
       const userName = data.user ? data.user.nome : 'Usuário';
       welcomeHeading.textContent = `Bem-vindo, ${userName}!`;
       welcomeHeading.style.cssText = `
         color: #8B0000;
         margin-bottom: 20px;
         font-size: 32px;
-        font-weight: bold;
       `;
       
       const welcomeText = document.createElement('p');
@@ -120,25 +112,18 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       `;
       
       // Adicionar estilos de animação globalmente
-      if (!document.getElementById('login-animations')) {
-        const style = document.createElement('style');
-        style.id = 'login-animations';
-        style.textContent = `
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-          @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-          }
-          @keyframes scaleIn {
-            from { transform: scale(0.9); opacity: 0.8; }
-            to { transform: scale(1); opacity: 1; }
-          }
-        `;
-        document.head.appendChild(style);
-      }
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+      `;
+      document.head.appendChild(style);
       
       // Montar a estrutura
       welcomeContent.appendChild(welcomeHeading);
@@ -150,21 +135,21 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       // Forçar reflow para garantir a animação
       welcomeDiv.offsetHeight;
       
-      // Redirecionar após 2 segundos para melhor UX
+      // Redirecionar após 1 segundo
       setTimeout(() => {
         window.location.href = "https://thiagozmb.github.io/elegance_app/painel_inicial.html";
-      }, 2000);
+      }, 1000);
       
     } else {
-      resDiv.textContent = data.message || 'Usuário, senha ou CNPJ inválidos.';
+      resDiv.textContent = data.message || 'Usuário ou senha inválidos.';
       resDiv.className = 'result error show';
       showLoading(false);
     }
   } catch (err) {
-    console.error('Erro no login:', err);
     resDiv.textContent = 'Erro ao conectar ao servidor. Tente novamente.';
     resDiv.className = 'result error show';
     showLoading(false);
+    console.error('Erro no login:', err);
   }
 });
 
@@ -179,107 +164,17 @@ function showLoading(show) {
   if (btn) btn.disabled = show;
 }
 
-// Função para verificar se o usuário já está logado
+// NOVO: Função para verificar se o usuário já está logado (opcional)
+// Você pode chamar esta função quando a página de login carregar
 function checkExistingLogin() {
-  console.log('🔍 Verificando login existente...');
-  
-  const isLoggedIn = localStorage.getItem('isLoggedIn');
   const userData = localStorage.getItem('user');
-  const loginTime = localStorage.getItem('loginTime');
-  
-  console.log('LocalStorage - isLoggedIn:', isLoggedIn);
-  console.log('LocalStorage - userData:', userData ? 'EXISTE' : 'NÃO EXISTE');
-  console.log('LocalStorage - loginTime:', loginTime);
-  
-  if (isLoggedIn === 'true' && userData && loginTime) {
-    // Verificar se o login não expirou (24 horas)
-    const loginDate = new Date(loginTime);
-    const now = new Date();
-    const hoursDiff = (now - loginDate) / (1000 * 60 * 60);
-    
-    console.log('Diferença em horas desde o login:', hoursDiff.toFixed(2));
-    
-    if (hoursDiff < 24) {
-      console.log('✅ Usuário já logado e sessão válida');
-      console.log('Dados do usuário:', JSON.parse(userData));
-      
-      // Mostrar mensagem de redirecionamento
-      const resDiv = document.getElementById('result');
-      if (resDiv) {
-        resDiv.textContent = 'Você já está logado. Redirecionando...';
-        resDiv.className = 'result success show';
-      }
-      
-      setTimeout(() => {
-        console.log('🔄 Redirecionando usuário logado...');
-        window.location.href = "https://thiagozmb.github.io/elegance_app/painel_inicial.html";
-      }, 500);
-    } else {
-      console.log('⏰ Login expirado, limpando dados...');
-      clearUserData();
-    }
-  } else {
-    console.log('❌ Usuário não está logado');
+  if (userData) {
+    // Usuário já está logado, pode redirecionar direto
+    console.log('Usuário já logado:', JSON.parse(userData));
+    // Descomente a linha abaixo se quiser redirecionar automaticamente
+    // window.location.href = "https://thiagozmb.github.io/elegance_app/painel_inicial.html";
   }
 }
 
-// Função para limpar dados do usuário  
-function clearUserData() {
-  console.log('🧹 Limpando dados do localStorage...');
-  localStorage.removeItem('user');
-  localStorage.removeItem('isLoggedIn');
-  localStorage.removeItem('loginTime');
-  console.log('✅ Dados limpos');
-}
-
-// Função para logout (para usar em outras páginas)
-function logout() {
-  console.log('👋 Fazendo logout...');
-  clearUserData();
-  window.location.href = "index.html";
-}
-
-// Função para teste manual no console
-window.testLogin = function(cnpj, username, password) {
-  console.log('🧪 TESTE MANUAL DE LOGIN');
-  console.log('CNPJ:', cnpj);
-  console.log('Username:', username);
-  console.log('Password:', password ? '***' : 'VAZIO');
-  
-  const apiUrl = 'https://app-cek0.onrender.com/login';
-  const requestData = { username, password, cnpj };
-  
-  fetch(apiUrl, {
-    method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify(requestData)
-  })
-  .then(response => {
-    console.log('Status da resposta:', response.status);
-    return response.json();
-  })
-  .then(data => {
-    console.log('Resultado do teste:', data);
-  })
-  .catch(error => {
-    console.error('Erro no teste:', error);
-  });
-};
-
 // Verificar login existente quando a página carregar
-document.addEventListener('DOMContentLoaded', function() {
-  checkExistingLogin();
-  
-  // Adicionar evento de Enter nos campos de input
-  const inputs = document.querySelectorAll('#cnpj, #username, #password');
-  inputs.forEach(input => {
-    input.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        document.getElementById('loginForm').dispatchEvent(new Event('submit'));
-      }
-    });
-  });
-});
+document.addEventListener('DOMContentLoaded', checkExistingLogin);
