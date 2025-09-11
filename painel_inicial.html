@@ -897,7 +897,7 @@
             // Pedidos prontos
             const readyOrders = pedidos.filter(p => p.situacao === 'Pronto').length;
             document.getElementById('ready-orders').textContent = readyOrders;
-            document.getElementById('ready-change').textContent = 'Aguardando retirada';
+            document.getElementById('ready-change').textContent = 'Pronto';
             document.getElementById('ready-change').className = 'card-change';
 
 
