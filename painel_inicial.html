@@ -888,11 +888,46 @@
             document.getElementById('today-change').className = todayOrders > 0 ? 
                 'card-change positive' : 'card-change';
             
-            // Pedidos em produção
-            const productionOrders = pedidos.filter(p => p.situacao.toLowerCase().includes('Em Produção')).length;
-            document.getElementById('production-orders').textContent = productionOrders;
-            document.getElementById('production-change').textContent = 'Em Produção';
-            document.getElementById('production-change').className = 'card-change';
+
+
+
+
+            // Pedidos em produção com tratamento robusto
+const productionOrders = pedidos.filter(p => {
+  // Verificar se p.situacao existe e não é nulo/undefined
+  if (!p.situacao) return false;
+  
+  // Converter para string, remover espaços e converter para minúsculas
+  const situacao = String(p.situacao).trim().toLowerCase();
+  
+  // Verificar se contém "em produção" (ou variações)
+  return situacao.includes('em produção') || 
+         situacao.includes('em producao') || // sem acento
+         situacao.includes('producao') ||    // apenas "produção"
+         situacao.includes('produção');      // apenas "produção" com acento
+}).length;
+
+// Atualizar o DOM com verificação de existência dos elementos
+const productionOrdersElement = document.getElementById('production-orders');
+const productionChangeElement = document.getElementById('production-change');
+
+if (productionOrdersElement) {
+  productionOrdersElement.textContent = productionOrders;
+}
+
+if (productionChangeElement) {
+  productionChangeElement.textContent = 'Em Produção';
+  productionChangeElement.className = 'card-change';
+}
+
+// Debug: mostrar os valores de situação para identificar o problema
+console.log('Situações encontradas:', [...new Set(pedidos.map(p => p.situacao))]);
+console.log('Pedidos em produção:', productionOrders);
+
+
+
+
+            
             
             // Pedidos prontos
             const readyOrders = pedidos.filter(p => p.situacao === 'Pronto').length;
