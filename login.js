@@ -150,10 +150,10 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       // Forçar reflow para garantir a animação
       welcomeDiv.offsetHeight;
       
-      // Redirecionar após 1 segundos para melhor UX
+      // Redirecionar após 2 segundos para melhor UX
       setTimeout(() => {
         window.location.href = "https://thiagozmb.github.io/elegance_app/painel_inicial.html";
-      }, 1000);
+      }, 2000);
       
     } else {
       resDiv.textContent = data.message || 'Usuário, senha ou CNPJ inválidos.';
@@ -181,18 +181,28 @@ function showLoading(show) {
 
 // Função para verificar se o usuário já está logado
 function checkExistingLogin() {
+  console.log('🔍 Verificando login existente...');
+  
   const isLoggedIn = localStorage.getItem('isLoggedIn');
   const userData = localStorage.getItem('user');
   const loginTime = localStorage.getItem('loginTime');
   
+  console.log('LocalStorage - isLoggedIn:', isLoggedIn);
+  console.log('LocalStorage - userData:', userData ? 'EXISTE' : 'NÃO EXISTE');
+  console.log('LocalStorage - loginTime:', loginTime);
+  
   if (isLoggedIn === 'true' && userData && loginTime) {
-    // Verificar se o login não expirou (exemplo: 24 horas)
+    // Verificar se o login não expirou (24 horas)
     const loginDate = new Date(loginTime);
     const now = new Date();
     const hoursDiff = (now - loginDate) / (1000 * 60 * 60);
     
+    console.log('Diferença em horas desde o login:', hoursDiff.toFixed(2));
+    
     if (hoursDiff < 24) {
-      console.log('Usuário já logado:', JSON.parse(userData));
+      console.log('✅ Usuário já logado e sessão válida');
+      console.log('Dados do usuário:', JSON.parse(userData));
+      
       // Mostrar mensagem de redirecionamento
       const resDiv = document.getElementById('result');
       if (resDiv) {
@@ -201,27 +211,63 @@ function checkExistingLogin() {
       }
       
       setTimeout(() => {
+        console.log('🔄 Redirecionando usuário logado...');
         window.location.href = "https://thiagozmb.github.io/elegance_app/painel_inicial.html";
       }, 500);
     } else {
-      // Login expirado, limpar dados
+      console.log('⏰ Login expirado, limpando dados...');
       clearUserData();
     }
+  } else {
+    console.log('❌ Usuário não está logado');
   }
 }
 
-// Função para limpar dados do usuário
+// Função para limpar dados do usuário  
 function clearUserData() {
+  console.log('🧹 Limpando dados do localStorage...');
   localStorage.removeItem('user');
   localStorage.removeItem('isLoggedIn');
   localStorage.removeItem('loginTime');
+  console.log('✅ Dados limpos');
 }
 
 // Função para logout (para usar em outras páginas)
 function logout() {
+  console.log('👋 Fazendo logout...');
   clearUserData();
-  window.location.href = "index.html"; // ou sua página de login
+  window.location.href = "index.html";
 }
+
+// Função para teste manual no console
+window.testLogin = function(cnpj, username, password) {
+  console.log('🧪 TESTE MANUAL DE LOGIN');
+  console.log('CNPJ:', cnpj);
+  console.log('Username:', username);
+  console.log('Password:', password ? '***' : 'VAZIO');
+  
+  const apiUrl = 'https://app-cek0.onrender.com/login';
+  const requestData = { username, password, cnpj };
+  
+  fetch(apiUrl, {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(requestData)
+  })
+  .then(response => {
+    console.log('Status da resposta:', response.status);
+    return response.json();
+  })
+  .then(data => {
+    console.log('Resultado do teste:', data);
+  })
+  .catch(error => {
+    console.error('Erro no teste:', error);
+  });
+};
 
 // Verificar login existente quando a página carregar
 document.addEventListener('DOMContentLoaded', function() {
