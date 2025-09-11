@@ -966,7 +966,7 @@ console.log('Receita total:', revenue);
             // Gráfico de pizza - Distribuição de status
             const statusCtx = document.getElementById('status-chart').getContext('2d');
             const statusCounts = {
-                'Em Producao': pedidos.filter(p => p.situacao.toLowerCase().includes('producao')).length,
+                'Em Producao': pedidos.filter(p => p.situacao.toLowerCase().includes('Em Produção')).length,
                 'Pronto': pedidos.filter(p => p.situacao === 'Pronto').length,
                 'Entregue': pedidos.filter(p => p.situacao === 'Entregue').length,
                 'Retirado': pedidos.filter(p => p.situacao === 'Retirado').length
