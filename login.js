@@ -1,12 +1,13 @@
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  
+
+  const cnpj = document.getElementById('cnpj').value.trim();
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value.trim();
   const resDiv = document.getElementById('result');
   
   // Validação básica 
-  if (!username || !password) {
+  if (!username || !password || !cnpj) {
     resDiv.textContent = 'Por favor, preencha todos os campos.';
     resDiv.className = 'result error show';
     return;
@@ -27,7 +28,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     const res = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ username, password, cnpj })
     });
     
     // Verificar se a resposta é válida
@@ -141,7 +142,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       }, 1000);
       
     } else {
-      resDiv.textContent = data.message || 'Usuário ou senha inválidos.';
+      resDiv.textContent = data.message || 'Usuário ,senha ou CNPJ inválidos.';
       resDiv.className = 'result error show';
       showLoading(false);
     }
