@@ -38,12 +38,21 @@ const dbConfig = {
 
 
 
-// Backend - Endpoint de Login Corrigido
+// BACKEND - Endpoint de Login Simplificado com Debug
 app.post('/login', async (req, res) => {
+  console.log('=== INÍCIO DO LOGIN ===');
+  console.log('Dados recebidos:', req.body);
+  
   const { username, password, cnpj } = req.body;
+  
+  // Log dos valores extraídos
+  console.log('Username:', username);
+  console.log('Password:', password);
+  console.log('CNPJ:', cnpj);
   
   // Validação dos dados recebidos
   if (!username || !password || !cnpj) {
+    console.log('Erro: Campos obrigatórios não preenchidos');
     return res.status(400).json({ 
       success: false, 
       message: 'Todos os campos são obrigatórios' 
@@ -52,10 +61,12 @@ app.post('/login', async (req, res) => {
   
   let conn;
   try {
+    console.log('Conectando ao banco de dados...');
     conn = await mysql.createConnection(dbConfig);
+    console.log('Conexão estabelecida com sucesso');
     
-    // Query corrigida com INNER JOIN
-    const [rows] = await conn.execute(`
+    // Query simplificada
+    const query = `
       SELECT 
         cu.NOME,
         cu.RAZAO_SOCIAL,
@@ -63,21 +74,22 @@ app.post('/login', async (req, res) => {
       FROM cliente_usuarios cu
       INNER JOIN cadastro_clientes cc ON cu.RAZAO_SOCIAL = cc.RAZAO_SOCIAL
       WHERE cu.NOME = ? AND cu.SENHA = ? AND cc.CNPJ = ?
-    `, [username, password, cnpj]);
+    `;
+    
+    console.log('Executando query:', query);
+    console.log('Parâmetros:', [username, password, cnpj]);
+    
+    const [rows] = await conn.execute(query, [username, password, cnpj]);
+    
+    console.log('Resultado da query:', rows);
+    console.log('Número de registros encontrados:', rows.length);
     
     if (rows.length > 0) {
       const user = rows[0];
-      
-      // Verificar se o cliente está ativo
-      if (user.STATUS && user.STATUS.toLowerCase() !== 'ativo') {
-        return res.json({ 
-          success: false, 
-          message: 'Conta inativa. Entre em contato com o suporte.' 
-        });
-      }
+      console.log('Usuário encontrado:', user);
       
       // Login bem-sucedido
-      res.json({ 
+      const response = { 
         success: true, 
         message: 'Login realizado com sucesso',
         user: {
@@ -85,36 +97,63 @@ app.post('/login', async (req, res) => {
           empresa: user.RAZAO_SOCIAL,
           cnpj: user.CNPJ
         }
-      });
+      };
       
-      // Log do login bem-sucedido
-      console.log(`Login bem-sucedido: ${user.NOME} - CNPJ: ${user.CNPJ} - ${new Date().toISOString()}`);
+      console.log('Resposta de sucesso:', response);
+      res.json(response);
       
     } else {
-      // Credenciais inválidas
+      console.log('Nenhum usuário encontrado com essas credenciais');
+      
+      // Vamos fazer queries separadas para debug
+      console.log('=== DEBUG: Verificando dados separadamente ===');
+      
+      // Verificar se o usuário existe
+      const [userCheck] = await conn.execute(
+        'SELECT NOME, RAZAO_SOCIAL FROM cliente_usuarios WHERE NOME = ?', 
+        [username]
+      );
+      console.log('Usuários com esse nome:', userCheck);
+      
+      // Verificar se a senha está correta
+      const [passCheck] = await conn.execute(
+        'SELECT NOME FROM cliente_usuarios WHERE NOME = ? AND SENHA = ?', 
+        [username, password]
+      );
+      console.log('Usuários com nome e senha corretos:', passCheck);
+      
+      // Verificar se o CNPJ existe
+      const [cnpjCheck] = await conn.execute(
+        'SELECT CNPJ, RAZAO_SOCIAL FROM cadastro_clientes WHERE CNPJ = ?', 
+        [cnpj]
+      );
+      console.log('Clientes com esse CNPJ:', cnpjCheck);
+      
       res.json({ 
         success: false, 
         message: 'Usuário, senha ou CNPJ inválidos' 
       });
-      
-      // Log da tentativa de login falhada
-      console.log(`Tentativa de login falhada: ${username} - CNPJ: ${cnpj} - ${new Date().toISOString()}`);
     }
     
   } catch (err) {
-    console.error('Erro no login:', err);
+    console.error('=== ERRO NO LOGIN ===');
+    console.error('Erro completo:', err);
+    console.error('Stack trace:', err.stack);
+    
     res.status(500).json({ 
       success: false, 
-      message: 'Erro interno do servidor. Tente novamente mais tarde.',
-      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+      message: 'Erro interno do servidor',
+      error: err.message
     });
   } finally {
     if (conn) {
+      console.log('Fechando conexão com o banco');
       await conn.end();
     }
   }
+  
+  console.log('=== FIM DO LOGIN ===');
 });
-
 
 
 
