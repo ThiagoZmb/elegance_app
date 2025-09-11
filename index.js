@@ -38,15 +38,22 @@ const dbConfig = {
 
 
 
-// Endpoint de login
+// Endpoint de login com INNER JOIN
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
     const conn = await mysql.createConnection(dbConfig);
-    const [rows] = await conn.execute(
-      'SELECT * FROM cliente_usuarios WHERE NOME = ? AND SENHA = ?',
-      [username, password]
-    );
+    const [rows] = await conn.execute(`
+      SELECT 
+        cu.NOME,
+        cu.RAZAO_SOCIAL,
+        cu.CNPJ,
+        cc.*
+      FROM cliente_usuarios cu
+      INNER JOIN cadastro_clientes cc ON cu.CNPJ = cc.CNPJ
+      WHERE cu.NOME = ? AND cu.SENHA = ? AND cc.CNPJ = ?
+    `, [username, password, cnpj]);
+    
     await conn.end();
     
     if (rows.length > 0) {
@@ -55,7 +62,13 @@ app.post('/login', async (req, res) => {
         success: true, 
         user: {
           nome: user.NOME,
-          empresa: user.RAZAO_SOCIAL
+          empresa: user.RAZAO_SOCIAL,
+          cnpj: user.CNPJ,
+          // Adicione aqui outros campos da tabela cadastro_clientes conforme necessário
+          // Por exemplo:
+          // endereco: user.ENDERECO,
+          // telefone: user.TELEFONE,
+          // email: user.EMAIL
         }
       });
     } else {
@@ -65,7 +78,7 @@ app.post('/login', async (req, res) => {
     console.error('Erro no login:', err);
     res.status(500).json({ success: false, error: 'Erro de servidor' });
   }
-}); // ← FECHAMENTO DO ENDPOINT LOGIN 
+}); // ← FECHAMENTO DO ENDPOINT LOGIN
 
 
 
