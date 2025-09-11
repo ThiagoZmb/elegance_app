@@ -888,7 +888,7 @@
                 'card-change positive' : 'card-change';
             
             // Pedidos em produção
-            const productionOrders = pedidos.filter(p => p.situacao.toLowerCase().includes('Em produção')).length;
+            const productionOrders = pedidos.filter(p => p.situacao.toLowerCase().includes('Em Produção')).length;
             document.getElementById('production-orders').textContent = productionOrders;
             document.getElementById('production-change').textContent = 'Em andamento';
             document.getElementById('production-change').className = 'card-change';
