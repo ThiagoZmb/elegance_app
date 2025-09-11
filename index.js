@@ -21,13 +21,7 @@ const dbConfig = {
   database: process.env.DB_NAME || 'db_elegance_v4'
 };
 
-
-
-
-
-
-
-// Endpoint de login (modificado para retornar a empresa)
+// Endpoint de login
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -37,14 +31,14 @@ app.post('/login', async (req, res) => {
       [username, password]
     );
     await conn.end();
-
+    
     if (rows.length > 0) {
       const user = rows[0];
       res.json({ 
         success: true, 
         user: {
           nome: user.NOME,
-          empresa: user.RAZAO_SOCIAL 
+          empresa: user.RAZAO_SOCIAL
         }
       });
     } else {
@@ -54,6 +48,40 @@ app.post('/login', async (req, res) => {
     console.error('Erro no login:', err);
     res.status(500).json({ success: false, error: 'Erro de servidor' });
   }
+}); // ← FECHAMENTO DO ENDPOINT LOGIN (estava faltando)
+
+
+
+
+
+
+
+
+
+
+// Endpoint para buscar pedidos
+app.get('/pedidos', async (req, res) => {
+  try {
+    const conn = await mysql.createConnection(dbConfig);
+    
+    const [rows] = await conn.execute(`
+      SELECT 
+        RAZAO_SOCIAL AS razaosocial
+      FROM ped_orc 
+      WHERE NUMERO='22570'
+    `);
+    
+    await conn.end();
+    res.json(rows);
+  } catch (err) {
+    console.error('Erro ao buscar pedidos:', err);
+    res.status(500).json({ error: 'Erro de servidor' });
+  }
+});
+
+// Iniciar servidor
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
 
 
@@ -85,88 +113,6 @@ app.get('/dados_pedidos', async (req, res) => {
     res.json(rows);
   } catch (err) {
     console.error('Erro ao buscar pedidos:', err);
-    res.status(500).json({ error: 'Erro de servidor' });
-  }
-});
-
-
-
-
-
-
-
-
-
-
-app.get('/dados_pedidos_rj', async (req, res) => {
-  try {
-    const { empresa } = req.query;
-    
-    if (!empresa) {
-      return res.status(400).json({ error: 'Empresa é obrigatória' });
-    }
-    
-    const conn = await mysql.createConnection(dbConfig);
-    
-    // Query para buscar os pedidos filtrados por empresa
-    const [rows] = await conn.execute(`
-      SELECT 
-        p.NUMERO as numero,
-        p.RAZAO_SOCIAL as cliente,
-        p.CLIENTE_FINAL as clienteFinal,
-        DATE_FORMAT(p.DATA, '%d/%m/%Y') as data,
-        DATE_FORMAT(p.DATA_PRONTO, '%d/%m/%Y') as prontoEm,
-        p.TOTAL as valor,
-        p.OBS_GERAL as observacao,
-        p.SITUACAO as situacao,
-        p.FINANCEIRO as financeiro,
-        DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
-      FROM ped_orc p
-     
-    `);
-    
-    await conn.end();
-    res.json(rows);
-  } catch (err) {
-    console.error('Erro ao buscar pedidos:', err);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Endpoint para buscar pedidos
-app.get('/pedidos', async (req, res) => {
-  try {
-    const conn = await mysql.createConnection(dbConfig);
-    
-    const [rows] = await conn.execute(`
-      SELECT 
-        RAZAO_SOCIAL AS razaosocial
-      FROM ped_orc 
-      WHERE NUMERO='22570'
-    `);
-    
-    await conn.end();
-    res.json(rows);
-  } catch (err) {
-    console.error('Erro ao buscar pedidos:', err);
-    res.status(500).json({ error: 'Erro de servidor' });
-  }
-});
-
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
     res.status(500).json({ error: 'Erro de servidor' });
   }
 });
