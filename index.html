@@ -387,19 +387,61 @@
       // Remove tudo que não é número
       value = value.replace(/\D/g, '');
       
-      // Aplica a formatação
-      value = value.replace(/^(\d{2})(\d)/, '$1.$2');
-      value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
-      value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
-      value = value.replace(/(\d{4})(\d)/, '$1-$2');
+      // Limita a 14 caracteres
+      value = value.substring(0, 14);
       
-      return value;
+      // Aplica a formatação
+      if (value.length <= 2) {
+        return value;
+      } else if (value.length <= 5) {
+        return value.replace(/^(\d{2})(\d)/, '$1.$2');
+      } else if (value.length <= 8) {
+        return value.replace(/^(\d{2})(\d{3})(\d)/, '$1.$2.$3');
+      } else if (value.length <= 12) {
+        return value.replace(/^(\d{2})(\d{3})(\d{3})(\d)/, '$1.$2.$3/$4');
+      } else {
+        return value.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d)/, '$1.$2.$3/$4-$5');
+      }
     }
 
-    // Função para validar CNPJ básica (apenas formato)
-    function isValidCNPJFormat(cnpj) {
-      const regex = /^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$/;
-      return regex.test(cnpj);
+    // Função para validar CNPJ (incluindo dígitos verificadores)
+    function isValidCNPJ(cnpj) {
+      cnpj = cnpj.replace(/[^\d]+/g, '');
+      
+      if (cnpj.length !== 14) return false;
+      
+      // Elimina CNPJs inválidos conhecidos
+      if (/^(\d)\1{13}$/.test(cnpj)) return false;
+      
+      // Valida DVs
+      let tamanho = cnpj.length - 2;
+      let numeros = cnpj.substring(0, tamanho);
+      let digitos = cnpj.substring(tamanho);
+      let soma = 0;
+      let pos = tamanho - 7;
+      
+      for (let i = tamanho; i >= 1; i--) {
+        soma += numeros.charAt(tamanho - i) * pos--;
+        if (pos < 2) pos = 9;
+      }
+      
+      let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+      if (resultado !== parseInt(digitos.charAt(0))) return false;
+      
+      tamanho = tamanho + 1;
+      numeros = cnpj.substring(0, tamanho);
+      soma = 0;
+      pos = tamanho - 7;
+      
+      for (let i = tamanho; i >= 1; i--) {
+        soma += numeros.charAt(tamanho - i) * pos--;
+        if (pos < 2) pos = 9;
+      }
+      
+      resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+      if (resultado !== parseInt(digitos.charAt(1))) return false;
+      
+      return true;
     }
 
     // Aplicar formatação automática no campo CNPJ
@@ -437,38 +479,6 @@
       }, 3000);
     }
 
-    // Interceptar o submit para adicionar loading
-    document.addEventListener('DOMContentLoaded', function() {
-      const form = document.getElementById('loginForm');
-      
-      form.addEventListener('submit', function(e) {
-        showLoading(true);
-        
-        // Observar mudanças no div result para parar o loading
-        const resultDiv = document.getElementById('result');
-        const observer = new MutationObserver(function(mutations) {
-          mutations.forEach(function(mutation) {
-            if (mutation.type === 'childList' || mutation.type === 'characterData') {
-              showLoading(false);
-              observer.disconnect();
-            }
-          });
-        });
-        
-        observer.observe(resultDiv, {
-          childList: true,
-          subtree: true,
-          characterData: true
-        });
-        
-        // Fallback para parar loading após 10 segundos
-        setTimeout(() => {
-          showLoading(false);
-          observer.disconnect();
-        }, 10000);
-      });
-    });
-
     // Efeito de focus nos inputs
     document.querySelectorAll('input').forEach(input => {
       input.addEventListener('focus', function() {
@@ -496,15 +506,13 @@
       
       // Validação básica 
       if (!cnpjFormatado || !username || !password) {
-        resDiv.textContent = 'Por favor, preencha todos os campos.';
-        resDiv.className = 'result error show';
+        showMessage('Por favor, preencha todos os campos.', 'error');
         return;
       }
 
-      // Validar formato do CNPJ
-      if (!isValidCNPJFormat(cnpjFormatado)) {
-        resDiv.textContent = 'Por favor, insira um CNPJ válido no formato 00.000.000/0000-00.';
-        resDiv.className = 'result error show';
+      // Validar CNPJ
+      if (!isValidCNPJ(cnpjFormatado)) {
+        showMessage('Por favor, insira um CNPJ válido.', 'error');
         return;
       }
       
@@ -517,8 +525,7 @@
       
       // Mostrar feedback visual
       showLoading(true);
-      resDiv.textContent = 'Verificando credenciais...';
-      resDiv.className = 'result show';
+      showMessage('Verificando credenciais...', '');
       
       const apiUrl = 'https://app-cek0.onrender.com/login';
       
@@ -541,8 +548,7 @@
           // Salvar dados do usuário
           const userData = data.user || { cnpj: cnpjLimpo, username };
           
-          resDiv.textContent = 'Login bem-sucedido!';
-          resDiv.className = 'result success show';
+          showMessage('Login bem-sucedido!', 'success');
           
           // Remover qualquer mensagem de boas-vindas existente
           const existingWelcome = document.getElementById('welcome-message');
@@ -622,13 +628,11 @@
           }, 1000);
           
         } else {
-          resDiv.textContent = data.message || 'CNPJ, usuário ou senha inválidos.';
-          resDiv.className = 'result error show';
+          showMessage(data.message || 'CNPJ, usuário ou senha inválidos.', 'error');
           showLoading(false);
         }
       } catch (err) {
-        resDiv.textContent = 'Erro ao conectar ao servidor. Tente novamente.';
-        resDiv.className = 'result error show';
+        showMessage('Erro ao conectar ao servidor. Tente novamente.', 'error');
         showLoading(false);
         console.error('Erro no login:', err);
       }
