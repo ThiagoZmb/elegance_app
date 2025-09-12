@@ -116,7 +116,7 @@ app.post('/login', async (req, res) => {
 
 
       // Remove caracteres não numéricos do CNPJ
-        //const cnpjNumerico = user.CNPJ_CPF.replace(/\D/g, '');
+        const cnpjNumerico = user.CNPJ_CPF.replace(/\D/g, '');
 
       
       // Login bem-sucedido
@@ -126,7 +126,7 @@ app.post('/login', async (req, res) => {
         user: {
           nome: user.NOME,
           empresa: user.RAZAO_SOCIAL,
-          cnpj: user.CNPJ_CPF.replace(/\D/g, '');
+          cnpj: cnpjNumerico;
         }
       });
 
@@ -135,7 +135,7 @@ app.post('/login', async (req, res) => {
 
       
       // Log do login bem-sucedido
-      console.log(`Login bem-sucedido: ${user.NOME} - CNPJ: ${user.CNPJ_CPF} - ${new Date().toISOString()}`);
+      console.log(`Login bem-sucedido: ${user.NOME} - CNPJ: ${cnpjNumerico} - ${new Date().toISOString()}`);
       
     } else {
       // Credenciais inválidas
@@ -146,7 +146,7 @@ app.post('/login', async (req, res) => {
       });
       
       // Log da tentativa de login falhada
-      console.log(`Tentativa de login falhada: ${username} - CNPJ: ${cnpj} - ${new Date().toISOString()}`);
+      console.log(`Tentativa de login falhada: ${username} - CNPJ: ${cnpjNumerico} - ${new Date().toISOString()}`);
     }
     
   } catch (err) {
