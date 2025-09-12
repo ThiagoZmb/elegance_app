@@ -584,6 +584,10 @@
             password: password 
           })
         });
+
+
+        console.log('Parâmetros recebidos:', { username, password, cnpj: cnpjNumeros });
+
         
         // Verificar se a resposta é válida
         if (!res.ok) {
@@ -686,7 +690,7 @@
         } else {
           showMessage(data.message || 'CNPJ, usuário ou senha inválidos.', 'error');
           showLoading(false);
-         console.log(cnpjLimpo);
+         
         }
       } catch (err) {
         showMessage('Erro ao conectar ao servidor: ' + err.message, 'error');
