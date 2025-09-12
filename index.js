@@ -94,8 +94,7 @@ app.post('/login', async (req, res) => {
       SELECT 
         cu.NOME,
         cu.RAZAO_SOCIAL,
-        cc.CNPJ_CPF,
-        cc.STATUS
+        cc.CNPJ_CPF
       FROM cliente_usuarios cu
       INNER JOIN cadastro_clientes cc ON cu.RAZAO_SOCIAL = cc.RAZAO_SOCIAL
       WHERE cu.NOME = ? AND cu.SENHA = ? AND REPLACE(REPLACE(REPLACE(cc.CNPJ_CPF, '.', ''), '/', ''), '-', '') = ?
@@ -104,13 +103,7 @@ app.post('/login', async (req, res) => {
     if (rows.length > 0) {
       const user = rows[0];
       
-      // Verificar se o cliente está ativo (considerando case-insensitive)
-      if (!user.STATUS || user.STATUS.toLowerCase() !== 'ativo') {
-        return res.json({ 
-          success: false, 
-          message: 'Conta inativa. Entre em contato com o suporte.' 
-        });
-      }
+      
       
       // Login bem-sucedido
       res.json({ 
