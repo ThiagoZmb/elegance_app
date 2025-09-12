@@ -88,96 +88,58 @@ app.post('/login', async (req, res) => {
   try {
     conn = await mysql.createConnection(dbConfig);
     
-    // Query corrigida com INNER JOIN
-    const [rows] = await conn.execute(`
-      SELECT 
-        cu.NOME,
-        cu.RAZAO_SOCIAL,
-        cc.CNPJ_CPF
-      FROM cliente_usuarios cu
-      INNER JOIN cadastro_clientes cc ON cu.RAZAO_SOCIAL = cc.RAZAO_SOCIAL
-      WHERE cu.NOME = ? AND cu.SENHA = ? AND cc.CNPJ_CPF = ?
-    `, [username, password, cnpj]);
-    
-    if (rows.length > 0) {
-      const user = rows[0];
+    // Query corrigida com INNER JOIN e validação de CNPJ
+const [rows] = await conn.execute(`
+  SELECT 
+    cu.NOME,
+    cu.RAZAO_SOCIAL,
+    cc.CNPJ_CPF,
+    cc.STATUS
+  FROM cliente_usuarios cu
+  INNER JOIN cadastro_clientes cc ON cu.RAZAO_SOCIAL = cc.RAZAO_SOCIAL
+  WHERE cu.NOME = ? AND cu.SENHA = ? AND REPLACE(REPLACE(REPLACE(cc.CNPJ_CPF, '.', ''), '/', ''), '-', '') = ?
+`, [username, password, cnpj.replace(/\D/g, '')]);
 
-
-      
-
-      
-      // Verificar se o cliente está ativo
-      if (user.STATUS && user.STATUS.toLowerCase() !== 'ativo') {
-        return res.json({ 
-          success: false, 
-          message: 'Conta inativa. Entre em contato com o suporte.' 
-        });
-      }
-
-
-      // Remove caracteres não numéricos do CNPJ
-        const cnpjNumerico = user.CNPJ_CPF.replace(/\D/g, '');
-
-      
-      // Login bem-sucedido
-      res.json({ 
-        success: true, 
-        message: 'Login realizado com sucesso',
-        user: {
-          nome: user.NOME,
-          empresa: user.RAZAO_SOCIAL,
-          cnpj: cnpjNumerico;
-        }
-      });
-
-
-      
-
-      
-      // Log do login bem-sucedido
-      console.log(`Login bem-sucedido: ${user.NOME} - CNPJ: ${cnpjNumerico} - ${new Date().toISOString()}`);
-      
-    } else {
-      // Credenciais inválidas
-      res.json({ 
-        success: false, 
-        message: 'Usuário, senha ou CNPJ inválidos' 
-        //console.log(user.CNPJ_CPF);
-      });
-      
-      // Log da tentativa de login falhada
-      console.log(`Tentativa de login falhada: ${username} - CNPJ: ${cnpjNumerico} - ${new Date().toISOString()}`);
-    }
-    
-  } catch (err) {
-    console.error('Erro no login:', err);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Erro interno do servidor. Tente novamente mais tarde.',
-      error: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
-  } finally {
-    if (conn) {
-      await conn.end();
-    }
-  }
-});
-
-// Middleware para verificar autenticação (para usar nas outras rotas)
-function verifyToken(req, res, next) {
-  const authHeader = req.headers.authorization;
+if (rows.length > 0) {
+  const user = rows[0];
   
-  if (!authHeader) {
-    return res.status(401).json({ 
+  // Verificar se o cliente está ativo
+  if (user.STATUS && user.STATUS.toLowerCase() !== 'ativo') {
+    return res.json({ 
       success: false, 
-      message: 'Token de acesso não fornecido' 
+      message: 'Conta inativa. Entre em contato com o suporte.' 
     });
   }
   
-  // Aqui você implementaria a verificação do token JWT se estiver usando
-  // Por enquanto, apenas passamos adiante
-  next();
+  // Login bem-sucedido - retornar CNPJ apenas com números
+  res.json({ 
+    success: true, 
+    message: 'Login realizado com sucesso',
+    user: {
+      nome: user.NOME,
+      empresa: user.RAZAO_SOCIAL,
+      cnpj: user.CNPJ_CPF.replace(/\D/g, '') // Retornar apenas números
+    }
+  });
+  
+  // Log do login bem-sucedido
+  console.log(`Login bem-sucedido: ${user.NOME} - CNPJ: ${user.CNPJ_CPF.replace(/\D/g, '')} - ${new Date().toISOString()}`);
+  
+} else {
+  // Credenciais inválidas
+  res.json({ 
+    success: false, 
+    message: 'Usuário, senha ou CNPJ inválidos' 
+  });
+  
+  // Log da tentativa de login falhada
+  console.log(`Tentativa de login falhada: ${username} - CNPJ: ${cnpj.replace(/\D/g, '')} - ${new Date().toISOString()}`);
 }
+
+
+
+
+
 
 
 
@@ -208,9 +170,6 @@ app.get('/pedidos', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
-
-
-
 
 // Endpoint para buscar dados dos pedidos
 app.get('/dados_pedidos', async (req, res) => {
@@ -243,6 +202,15 @@ app.get('/dados_pedidos', async (req, res) => {
 });
 
 
+
+
+
+
+
+
+
+
+    
 
 // Endpoint para buscar dados dos pedidos do RJ
 app.get('/dados_pedidos_rj', async (req, res) => {
