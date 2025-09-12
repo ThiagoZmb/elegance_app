@@ -686,6 +686,7 @@
         } else {
           showMessage(data.message || 'CNPJ, usuário ou senha inválidos.', 'error');
           showLoading(false);
+         console.log(cnpjLimpo);
         }
       } catch (err) {
         showMessage('Erro ao conectar ao servidor: ' + err.message, 'error');
