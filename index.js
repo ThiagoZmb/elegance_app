@@ -72,11 +72,9 @@ app.post('/login1', async (req, res) => {
 
 
 
-// Backend - Endpoint de Login Corrigido
 app.post('/login', async (req, res) => {
   const { username, password, cnpj } = req.body;
   
-  // Validação dos dados recebidos
   if (!username || !password || !cnpj) {
     return res.status(400).json({ 
       success: false, 
@@ -84,58 +82,69 @@ app.post('/login', async (req, res) => {
     });
   }
   
+  // Formatar o CNPJ para apenas números
+  const cnpjNumeros = cnpj.replace(/\D/g, '');
+  
   let conn;
   try {
     conn = await mysql.createConnection(dbConfig);
     
-    // Query corrigida com INNER JOIN e validação de CNPJ
-const [rows] = await conn.execute(`
-  SELECT 
-    cu.NOME,
-    cu.RAZAO_SOCIAL,
-    cc.CNPJ_CPF,
-    cc.STATUS
-  FROM cliente_usuarios cu
-  INNER JOIN cadastro_clientes cc ON cu.RAZAO_SOCIAL = cc.RAZAO_SOCIAL
-  WHERE cu.NOME = ? AND cu.SENHA = ? AND REPLACE(REPLACE(REPLACE(cc.CNPJ_CPF, '.', ''), '/', ''), '-', '') = ?
-`, [username, password, cnpj.replace(/\D/g, '')]);
+    // Query com INNER JOIN e remoção de caracteres não numéricos do CNPJ no banco
+    const [rows] = await conn.execute(`
+      SELECT 
+        cu.NOME,
+        cu.RAZAO_SOCIAL,
+        cc.CNPJ_CPF,
+        cc.STATUS
+      FROM cliente_usuarios cu
+      INNER JOIN cadastro_clientes cc ON cu.RAZAO_SOCIAL = cc.RAZAO_SOCIAL
+      WHERE cu.NOME = ? AND cu.SENHA = ? AND REPLACE(REPLACE(REPLACE(cc.CNPJ_CPF, '.', ''), '/', ''), '-', '') = ?
+    `, [username, password, cnpjNumeros]);
 
-if (rows.length > 0) {
-  const user = rows[0];
-  
-  // Verificar se o cliente está ativo
-  if (user.STATUS && user.STATUS.toLowerCase() !== 'ativo') {
-    return res.json({ 
-      success: false, 
-      message: 'Conta inativa. Entre em contato com o suporte.' 
-    });
-  }
-  
-  // Login bem-sucedido - retornar CNPJ apenas com números
-  res.json({ 
-    success: true, 
-    message: 'Login realizado com sucesso',
-    user: {
-      nome: user.NOME,
-      empresa: user.RAZAO_SOCIAL,
-      cnpj: user.CNPJ_CPF.replace(/\D/g, '') // Retornar apenas números
+    if (rows.length > 0) {
+      const user = rows[0];
+      
+      // Verificar se o cliente está ativo (considerando case-insensitive)
+      if (!user.STATUS || user.STATUS.toLowerCase() !== 'ativo') {
+        return res.json({ 
+          success: false, 
+          message: 'Conta inativa. Entre em contato com o suporte.' 
+        });
+      }
+      
+      // Login bem-sucedido
+      res.json({ 
+        success: true, 
+        message: 'Login realizado com sucesso',
+        user: {
+          nome: user.NOME,
+          empresa: user.RAZAO_SOCIAL,
+          cnpj: user.CNPJ_CPF.replace(/\D/g, '') // Retornar apenas números
+        }
+      });
+      
+      console.log(`Login bem-sucedido: ${user.NOME} - CNPJ: ${user.CNPJ_CPF.replace(/\D/g, '')} - ${new Date().toISOString()}`);
+      
+    } else {
+      res.json({ 
+        success: false, 
+        message: 'Usuário, senha ou CNPJ inválidos' 
+      });
+      
+      console.log(`Tentativa de login falhada: ${username} - CNPJ: ${cnpjNumeros} - ${new Date().toISOString()}`);
     }
-  });
-  
-  // Log do login bem-sucedido
-  console.log(`Login bem-sucedido: ${user.NOME} - CNPJ: ${user.CNPJ_CPF.replace(/\D/g, '')} - ${new Date().toISOString()}`);
-  
-} else {
-  // Credenciais inválidas
-  res.json({ 
-    success: false, 
-    message: 'Usuário, senha ou CNPJ inválidos' 
-  });
-  
-  // Log da tentativa de login falhada
-  console.log(`Tentativa de login falhada: ${username} - CNPJ: ${cnpj.replace(/\D/g, '')} - ${new Date().toISOString()}`);
-}
-
+  } catch (error) {
+    console.error('Erro no login:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Erro interno do servidor' 
+    });
+  } finally {
+    if (conn) {
+      conn.end().catch(err => console.error('Erro ao fechar conexão:', err));
+    }
+  }
+});
 
 
 
