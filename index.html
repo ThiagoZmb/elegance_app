@@ -517,7 +517,7 @@
       }
       
       // Limpar CNPJ - remover todos os caracteres não numéricos
-      const cnpjLimpo = cnpjFormatado.replace(/\D/g, '');
+      const cnpjNumeros = cnpjFormatado.replace(/\D/g, '');
       
       // Resetar mensagens de erro
       resDiv.textContent = '';
@@ -534,7 +534,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           // Enviar o CNPJ limpo (apenas números)
-          body: JSON.stringify({ cnpj: cnpjLimpo, username, password })
+          body: JSON.stringify({ cnpj: cnpjNumeros, username, password })
         });
         
         // Verificar se a resposta é válida
@@ -546,7 +546,7 @@
        
         if (data.success) {
           // Salvar dados do usuário
-          const userData = data.user || { cnpj: cnpjLimpo, username };
+          const userData = data.user || { cnpj: cnpjNumeros, username };
           
           showMessage('Login bem-sucedido!', 'success');
           
