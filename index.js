@@ -101,6 +101,10 @@ app.post('/login', async (req, res) => {
     
     if (rows.length > 0) {
       const user = rows[0];
+
+
+      
+
       
       // Verificar se o cliente está ativo
       if (user.STATUS && user.STATUS.toLowerCase() !== 'ativo') {
@@ -109,6 +113,11 @@ app.post('/login', async (req, res) => {
           message: 'Conta inativa. Entre em contato com o suporte.' 
         });
       }
+
+
+      // Remove caracteres não numéricos do CNPJ
+        //const cnpjNumerico = user.CNPJ_CPF.replace(/\D/g, '');
+
       
       // Login bem-sucedido
       res.json({ 
@@ -117,9 +126,13 @@ app.post('/login', async (req, res) => {
         user: {
           nome: user.NOME,
           empresa: user.RAZAO_SOCIAL,
-          cnpj: user.CNPJ_CPF
+          cnpj: user.CNPJ_CPF.replace(/\D/g, '');
         }
       });
+
+
+      
+
       
       // Log do login bem-sucedido
       console.log(`Login bem-sucedido: ${user.NOME} - CNPJ: ${user.CNPJ_CPF} - ${new Date().toISOString()}`);
