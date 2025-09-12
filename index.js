@@ -117,12 +117,12 @@ app.post('/login', async (req, res) => {
         user: {
           nome: user.NOME,
           empresa: user.RAZAO_SOCIAL,
-          cnpj: user.CNPJ
+          cnpj: user.CNPJ_CPF
         }
       });
       
       // Log do login bem-sucedido
-      console.log(`Login bem-sucedido: ${user.NOME} - CNPJ: ${user.CNPJ} - ${new Date().toISOString()}`);
+      console.log(`Login bem-sucedido: ${user.NOME} - CNPJ: ${user.CNPJ_CPF} - ${new Date().toISOString()}`);
       
     } else {
       // Credenciais inválidas
