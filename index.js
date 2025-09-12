@@ -129,6 +129,7 @@ app.post('/login', async (req, res) => {
       res.json({ 
         success: false, 
         message: 'Usuário, senha ou CNPJ inválidos' 
+        console.log(user.CNPJ_CPF);
       });
       
       // Log da tentativa de login falhada
