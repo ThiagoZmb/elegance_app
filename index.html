@@ -489,24 +489,27 @@
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       
-      const cnpj = document.getElementById('cnpj').value.trim();
+      const cnpjFormatado = document.getElementById('cnpj').value.trim();
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value.trim();
       const resDiv = document.getElementById('result');
       
       // Validação básica 
-      if (!cnpj || !username || !password) {
+      if (!cnpjFormatado || !username || !password) {
         resDiv.textContent = 'Por favor, preencha todos os campos.';
         resDiv.className = 'result error show';
         return;
       }
 
       // Validar formato do CNPJ
-      if (!isValidCNPJFormat(cnpj)) {
+      if (!isValidCNPJFormat(cnpjFormatado)) {
         resDiv.textContent = 'Por favor, insira um CNPJ válido no formato 00.000.000/0000-00.';
         resDiv.className = 'result error show';
         return;
       }
+      
+      // Limpar CNPJ - remover todos os caracteres não numéricos
+      const cnpjLimpo = cnpjFormatado.replace(/\D/g, '');
       
       // Resetar mensagens de erro
       resDiv.textContent = '';
@@ -523,7 +526,8 @@
         const res = await fetch(apiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ cnpj, username, password })
+          // Enviar o CNPJ limpo (apenas números)
+          body: JSON.stringify({ cnpj: cnpjLimpo, username, password })
         });
         
         // Verificar se a resposta é válida
@@ -534,8 +538,8 @@
         const data = await res.json();
        
         if (data.success) {
-          // Salvar dados do usuário no localStorage (sem usar localStorage devido às restrições)
-          const userData = data.user || { cnpj, username };
+          // Salvar dados do usuário
+          const userData = data.user || { cnpj: cnpjLimpo, username };
           
           resDiv.textContent = 'Login bem-sucedido!';
           resDiv.className = 'result success show';
@@ -630,7 +634,7 @@
       }
     });
 
-    // Função para verificar se o usuário já está logado (usando variável global em vez de localStorage)
+    // Função para verificar se o usuário já está logado
     let currentUser = null;
     
     function checkExistingLogin() {
