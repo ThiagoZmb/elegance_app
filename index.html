@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login Elegance</title>
+  <title>Login Elegance - Debug</title>
   <style>
     * {
       margin: 0;
@@ -46,7 +46,7 @@
       border-radius: 24px;
       padding: 48px;
       width: 100%;
-      max-width: 420px;
+      max-width: 500px;
       box-shadow: 0 32px 64px rgba(0, 0, 0, 0.15);
       border: 1px solid rgba(255, 255, 255, 0.2);
       position: relative;
@@ -295,6 +295,50 @@
       border: 1px solid #f5c6cb;
     }
 
+    .result.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    .debug-info {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #6c757d;
+      font-size: 13px;
+      color: #495057;
+    }
+
+    .debug-info h4 {
+      margin-bottom: 10px;
+      color: #495057;
+      font-size: 14px;
+    }
+
+    .debug-info pre {
+      background: #e9ecef;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+
+    .toggle-debug {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .toggle-debug button {
+      background: none;
+      border: none;
+      color: #667eea;
+      cursor: pointer;
+      font-size: 13px;
+      text-decoration: underline;
+    }
+
     @media (max-width: 480px) {
       .login-container {
         padding: 32px 24px;
@@ -379,6 +423,22 @@
     </div>
     
     <div id="result" class="result"></div>
+    
+    <div class="toggle-debug">
+      <button onclick="toggleDebug()">ℹ️ Informações de Depuração</button>
+    </div>
+    
+    <div id="debugInfo" class="debug-info" style="display: none;">
+      <h4>Informações para Depuração:</h4>
+      <p>Se o login está falhando, verifique:</p>
+      <ul>
+        <li>O CNPJ está formatado corretamente (apenas números no banco: 08951388000118)</li>
+        <li>O usuário e senha correspondem exatamente aos registros do banco</li>
+        <li>O CNPJ existe na tabela cadastro_clientes com a mesma RAZÃO_SOCIAL</li>
+      </ul>
+      <p>Última tentativa:</p>
+      <pre id="lastAttempt">Nenhuma tentativa ainda</pre>
+    </div>
   </div>
 
   <script>
@@ -442,7 +502,19 @@
       
       setTimeout(() => {
         resDiv.classList.remove('show');
-      }, 3000);
+      }, 5000);
+    }
+
+    // Função para mostrar/ocultar informações de depuração
+    function toggleDebug() {
+      const debugInfo = document.getElementById('debugInfo');
+      debugInfo.style.display = debugInfo.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Atualizar informações da última tentativa
+    function updateLastAttempt(cnpj, username) {
+      document.getElementById('lastAttempt').textContent = 
+        `CNPJ: ${cnpj}\nUsuário: ${username}\nData: ${new Date().toLocaleString()}`;
     }
 
     // Efeito de focus nos inputs
@@ -472,20 +544,21 @@
       
       // Validação básica 
       if (!cnpjFormatado || !username || !password) {
-        resDiv.textContent = 'Por favor, preencha todos os campos.';
-        resDiv.className = 'result error show';
+        showMessage('Por favor, preencha todos os campos.', 'error');
         return;
       }
 
       // Validar formato do CNPJ
       if (!isValidCNPJFormat(cnpjFormatado)) {
-        resDiv.textContent = 'Por favor, insira um CNPJ válido no formato 00.000.000/0000-00.';
-        resDiv.className = 'result error show';
+        showMessage('Por favor, insira um CNPJ válido no formato 00.000.000/0000-00.', 'error');
         return;
       }
       
       // Limpar CNPJ - remover todos os caracteres não numéricos
       const cnpjLimpo = cnpjFormatado.replace(/\D/g, '');
+      
+      // Atualizar informações de depuração
+      updateLastAttempt(cnpjLimpo, username);
       
       // Resetar mensagens de erro
       resDiv.textContent = '';
@@ -493,8 +566,7 @@
       
       // Mostrar feedback visual
       showLoading(true);
-      resDiv.textContent = 'Verificando credenciais...';
-      resDiv.className = 'result show';
+      showMessage('Verificando credenciais...', 'info');
       
       const apiUrl = 'https://app-cek0.onrender.com/login';
       
@@ -532,8 +604,7 @@
           // Salvar dados do usuário
           const userData = data.user || { cnpj: cnpjLimpo, username };
           
-          resDiv.textContent = 'Login bem-sucedido!';
-          resDiv.className = 'result success show';
+          showMessage('Login bem-sucedido! Redirecionando...', 'success');
           
           // Remover qualquer mensagem de boas-vindas existente
           const existingWelcome = document.getElementById('welcome-message');
@@ -613,13 +684,11 @@
           }, 1000);
           
         } else {
-          resDiv.textContent = data.message || 'CNPJ, usuário ou senha inválidos.';
-          resDiv.className = 'result error show';
+          showMessage(data.message || 'CNPJ, usuário ou senha inválidos.', 'error');
           showLoading(false);
         }
       } catch (err) {
-        resDiv.textContent = 'Erro ao conectar ao servidor: ' + err.message;
-        resDiv.className = 'result error show';
+        showMessage('Erro ao conectar ao servidor: ' + err.message, 'error');
         showLoading(false);
         console.error('Erro no login:', err);
       }
