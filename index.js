@@ -26,52 +26,6 @@ const dbConfig = {
 
 
 
-
-
-
-
-
-
-
-// Endpoint de login
-app.post('/login1', async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    const conn = await mysql.createConnection(dbConfig);
-    const [rows] = await conn.execute(
-      'SELECT * FROM cliente_usuarios WHERE NOME = ? AND SENHA = ?',
-      [username, password]
-    );
-    await conn.end();
-    
-    if (rows.length > 0) {
-      const user = rows[0];
-      res.json({ 
-        success: true, 
-        user: {
-          nome: user.NOME,
-          empresa: user.RAZAO_SOCIAL
-        }
-      });
-    } else {
-      res.json({ success: false });
-    }
-  } catch (err) {
-    console.error('Erro no login:', err);
-    res.status(500).json({ success: false, error: 'Erro de servidor' });
-  }
-}); // ← FECHAMENTO DO ENDPOINT LOGIN (estava faltando)
-
-
-
-
-
-
-
-
-
-
-
 app.post('/login', async (req, res) => {
   const { username, password, cnpj } = req.body;
   
@@ -102,7 +56,7 @@ app.post('/login', async (req, res) => {
 
     if (rows.length > 0) {
       const user = rows[0];
-      
+      const userCnpj = user.CNPJ_CPF;
       
       
       // Login bem-sucedido
@@ -115,7 +69,8 @@ app.post('/login', async (req, res) => {
           cnpj: user.CNPJ_CPF.replace(/\D/g, '') // Retornar apenas números
         }
       });
-      
+
+      localStorage.setItem('userCnpj', userCnpj);
       console.log(`Login bem-sucedido: ${user.NOME} - CNPJ: ${user.CNPJ_CPF.replace(/\D/g, '')} - ${new Date().toISOString()}`);
       
     } else {
