@@ -66,7 +66,8 @@ app.post('/login', async (req, res) => {
         user: {
           nome: user.NOME,
           empresa: user.RAZAO_SOCIAL,
-          cnpj: user.CNPJ_CPF.replace(/\D/g, '') // Retornar apenas números
+          cnpj: user.CNPJ_CPF.replace(/\D/g, ''), // Retornar apenas números
+          cnpj_comp: user.CNPJ_CPF
         }
       });
 
