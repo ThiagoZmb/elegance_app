@@ -263,7 +263,7 @@ app.get('/pedidos_cnpj', async (req, res) => {
 
     const cnpjNumeros = cnpj.replace(/\D/g, '');
     const conn = await mysql.createConnection(dbConfig);
-    
+    console.log(cnpjNumeros);
     const [rows] = await conn.execute(`
       SELECT 
         p.NUMERO as numero,
