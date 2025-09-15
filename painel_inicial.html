@@ -802,7 +802,9 @@
                 });
 
                 const cnpjSalvo = localStorage.getItem('cnpj_da_empresa');
+                console.log(cnpjSalvo);
 
+                
                 // Fazer requisição para o endpoint de pedidos
                 const res = await fetch('https://app-cek0.onrender.com/pedidos_cnpj?cnpj=${cnpjSalvo}');
                 //const res = await fetch('https://app-cek0.onrender.com/pedidos_cnpj');
