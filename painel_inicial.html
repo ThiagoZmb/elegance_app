@@ -815,9 +815,9 @@
 
                 
                 // Fazer requisição para o endpoint de pedidos
-                const res = await fetch('https://app-cek0.onrender.com/pedidos_cnpj?cnpj_comp=${cnpjSalvo}');
-              
-                //const res = await fetch('https://app-cek0.onrender.com/pedidos_cnpj');
+                //const res = await fetch('https://app-cek0.onrender.com/pedidos_cnpj?cnpj_comp=${cnpjSalvo}');
+              const res = await fetch(`https://app-cek0.onrender.com/pedidos_cnpj?cnpj_comp=${cnpjSalvo}`);
+               
                 // Verificar se a resposta é válida
                 if (!res.ok) {
                     throw new Error(`Erro HTTP: ${res.status}`);
