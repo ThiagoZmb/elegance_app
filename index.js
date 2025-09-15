@@ -232,7 +232,7 @@ app.get('/pedidos_cnpj', async (req, res) => {
         DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
       FROM ped_orc p
       INNER JOIN cadastro_clientes cc ON p.RAZAO_SOCIAL = cc.RAZAO_SOCIAL
-      WHERE cc.CNPJ_CPF = ? AND TIPO='Pedido'
+      WHERE cc.CNPJ_CPF = ? AND p.TIPO='Pedido'
     `, [user_cnpj]); 
 
     await conn.end();
