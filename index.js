@@ -36,12 +36,14 @@ app.post('/login', async (req, res) => {
     });
   }
   
+  // Formatar o CNPJ para apenas números
   const cnpjNumeros = cnpj.replace(/\D/g, '');
   
   let conn;
   try {
     conn = await mysql.createConnection(dbConfig);
     
+    // Query com INNER JOIN e remoção de caracteres não numéricos do CNPJ no banco
     const [rows] = await conn.execute(`
       SELECT 
         cu.NOME,
@@ -54,36 +56,44 @@ app.post('/login', async (req, res) => {
 
     if (rows.length > 0) {
       const user = rows[0];
+      const userCnpj = user.CNPJ_CPF;
       
-      // Login bem-sucedido - enviar resposta APENAS UMA VEZ
-      return res.json({ 
+      
+      // Login bem-sucedido
+      res.json({ 
         success: true, 
         message: 'Login realizado com sucesso',
         user: {
           nome: user.NOME,
           empresa: user.RAZAO_SOCIAL,
-          cnpj: user.CNPJ_CPF.replace(/\D/g, '')
+          cnpj: user.CNPJ_CPF.replace(/\D/g, '') // Retornar apenas números
         }
       });
 
+      localStorage.setItem('userCnpj', userCnpj);
+      console.log(`Login bem-sucedido: ${user.NOME} - CNPJ: ${user.CNPJ_CPF.replace(/\D/g, '')} - ${new Date().toISOString()}`);
+      
     } else {
-      return res.json({ 
+      res.json({ 
         success: false, 
         message: 'Usuário, senha ou CNPJ inválidos' 
       });
+      
+      console.log(`Tentativa de login falhada: ${username} - CNPJ: ${cnpjNumeros} - ${new Date().toISOString()}`);
     }
   } catch (error) {
     console.error('Erro no login:', error);
-    return res.status(500).json({ 
+    res.status(500).json({ 
       success: false, 
       message: 'Erro interno do servidor' 
     });
   } finally {
     if (conn) {
-      await conn.end().catch(err => console.error('Erro ao fechar conexão:', err));
+      conn.end().catch(err => console.error('Erro ao fechar conexão:', err));
     }
   }
 });
+
 
 
 
