@@ -547,7 +547,7 @@
         if (data.success) {
           // Salvar dados do usuário
           const userData = data.user || { cnpj: cnpjNumeros, username };
-          localStorage.setItem(data.user.cnpj_comp);
+          localStorage.setItem('cnpj_da_empresa',data.user.cnpj_comp);
           
           
           showMessage('Login bem-sucedido!', 'success');
