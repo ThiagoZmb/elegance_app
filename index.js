@@ -212,7 +212,7 @@ app.get('/pedidos_cnpj', async (req, res) => {
   try {
    
     //const user_cnpj =  '08.951.388/0001-18';
-     const user_cnpj = req.query.cnpjSalvo;
+     const user_cnpj = req.query.cnpj_comp;
       console.log(user_cnpj);
     
     const conn = await mysql.createConnection(dbConfig);
