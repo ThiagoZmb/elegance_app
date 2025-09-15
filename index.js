@@ -255,20 +255,11 @@ app.get('/dados_pedidos_rj', async (req, res) => {
 //WHERE REPLACE(REPLACE(REPLACE(cc.CNPJ_CPF, '.', ''), '/', ''), '-', '') = ?
 app.get('/pedidos_cnpj', async (req, res) => {
   try {
-    
-    //const { cnpj } = req.query; // Receber CNPJ via query parameter
-     //const userData = localStorage.getItem('user');
-      const user_cnpj='08.951.388/0001-18';
+    const user_cnpj = '08.951.388/0001-18';
 
-
-    
-    if (!cnpj) {
-      return res.status(400).json({ error: 'CNPJ é obrigatório' });
-    }
-
-    const cnpjNumeros = cnpj.replace(/\D/g, '');
     const conn = await mysql.createConnection(dbConfig);
-    console.log(cnpjNumeros);
+    console.log(user_cnpj);
+
     const [rows] = await conn.execute(`
       SELECT 
         p.NUMERO as numero,
@@ -284,8 +275,8 @@ app.get('/pedidos_cnpj', async (req, res) => {
       FROM ped_orc p
       INNER JOIN cadastro_clientes cc ON p.RAZAO_SOCIAL = cc.RAZAO_SOCIAL
       WHERE cc.CNPJ_CPF = ?
-    `, [user_cnpj]);
-    
+    `, [user_cnpj]); 
+
     await conn.end();
     res.json(rows);
   } catch (err) {
