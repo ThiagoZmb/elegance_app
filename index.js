@@ -192,6 +192,8 @@ app.get('/dados_pedidos', async (req, res) => {
         p.FINANCEIRO as financeiro,
         DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
       FROM ped_orc p
+      WHERE p.TIPO='Pedido'
+      ORDER BY p.DATA DESC
       
     `);
     
@@ -237,6 +239,47 @@ app.get('/dados_pedidos_rj', async (req, res) => {
       WHERE c.ESTADO = 'RJ' AND p.TIPO='Pedido'
       ORDER BY p.DATA DESC
     `);
+    
+    await conn.end();
+    res.json(rows);
+  } catch (err) {
+    console.error('Erro ao buscar pedidos:', err);
+    res.status(500).json({ error: 'Erro de servidor' });
+  }
+});
+
+
+
+
+
+
+app.get('/pedidos_cnpj', async (req, res) => {
+  try {
+    const { cnpj } = req.query; // Receber CNPJ via query parameter
+
+    if (!cnpj) {
+      return res.status(400).json({ error: 'CNPJ é obrigatório' });
+    }
+
+    const cnpjNumeros = cnpj.replace(/\D/g, '');
+    const conn = await mysql.createConnection(dbConfig);
+    
+    const [rows] = await conn.execute(`
+      SELECT 
+        p.NUMERO as numero,
+        p.RAZAO_SOCIAL as cliente,
+        p.CLIENTE_FINAL as clienteFinal,
+        DATE_FORMAT(p.DATA, '%d/%m/%Y') as data,
+        DATE_FORMAT(p.DATA_PRONTO, '%d/%m/%Y') as prontoEm,
+        p.TOTAL as valor,
+        p.OBS_GERAL as observacao,
+        p.SITUACAO as situacao,
+        p.FINANCEIRO as financeiro,
+        DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
+      FROM ped_orc p
+      INNER JOIN cadastro_clientes cc ON p.RAZAO_SOCIAL = cc.RAZAO_SOCIAL
+      WHERE REPLACE(REPLACE(REPLACE(cc.CNPJ_CPF, '.', ''), '/', ''), '-', '') = ?
+    `, [cnpjNumeros]);
     
     await conn.end();
     res.json(rows);
