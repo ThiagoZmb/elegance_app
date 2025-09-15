@@ -213,7 +213,7 @@ app.get('/pedidos_cnpj', async (req, res) => {
     const user_cnpj =  localStorage.getItem('userCnpj');;
    
     const conn = await mysql.createConnection(dbConfig);
-    //console.log(user_cnpj);
+    console.log(user_cnpj);
 
     const [rows] = await conn.execute(`
       SELECT 
