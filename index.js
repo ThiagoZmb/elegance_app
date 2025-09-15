@@ -70,7 +70,7 @@ app.post('/login', async (req, res) => {
         }
       });
 
-      localStorage.setItem('userCnpj', userCnpj);
+      //localStorage.setItem('userCnpj', userCnpj);
       console.log(`Login bem-sucedido: ${user.NOME} - CNPJ: ${user.CNPJ_CPF.replace(/\D/g, '')} - ${new Date().toISOString()}`);
       
     } else {
@@ -206,12 +206,12 @@ app.get('/dados_pedidos_rj', async (req, res) => {
 
 
 
-
 //WHERE REPLACE(REPLACE(REPLACE(cc.CNPJ_CPF, '.', ''), '/', ''), '-', '') = ?
 app.get('/pedidos_cnpj', async (req, res) => {
   try {
-    const user_cnpj =  localStorage.getItem('userCnpj');;
-   
+    //const user_cnpj =  localStorage.getItem('userCnpj');
+    const user_cnpj =  '08.951.388/0001-18';
+    
     const conn = await mysql.createConnection(dbConfig);
     console.log(user_cnpj);
 
