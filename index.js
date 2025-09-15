@@ -255,8 +255,9 @@ app.get('/dados_pedidos_rj', async (req, res) => {
 //WHERE REPLACE(REPLACE(REPLACE(cc.CNPJ_CPF, '.', ''), '/', ''), '-', '') = ?
 app.get('/pedidos_cnpj', async (req, res) => {
   try {
-    const { cnpj } = req.query; // Receber CNPJ via query parameter
-     const userData = localStorage.getItem('user');
+    
+    //const { cnpj } = req.query; // Receber CNPJ via query parameter
+     //const userData = localStorage.getItem('user');
       const user_cnpj='08.951.388/0001-18';
 
 
