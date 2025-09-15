@@ -70,7 +70,7 @@ app.post('/login', async (req, res) => {
         }
       });
 
-      //localStorage.setItem('userCnpj', userCnpj);
+      localStorage.setItem('userCnpj', userCnpj);
       console.log(`Login bem-sucedido: ${user.NOME} - CNPJ: ${user.CNPJ_CPF.replace(/\D/g, '')} - ${new Date().toISOString()}`);
       
     } else {
