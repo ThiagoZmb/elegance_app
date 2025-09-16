@@ -548,13 +548,10 @@
             function formatItemDescription(item) {
                 let html = '';
                 const tipo = item.TIPO_PRODUTO || '';
-                
-                html += `<p class="main-info">${tipo}</p>`;
+                const detalhes = item.detalhes || {};
+                const complementos = item.complementos || [];
                 
                 if (tipo !== "Metalons") {
-                    const detalhes = item.detalhes || {};
-                    const complementos = item.complementos || [];
-                    
                     // Para itens que não são metalons
                     if (tipo === "Porta de giro" || tipo === "Porta basculante" || tipo === "Frente de gaveta" || 
                         tipo === "Porta de correr" || tipo === "Serviço" || tipo === "Perfil" || 
@@ -562,53 +559,52 @@
                     
                         // PERFIL
                         if (detalhes.perfil) {
-                            if (!detalhes.cor_perfil) {
-                                html += `<p><strong>Perfil:</strong> ${detalhes.perfil} ${detalhes.acabamento_perfil || ''}</p>`;
-                            } else {
-                                html += `<p><strong>Perfil:</strong> ${detalhes.perfil} ${detalhes.acabamento_perfil || ''} | Cor: ${detalhes.cor_perfil}</p>`;
-                            }
+                            html += `Perfil: ${detalhes.perfil}`;
+                            if (detalhes.acabamento_perfil) html += ` ${detalhes.acabamento_perfil}`;
+                            if (detalhes.cor_perfil) html += ` | Cor: ${detalhes.cor_perfil}`;
+                            html += '<br>';
                         }
 
                         // PUXADOR
                         if (detalhes.puxador && detalhes.qtd_puxador) {
-                            html += `<p><strong>Puxador:</strong> ${detalhes.qtd_puxador} - ${detalhes.puxador} ${detalhes.acabamento_puxador || ''}`;
-                            if (detalhes.posicao_puxador || detalhes.tam_puxador) {
-                                html += ` (Posição: ${detalhes.posicao_puxador || ''}, Tamanho: ${detalhes.tam_puxador || ''} mm)`;
-                            }
-                            html += `</p>`;
+                            html += `Puxador: ${detalhes.qtd_puxador} - ${detalhes.puxador}`;
+                            if (detalhes.acabamento_puxador) html += ` ${detalhes.acabamento_puxador}`;
+                            html += '<br>';
+                            if (detalhes.posicao_puxador) html += `Posição: ${detalhes.posicao_puxador}<br>`;
+                            if (detalhes.tam_puxador) html += `Tamanho: ${detalhes.tam_puxador} mm<br>`;
                         }
 
                         // FUROS
                         if (detalhes.qtd_furos) {
-                            html += `<p><strong>Furos:</strong> ${detalhes.qtd_furos} ${detalhes.pos_furos || ''}</p>`;
+                            html += `Furos: ${detalhes.qtd_furos}`;
+                            if (detalhes.pos_furos) html += ` ${detalhes.pos_furos}`;
+                            html += '<br>';
                         }
 
                         // REVESTIMENTO
                         if (detalhes.revestimento) {
-                            if (!detalhes.cor_revestimento) {
-                                html += `<p><strong>Revestimento:</strong> ${detalhes.revestimento} ${detalhes.acabamento_revestimento || ''}</p>`;
-                            } else {
-                                html += `<p><strong>Revestimento:</strong> ${detalhes.revestimento} ${detalhes.acabamento_revestimento || ''} (${detalhes.cor_revestimento})</p>`;
-                            }
+                            html += `Revestimento: ${detalhes.revestimento}`;
+                            if (detalhes.acabamento_revestimento) html += ` ${detalhes.acabamento_revestimento}`;
+                            html += '<br>';
                         }
 
-                        // TAMANHOS
+                        // TAMANHOS principais
                         if (detalhes.altura && detalhes.largura) {
-                            html += `<p><strong>Tamanho:</strong> H=${detalhes.altura} x L=${detalhes.largura} mm</p>`;
+                            html += `<strong>Tamanho: H=${detalhes.altura} x L=${detalhes.largura} mm</strong><br>`;
                         }
 
                         // COMPLEMENTOS
                         complementos.forEach(complemento => {
+                            html += '<br>';
                             if (complemento.classe === "Sistema de correr") {
-                                html += `<p><strong>Sistema correr:</strong> ${complemento.complemento} (Qtd: ${complemento.qtd})</p>`;
+                                html += `Complemento: ${complemento.complemento}<br>Qtd: ${complemento.qtd}`;
                             } else if (complemento.classe === "Amortecedores") {
-                                html += `<p><strong>Amortecedor:</strong> ${complemento.complemento} (Qtd: ${complemento.qtd})</p>`;
-                            } else if (complemento.classe === "Trilho superior") {
-                                html += `<p><strong>Trilho superior:</strong> ${complemento.complemento} (Qtd: ${complemento.qtd}, Tamanho: ${complemento.tamanho} mm)</p>`;
-                            } else if (complemento.classe === "Trilho inferior") {
-                                html += `<p><strong>Trilho inferior:</strong> ${complemento.complemento} (Qtd: ${complemento.qtd}, Tamanho: ${complemento.tamanho} mm)</p>`;
+                                html += `Complemento: ${complemento.complemento}<br>Qtd: ${complemento.qtd}`;
+                            } else if (complemento.classe === "Trilho superior" || complemento.classe === "Trilho inferior") {
+                                html += `Complemento: ${complemento.complemento}<br>Qtd: ${complemento.qtd}`;
+                                if (complemento.tamanho) html += `<br>Tamanho: ${complemento.tamanho} mm`;
                             } else {
-                                html += `<p><strong>Acessórios:</strong> ${complemento.complemento} (Qtd: ${complemento.qtd})</p>`;
+                                html += `Complemento: ${complemento.complemento}<br>Qtd: ${complemento.qtd}`;
                             }
                         });
 
@@ -617,25 +613,27 @@
                             for (let i = 1; i <= 6; i++) {
                                 const largura = detalhes[`largura${i}`];
                                 if (largura) {
-                                    html += `<p><strong>PORTA ${i}:</strong> H=${detalhes.altura} x L=${largura} mm</p>`;
+                                    html += `<br><strong>PORTA ${i}: H=${detalhes.altura} x L=${largura} mm</strong>`;
+                                    if (detalhes[`puxador${i}`]) html += `<br>Puxador: ${detalhes[`puxador${i}`]} -`;
+                                    if (detalhes[`posicao${i}`]) html += `<br>Posição: ${detalhes[`posicao${i}`]}`;
+                                    if (detalhes[`tamanho${i}`]) html += `<br>Tamanho: ${detalhes[`tamanho${i}`]} mm`;
                                 }
                             }
                         }
                     }
                 } else {
                     // Para metalons
-                    const detalhes = item.detalhes || {};
-                    html += `<p><strong>Produto:</strong> ${detalhes.produto || ''}</p>`;
-                    html += `<p><strong>Material:</strong> ${detalhes.modelo_material || ''}</p>`;
-                    html += `<p><strong>Acabamento:</strong> ${detalhes.acabamento || ''}</p>`;
-                    html += `<p><strong>Cor:</strong> ${detalhes.cor || ''}</p>`;
+                    if (detalhes.produto) html += `Produto: ${detalhes.produto}<br>`;
+                    if (detalhes.modelo_material) html += `Material: ${detalhes.modelo_material}<br>`;
+                    if (detalhes.acabamento) html += `Acabamento: ${detalhes.acabamento}<br>`;
+                    if (detalhes.cor) html += `Cor: ${detalhes.cor}<br>`;
                     
                     if (detalhes.altura && detalhes.largura && detalhes.profundidade) {
-                        html += `<p><strong>Tamanho:</strong> H=${detalhes.altura} x L=${detalhes.largura} x P=${detalhes.profundidade} mm</p>`;
+                        html += `Tamanho: H=${detalhes.altura} x L=${detalhes.largura} x P=${detalhes.profundidade} mm`;
                     }
                 }
                 
-                return html;
+                return html || tipo;
             }
         });
     </script>
