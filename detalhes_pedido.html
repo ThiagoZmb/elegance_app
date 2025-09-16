@@ -43,7 +43,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: var(--white);
             border-radius: 20px;
@@ -119,6 +119,11 @@
             color: var(--success-color);
         }
 
+        .status-retirado {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: var(--text-light);
+        }
+
         .info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -179,7 +184,7 @@
             margin-top: 10px;
         }
 
-        .mysql-table-container {
+        .items-table-container {
             background: var(--white);
             border-radius: 12px;
             padding: 20px;
@@ -189,7 +194,7 @@
             overflow-x: auto;
         }
 
-        .mysql-table-container h3 {
+        .items-table-container h3 {
             font-size: 18px;
             color: var(--text-dark);
             margin-bottom: 15px;
@@ -198,12 +203,13 @@
             gap: 10px;
         }
 
-        .mysql-table {
+        .items-table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 15px;
         }
 
-        .mysql-table th {
+        .items-table th {
             background: var(--secondary-color);
             padding: 12px 10px;
             text-align: left;
@@ -212,14 +218,31 @@
             border-bottom: 2px solid var(--border-color);
         }
 
-        .mysql-table td {
+        .items-table td {
             padding: 12px 10px;
             border-bottom: 1px solid var(--border-color);
             color: var(--text-dark);
+            vertical-align: top;
         }
 
-        .mysql-table tr:hover {
+        .items-table tr:hover {
             background: var(--secondary-color);
+        }
+
+        .item-details {
+            max-width: 400px;
+        }
+
+        .item-details p {
+            margin-bottom: 5px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .item-details .main-info {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
         }
 
         .financial-badge {
@@ -267,6 +290,12 @@
             100% { transform: rotate(360deg); }
         }
 
+        .section-divider {
+            height: 2px;
+            background: var(--border-color);
+            margin: 25px 0;
+        }
+
         @media (max-width: 768px) {
             .order-header {
                 flex-direction: column;
@@ -278,8 +307,13 @@
                 grid-template-columns: 1fr;
             }
             
-            .mysql-table {
+            .items-table {
                 font-size: 12px;
+            }
+            
+            .items-table th,
+            .items-table td {
+                padding: 8px 6px;
             }
         }
     </style>
@@ -353,18 +387,24 @@
                     <div class="obs-content" id="order-obs"></div>
                 </div>
 
-                <div class="mysql-table-container">
-                    <h3><i class="fas fa-database"></i> Dados do Banco de Dados</h3>
+                <div class="section-divider"></div>
+
+                <div class="items-table-container">
+                    <h3><i class="fas fa-list-alt"></i> Itens do Pedido</h3>
                     <div style="overflow-x: auto;">
-                        <table class="mysql-table">
+                        <table class="items-table">
                             <thead>
                                 <tr>
-                                    <th>Campo</th>
-                                    <th>Valor</th>
+                                    <th>Item</th>
+                                    <th>QTD</th>
+                                    <th>Descrição</th>
+                                    <th>Observação</th>
+                                    <th>Unitário</th>
+                                    <th>Total</th>
                                 </tr>
                             </thead>
-                            <tbody id="mysql-data">
-                                <!-- Dados do MySQL serão preenchidos aqui -->
+                            <tbody id="items-data">
+                                <!-- Dados dos itens serão preenchidos aqui -->
                             </tbody>
                         </table>
                     </div>
@@ -411,8 +451,8 @@
                     
                     document.getElementById('order-obs').textContent = pedido.observacao || 'Nenhuma observação registrada.';
                     
-                    // Carregar dados do MySQL
-                    loadMySQLData(pedido.numero, pedido.cliente);
+                    // Carregar dados dos itens do pedido
+                    loadItemsData(pedido.numero);
                     
                 } catch (error) {
                     console.error('Erro ao processar dados do pedido:', error);
@@ -427,7 +467,7 @@
                 document.getElementById('error-message').style.display = 'block';
             }
             
-            async function loadMySQLData(numeroPedido, razaoSocial) {
+            async function loadItemsData(numeroPedido) {
                 try {
                     // Obter o CNPJ da empresa do localStorage
                     const cnpjSalvo = localStorage.getItem('cnpj_da_empresa');
@@ -440,43 +480,65 @@
                     // Determinar a URL da API com base no CNPJ
                     let apiUrl;
                     if (cnpjSalvo === '08.951.388/0001-18') {
-                        apiUrl = `https://app-cek0.onrender.com/detalhes_pedido_mysql?numero=${numeroPedido}&razao_social=${encodeURIComponent(razaoSocial)}`;
+                        apiUrl = `https://app-cek0.onrender.com/itens_pedido?numero=${numeroPedido}`;
                     } else if (cnpjSalvo === '37.521.493/0001-15') {
-                        apiUrl = `https://app-cek0.onrender.com/detalhes_pedido_mysql_rj?numero=${numeroPedido}&razao_social=${encodeURIComponent(razaoSocial)}`;
+                        apiUrl = `https://app-cek0.onrender.com/itens_pedido_rj?numero=${numeroPedido}`;
                     } else {
-                        apiUrl = `https://app-cek0.onrender.com/detalhes_pedido_mysql_cnpj?numero=${numeroPedido}&razao_social=${encodeURIComponent(razaoSocial)}&cnpj_comp=${cnpjSalvo}`;
+                        apiUrl = `https://app-cek0.onrender.com/itens_pedido_cnpj?numero=${numeroPedido}&cnpj_comp=${cnpjSalvo}`;
                     }
                     
-                    // Fazer a requisição para obter os dados do MySQL
+                    // Fazer a requisição para obter os itens do pedido
                     const response = await fetch(apiUrl);
                     
                     if (!response.ok) {
                         throw new Error(`Erro HTTP: ${response.status}`);
                     }
                     
-                    const mysqlData = await response.json();
+                    const itensData = await response.json();
                     
-                    // Preencher a tabela com os dados do MySQL
-                    const mysqlTbody = document.getElementById('mysql-data');
-                    mysqlTbody.innerHTML = '';
+                    // Preencher a tabela com os itens do pedido
+                    const itemsTbody = document.getElementById('items-data');
+                    itemsTbody.innerHTML = '';
                     
-                    if (mysqlData && Object.keys(mysqlData).length > 0) {
-                        for (const [key, value] of Object.entries(mysqlData)) {
+                    if (itensData && itensData.length > 0) {
+                        itensData.forEach(item => {
                             const row = document.createElement('tr');
                             
-                            const fieldCell = document.createElement('td');
-                            fieldCell.textContent = key;
-                            fieldCell.style.fontWeight = '600';
+                            // Coluna Item
+                            const itemCell = document.createElement('td');
+                            itemCell.textContent = item.item || '';
+                            row.appendChild(itemCell);
                             
-                            const valueCell = document.createElement('td');
-                            valueCell.textContent = value !== null && value !== undefined ? value : 'N/A';
+                            // Coluna QTD
+                            const qtdCell = document.createElement('td');
+                            qtdCell.textContent = item.qtd || '';
+                            row.appendChild(qtdCell);
                             
-                            row.appendChild(fieldCell);
-                            row.appendChild(valueCell);
-                            mysqlTbody.appendChild(row);
-                        }
+                            // Coluna Descrição
+                            const descCell = document.createElement('td');
+                            descCell.className = 'item-details';
+                            descCell.innerHTML = formatItemDescription(item);
+                            row.appendChild(descCell);
+                            
+                            // Coluna Observação
+                            const obsCell = document.createElement('td');
+                            obsCell.textContent = item.observacao || '';
+                            row.appendChild(obsCell);
+                            
+                            // Coluna Unitário
+                            const unitCell = document.createElement('td');
+                            unitCell.textContent = item.unitario ? 'R$ ' + parseFloat(item.unitario).toFixed(2).replace('.', ',') : '';
+                            row.appendChild(unitCell);
+                            
+                            // Coluna Total
+                            const totalCell = document.createElement('td');
+                            totalCell.textContent = item.total ? 'R$ ' + parseFloat(item.total).toFixed(2).replace('.', ',') : '';
+                            row.appendChild(totalCell);
+                            
+                            itemsTbody.appendChild(row);
+                        });
                     } else {
-                        mysqlTbody.innerHTML = '<tr><td colspan="2" style="text-align: center;">Nenhum dado adicional encontrado</td></tr>';
+                        itemsTbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Nenhum item encontrado para este pedido</td></tr>';
                     }
                     
                     // Esconder loading e mostrar conteúdo
@@ -484,16 +546,86 @@
                     document.getElementById('order-content').style.display = 'block';
                     
                 } catch (error) {
-                    console.error('Erro ao carregar dados do MySQL:', error);
+                    console.error('Erro ao carregar itens do pedido:', error);
                     
                     // Mesmo em caso de erro, mostrar os dados básicos do pedido
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('order-content').style.display = 'block';
                     
-                    // Mostrar mensagem de erro na tabela MySQL
-                    const mysqlTbody = document.getElementById('mysql-data');
-                    mysqlTbody.innerHTML = '<tr><td colspan="2" style="text-align: center; color: var(--danger-color);">Erro ao carregar dados adicionais</td></tr>';
+                    // Mostrar mensagem de erro na tabela de itens
+                    const itemsTbody = document.getElementById('items-data');
+                    itemsTbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--danger-color);">Erro ao carregar itens do pedido</td></tr>';
                 }
+            }
+            
+            function formatItemDescription(item) {
+                let html = '';
+                const tipo = item.tipo_produto || '';
+                
+                html += `<p class="main-info">${tipo}</p>`;
+                
+                if (tipo !== "Metalons") {
+                    // Para itens que não são metalons
+                    if (item.perfil) {
+                        html += `<p><strong>Perfil:</strong> ${item.perfil} ${item.acabamento_perfil || ''}`;
+                        if (item.cor_perfil) html += ` | Cor: ${item.cor_perfil}`;
+                        html += `</p>`;
+                    }
+                    
+                    if (item.puxador && item.qtd_puxador) {
+                        html += `<p><strong>Puxador:</strong> ${item.qtd_puxador} - ${item.puxador} ${item.acabamento_puxador || ''}`;
+                        if (item.posicao_puxador || item.tam_puxador) {
+                            html += ` (Posição: ${item.posicao_puxador || ''}, Tamanho: ${item.tam_puxador || ''} mm)`;
+                        }
+                        html += `</p>`;
+                    }
+                    
+                    if (item.qtd_furos) {
+                        html += `<p><strong>Furos:</strong> ${item.qtd_furos} ${item.pos_furos || ''}</p>`;
+                    }
+                    
+                    if (item.revestimento) {
+                        html += `<p><strong>Revestimento:</strong> ${item.revestimento} ${item.acabamento_revestimento || ''}`;
+                        if (item.cor_revestimento) html += ` (${item.cor_revestimento})`;
+                        html += `</p>`;
+                    }
+                    
+                    if (item.altura && item.largura) {
+                        html += `<p><strong>Tamanho:</strong> H=${item.altura} x L=${item.largura} mm</p>`;
+                    }
+                    
+                    if (item.kit_sistema_correr) {
+                        html += `<p><strong>Sistema correr:</strong> ${item.kit_sistema_correr} (Qtd: ${item.qtd_sistema_correr})</p>`;
+                    }
+                    
+                    if (item.amortecedor) {
+                        html += `<p><strong>Amortecedor:</strong> ${item.amortecedor} (Qtd: ${item.qtd_amortecedor})</p>`;
+                    }
+                    
+                    if (item.trilho_sup) {
+                        html += `<p><strong>Trilho superior:</strong> ${item.trilho_sup} (Qtd: ${item.qtd_trilho_sup}, Tamanho: ${item.tam_trilho_sup} mm)</p>`;
+                    }
+                    
+                    if (item.trilho_inf) {
+                        html += `<p><strong>Trilho inferior:</strong> ${item.trilho_inf} (Qtd: ${item.qtd_trilho_inf}, Tamanho: ${item.tam_trilho_inf} mm)</p>`;
+                    }
+                    
+                    if (item.acessorios) {
+                        html += `<p><strong>Acessórios:</strong> ${item.acessorios}</p>`;
+                    }
+                    
+                } else {
+                    // Para metalons
+                    if (item.produto) html += `<p><strong>Produto:</strong> ${item.produto}</p>`;
+                    if (item.modelo_material) html += `<p><strong>Material:</strong> ${item.modelo_material}</p>`;
+                    if (item.acabamento) html += `<p><strong>Acabamento:</strong> ${item.acabamento}</p>`;
+                    if (item.cor) html += `<p><strong>Cor:</strong> ${item.cor}</p>`;
+                    if (item.altura && item.largura && item.profundidade) {
+                        html += `<p><strong>Tamanho:</strong> H=${item.altura} x L=${item.largura} x P=${item.profundidade} mm</p>`;
+                    }
+                }
+                
+                return html;
             }
         });
     </script>
