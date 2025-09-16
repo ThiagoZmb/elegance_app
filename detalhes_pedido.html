@@ -547,63 +547,86 @@
                 html += `<p class="main-info">${tipo}</p>`;
                 
                 if (tipo !== "Metalons") {
+                    const detalhes = item.detalhes || {};
+                    const complementos = item.complementos || [];
+                    
                     // Para itens que não são metalons
-                    if (item.perfil) {
-                        html += `<p><strong>Perfil:</strong> ${item.perfil} ${item.acabamento_perfil || ''}`;
-                        if (item.cor_perfil) html += ` | Cor: ${item.cor_perfil}`;
-                        html += `</p>`;
-                    }
+                    if (tipo === "Porta de giro" || tipo === "Porta basculante" || tipo === "Frente de gaveta" || 
+                        tipo === "Porta de correr" || tipo === "Serviço" || tipo === "Perfil" || 
+                        tipo === "Puxador" || tipo === "Trilhos" || tipo === "Revestimento") {
                     
-                    if (item.puxador && item.qtd_puxador) {
-                        html += `<p><strong>Puxador:</strong> ${item.qtd_puxador} - ${item.puxador} ${item.acabamento_puxador || ''}`;
-                        if (item.posicao_puxador || item.tam_puxador) {
-                            html += ` (Posição: ${item.posicao_puxador || ''}, Tamanho: ${item.tam_puxador || ''} mm)`;
+                        // PERFIL
+                        if (detalhes.perfil) {
+                            if (!detalhes.cor_perfil) {
+                                html += `<p><strong>Perfil:</strong> ${detalhes.perfil} ${detalhes.acabamento_perfil || ''}</p>`;
+                            } else {
+                                html += `<p><strong>Perfil:</strong> ${detalhes.perfil} ${detalhes.acabamento_perfil || ''} | Cor: ${detalhes.cor_perfil}</p>`;
+                            }
                         }
-                        html += `</p>`;
+
+                        // PUXADOR
+                        if (detalhes.puxador && detalhes.qtd_puxador) {
+                            html += `<p><strong>Puxador:</strong> ${detalhes.qtd_puxador} - ${detalhes.puxador} ${detalhes.acabamento_puxador || ''}`;
+                            if (detalhes.posicao_puxador || detalhes.tam_puxador) {
+                                html += ` (Posição: ${detalhes.posicao_puxador || ''}, Tamanho: ${detalhes.tam_puxador || ''} mm)`;
+                            }
+                            html += `</p>`;
+                        }
+
+                        // FUROS
+                        if (detalhes.qtd_furos) {
+                            html += `<p><strong>Furos:</strong> ${detalhes.qtd_furos} ${detalhes.pos_furos || ''}</p>`;
+                        }
+
+                        // REVESTIMENTO
+                        if (detalhes.revestimento) {
+                            if (!detalhes.cor_revestimento) {
+                                html += `<p><strong>Revestimento:</strong> ${detalhes.revestimento} ${detalhes.acabamento_revestimento || ''}</p>`;
+                            } else {
+                                html += `<p><strong>Revestimento:</strong> ${detalhes.revestimento} ${detalhes.acabamento_revestimento || ''} (${detalhes.cor_revestimento})</p>`;
+                            }
+                        }
+
+                        // TAMANHOS
+                        if (detalhes.altura && detalhes.largura) {
+                            html += `<p><strong>Tamanho:</strong> H=${detalhes.altura} x L=${detalhes.largura} mm</p>`;
+                        }
+
+                        // COMPLEMENTOS
+                        complementos.forEach(complemento => {
+                            if (complemento.classe === "Sistema de correr") {
+                                html += `<p><strong>Sistema correr:</strong> ${complemento.complemento} (Qtd: ${complemento.qtd})</p>`;
+                            } else if (complemento.classe === "Amortecedores") {
+                                html += `<p><strong>Amortecedor:</strong> ${complemento.complemento} (Qtd: ${complemento.qtd})</p>`;
+                            } else if (complemento.classe === "Trilho superior") {
+                                html += `<p><strong>Trilho superior:</strong> ${complemento.complemento} (Qtd: ${complemento.qtd}, Tamanho: ${complemento.tamanho} mm)</p>`;
+                            } else if (complemento.classe === "Trilho inferior") {
+                                html += `<p><strong>Trilho inferior:</strong> ${complemento.complemento} (Qtd: ${complemento.qtd}, Tamanho: ${complemento.tamanho} mm)</p>`;
+                            } else {
+                                html += `<p><strong>Acessórios:</strong> ${complemento.complemento} (Qtd: ${complemento.qtd})</p>`;
+                            }
+                        });
+
+                        // Para portas de correr com múltiplas portas
+                        if (tipo === "Porta de correr") {
+                            for (let i = 1; i <= 6; i++) {
+                                const largura = detalhes[`largura${i}`];
+                                if (largura) {
+                                    html += `<p><strong>PORTA ${i}:</strong> H=${detalhes.altura} x L=${largura} mm</p>`;
+                                }
+                            }
+                        }
                     }
-                    
-                    if (item.qtd_furos) {
-                        html += `<p><strong>Furos:</strong> ${item.qtd_furos} ${item.pos_furos || ''}</p>`;
-                    }
-                    
-                    if (item.revestimento) {
-                        html += `<p><strong>Revestimento:</strong> ${item.revestimento} ${item.acabamento_revestimento || ''}`;
-                        if (item.cor_revestimento) html += ` (${item.cor_revestimento})`;
-                        html += `</p>`;
-                    }
-                    
-                    if (item.altura && item.largura) {
-                        html += `<p><strong>Tamanho:</strong> H=${item.altura} x L=${item.largura} mm</p>`;
-                    }
-                    
-                    if (item.kit_sistema_correr) {
-                        html += `<p><strong>Sistema correr:</strong> ${item.kit_sistema_correr} (Qtd: ${item.qtd_sistema_correr})</p>`;
-                    }
-                    
-                    if (item.amortecedor) {
-                        html += `<p><strong>Amortecedor:</strong> ${item.amortecedor} (Qtd: ${item.qtd_amortecedor})</p>`;
-                    }
-                    
-                    if (item.trilho_sup) {
-                        html += `<p><strong>Trilho superior:</strong> ${item.trilho_sup} (Qtd: ${item.qtd_trilho_sup}, Tamanho: ${item.tam_trilho_sup} mm)</p>`;
-                    }
-                    
-                    if (item.trilho_inf) {
-                        html += `<p><strong>Trilho inferior:</strong> ${item.trilho_inf} (Qtd: ${item.qtd_trilho_inf}, Tamanho: ${item.tam_trilho_inf} mm)</p>`;
-                    }
-                    
-                    if (item.acessorios) {
-                        html += `<p><strong>Acessórios:</strong> ${item.acessorios}</p>`;
-                    }
-                    
                 } else {
                     // Para metalons
-                    if (item.produto) html += `<p><strong>Produto:</strong> ${item.produto}</p>`;
-                    if (item.modelo_material) html += `<p><strong>Material:</strong> ${item.modelo_material}</p>`;
-                    if (item.acabamento) html += `<p><strong>Acabamento:</strong> ${item.acabamento}</p>`;
-                    if (item.cor) html += `<p><strong>Cor:</strong> ${item.cor}</p>`;
-                    if (item.altura && item.largura && item.profundidade) {
-                        html += `<p><strong>Tamanho:</strong> H=${item.altura} x L=${item.largura} x P=${item.profundidade} mm</p>`;
+                    const detalhes = item.detalhes || {};
+                    html += `<p><strong>Produto:</strong> ${detalhes.produto || ''}</p>`;
+                    html += `<p><strong>Material:</strong> ${detalhes.modelo_material || ''}</p>`;
+                    html += `<p><strong>Acabamento:</strong> ${detalhes.acabamento || ''}</p>`;
+                    html += `<p><strong>Cor:</strong> ${detalhes.cor || ''}</p>`;
+                    
+                    if (detalhes.altura && detalhes.largura && detalhes.profundidade) {
+                        html += `<p><strong>Tamanho:</strong> H=${detalhes.altura} x L=${detalhes.largura} x P=${detalhes.profundidade} mm</p>`;
                     }
                 }
                 
