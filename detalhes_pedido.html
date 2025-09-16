@@ -655,10 +655,10 @@
             try {
                 const pedido = JSON.parse(pedidoData);
                 const numeroPedido = pedido.numero;
-                const clienteFinal = pedido.clienteFinal || pedido.cliente;
+                const razaoSocial = pedido.cliente || pedido.cliente;
                 
                 // Montar o nome do arquivo: NUMERO_CLIENTE.pdf
-                const nomeArquivo = `${numeroPedido}_${clienteFinal}.pdf`;
+                const nomeArquivo = `${numeroPedido}_${razaoSocial}.pdf`;
                 
                 // URL do servidor FTP (convertida para HTTP para acesso via browser)
                 const url = `https://elegancea2.uhserver.com/Elegance/PedidosPDF/${encodeURIComponent(nomeArquivo)}`;
