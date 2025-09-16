@@ -306,27 +306,27 @@ app.get('/itens_pedido', async (req, res) => {
     // Buscar itens principais
     const [itens] = await conn.execute(`
       SELECT 
-        item, 
-        tipo_produto, 
-        qtd, 
-        observacao, 
-        unitario, 
-        total,
-        unitario_m,
-        total_m
+        ITEM, 
+        TIPO_PRODUTO, 
+        QTD, 
+        OBSERVACAO, 
+        UNITARIO, 
+        TOTAL,
+        UNITARIO_M,
+        TOTAL_M
       FROM ped_orc_lista_itens 
       WHERE numero = ? AND tipo = 'Pedido'
-      ORDER BY item
+      ORDER BY ITEM
     `, [numero]);
 
     // Para cada item, buscar detalhes específicos
     for (let item of itens) {
-      if (item.tipo_produto !== 'Metalons') {
+      if (item.TIPO_PRODUTO !== 'Metalons') {
         // Buscar detalhes na tabela ped_orc_itens_v4
         const [detalhes] = await conn.execute(`
           SELECT * FROM ped_orc_itens_v4 
           WHERE numero = ? AND tipo = 'Pedido' AND item_pedido = ?
-        `, [numero, item.item]);
+        `, [numero, item.ITEM]);
         
         if (detalhes.length > 0) {
           item.detalhes = detalhes[0];
@@ -336,7 +336,7 @@ app.get('/itens_pedido', async (req, res) => {
         const [complementos] = await conn.execute(`
           SELECT * FROM ped_orc_complementos 
           WHERE numero = ? AND tipo = 'Pedido' AND item_pedido = ?
-        `, [numero, item.item]);
+        `, [numero, item.ITEM]);
         
         item.complementos = complementos;
       } else {
@@ -344,7 +344,7 @@ app.get('/itens_pedido', async (req, res) => {
         const [detalhes] = await conn.execute(`
           SELECT * FROM ped_orc_serralheria 
           WHERE numero = ? AND tipo = 'Pedido' AND item_pedido = ?
-        `, [numero, item.item]);
+        `, [numero, item.ITEM]);
         
         if (detalhes.length > 0) {
           item.detalhes = detalhes[0];
