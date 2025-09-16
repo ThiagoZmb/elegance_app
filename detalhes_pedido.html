@@ -656,8 +656,9 @@
                 const pedido = JSON.parse(pedidoData);
                 const numeroPedido = pedido.numero;
                 
-                // Fazer requisição para gerar/baixar o PDF
-                const url = `https://app-cek0.onrender.com/pedido_pdf/${numeroPedido}`;
+                // URL do servidor FTP (convertida para HTTP para acesso via browser)
+                // Assumindo que o arquivo PDF tem o nome no formato: pedido_NUMERO.pdf
+                const url = `https://elegancea2.uhserver.com/Elegance/PedidosPDF/pedido_${numeroPedido}.pdf`;
                 
                 // Criar um link temporário para download
                 const link = document.createElement('a');
