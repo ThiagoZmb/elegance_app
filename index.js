@@ -342,7 +342,7 @@ app.get('/itens_pedido', async (req, res) => {
         observacao,
         unitario,
         total
-      FROM ped_orc_itens
+      FROM ped_orc_itens_v4
       WHERE NUMERO = ?
     `, [numero]);
     
