@@ -1170,53 +1170,55 @@
 
         // Função para carregar e exibir dados do usuário - CORRIGIDA
         function carregarDadosUsuario() {
-            // Verificar se há dados de usuário no localStorage
-            const userData = localStorage.getItem('user');
-            
-            if (userData) {
-                try {
-                    const user = JSON.parse(userData);
-                    
-                    // Preencher os elementos com os dados do usuário
-                    if (user.empresa) {
-                        document.getElementById('user-empresa').textContent = user.empresa;
-                    } else {
-                        console.warn('Empresa não encontrada nos dados do usuário');
-                    }
-                    
-                    if (user.nome) {
-                        document.getElementById('user-name').textContent = user.nome;
-                        
-                        // Atualizar avatar com a primeira letra do nome
-                        const firstLetter = user.nome.charAt(0).toUpperCase();
-                        document.getElementById('user-avatar').textContent = firstLetter;
-                    } else {
-                        console.warn('Nome não encontrado nos dados do usuário');
-                    }
-                    
-                } catch (e) {
-                    console.error('Erro ao processar dados do usuário:', e);
-                    // Definir valores padrão em caso de erro
-                    document.getElementById('user-empresa').textContent = 'Luiz Cruz';
-                    document.getElementById('user-name').textContent = 'Thiago';
-                    document.getElementById('user-avatar').textContent = 'T';
-                }
-            } else {
-                console.warn('Dados do usuário não encontrados no localStorage. Usando valores padrão.');
-                // Definir valores padrão
-                document.getElementById('user-empresa').textContent = 'Luiz Cruz';
-                document.getElementById('user-name').textContent = 'Thiago';
-                document.getElementById('user-avatar').textContent = 'T';
-            }
-        }
+  const userData = localStorage.getItem('user');
 
+  if (userData) {
+    // Tenta fazer o parse do JSON
+    try {
+      const user = JSON.parse(userData);
+
+      // Preencher os elementos com os dados do usuário
+      document.getElementById('user-empresa').textContent = user.empresa || 'Empresa';
+      document.getElementById('user-name').textContent = user.nome || 'Usuário';
+
+      // Atualizar avatar com a primeira letra do nome (se o nome existir)
+      const firstLetter = user.nome ? user.nome.charAt(0).toUpperCase() : '';
+      document.getElementById('user-avatar').textContent = firstLetter;
+      
+    } catch (e) {
+      // Se houver um erro no parse do JSON (dados corrompidos)
+      console.error('Erro ao processar dados do usuário no localStorage:', e);
+      // Opcional: remover dados inválidos
+      localStorage.removeItem('user');
+      // Redirecionar para login ou mostrar mensagem de erro
+      window.location.href = '/login'; 
+    }
+  } else {
+    // Se não há dados do usuário, redirecionar para a página de login
+    console.warn('Usuário não encontrado no localStorage. Redirecionando para login...');
+    //window.location.href = '/login'; 
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+        
         // Inicialização quando o DOM estiver carregado
         document.addEventListener('DOMContentLoaded', () => {
             carregarDadosUsuario();
+           
             loadPedidos();
             setupSearch();
             
-            document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
+            //document.getElementById('refresh-btn').addEventListener('click', checkAuthAndLoadPedidos);
         });
     </script>
 </body>
