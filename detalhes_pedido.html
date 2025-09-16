@@ -6,7 +6,6 @@
     <title>Detalhes do Pedido - Elegance Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Estilos semelhantes à página principal */
         * {
             margin: 0;
             padding: 0;
@@ -44,7 +43,7 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             background: var(--white);
             border-radius: 20px;
@@ -110,7 +109,17 @@
             color: var(--info-color);
         }
 
-        .order-info-grid {
+        .status-pronto {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-entregue {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+
+        .info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
@@ -160,7 +169,7 @@
         }
 
         .obs-section {
-            margin-top: 30px;
+            margin-bottom: 30px;
         }
 
         .obs-content {
@@ -170,6 +179,94 @@
             margin-top: 10px;
         }
 
+        .mysql-table-container {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-color);
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        .mysql-table-container h3 {
+            font-size: 18px;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mysql-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .mysql-table th {
+            background: var(--secondary-color);
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-dark);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .mysql-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-dark);
+        }
+
+        .mysql-table tr:hover {
+            background: var(--secondary-color);
+        }
+
+        .financial-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .financial-a-receber {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+
+        .financial-recebido {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            border-radius: 20px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(139, 0, 0, 0.2);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         @media (max-width: 768px) {
             .order-header {
                 flex-direction: column;
@@ -177,8 +274,12 @@
                 gap: 15px;
             }
             
-            .order-info-grid {
+            .info-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .mysql-table {
+                font-size: 12px;
             }
         }
     </style>
@@ -195,7 +296,7 @@
 
         <div class="order-details">
             <div id="loading" style="text-align: center; padding: 40px;">
-                <div class="loading-spinner" style="width: 40px; height: 40px; border: 4px solid rgba(139, 0, 0, 0.2); border-top: 4px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+                <div class="loading-spinner" style="margin: 0 auto 20px;"></div>
                 <p>Carregando detalhes do pedido...</p>
             </div>
 
@@ -205,7 +306,7 @@
                     <span class="order-status" id="order-status"></span>
                 </div>
 
-                <div class="order-info-grid">
+                <div class="info-grid">
                     <div class="info-card">
                         <h3>Informações do Cliente</h3>
                         <div class="info-item">
@@ -251,6 +352,23 @@
                     <h3>Observações</h3>
                     <div class="obs-content" id="order-obs"></div>
                 </div>
+
+                <div class="mysql-table-container">
+                    <h3><i class="fas fa-database"></i> Dados do Banco de Dados</h3>
+                    <div style="overflow-x: auto;">
+                        <table class="mysql-table">
+                            <thead>
+                                <tr>
+                                    <th>Campo</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mysql-data">
+                                <!-- Dados do MySQL serão preenchidos aqui -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <div id="error-message" style="display: none; text-align: center; padding: 40px; color: var(--danger-color);">
@@ -277,9 +395,7 @@
                     document.getElementById('order-date').textContent = pedido.data;
                     document.getElementById('ready-date').textContent = pedido.prontoEm || 'Não informado';
                     document.getElementById('delivery-date').textContent = pedido.dataEntrega || 'Não informado';
-                    document.getElementById('order-value').textContent = 'R$ ' + parseFloat(pedido.valor).toFixed(2).replace('.', ',');
-                    document.getElementById('financial-status').textContent = pedido.financeiro;
-                    document.getElementById('order-obs').textContent = pedido.observacao || 'Nenhuma observação registrada.';
+                    document.getElementById('order-value').textContent = 'R$ ' + parseFloat(pedido.valor || 0).toFixed(2).replace('.', ',');
                     
                     // Configurar status com a classe apropriada
                     const statusElement = document.getElementById('order-status');
@@ -287,9 +403,16 @@
                     const situacaoClass = `status-${pedido.situacao.toLowerCase().replace(' ', '-')}`;
                     statusElement.classList.add(situacaoClass);
                     
-                    // Esconder loading e mostrar conteúdo
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('order-content').style.display = 'block';
+                    // Configurar situação financeira
+                    const financialElement = document.getElementById('financial-status');
+                    financialElement.textContent = pedido.financeiro;
+                    const financialClass = `financial-${pedido.financeiro.toLowerCase().replace(' ', '-')}`;
+                    financialElement.classList.add(financialClass);
+                    
+                    document.getElementById('order-obs').textContent = pedido.observacao || 'Nenhuma observação registrada.';
+                    
+                    // Carregar dados do MySQL
+                    loadMySQLData(pedido.numero, pedido.cliente);
                     
                 } catch (error) {
                     console.error('Erro ao processar dados do pedido:', error);
@@ -302,6 +425,75 @@
             function showError() {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('error-message').style.display = 'block';
+            }
+            
+            async function loadMySQLData(numeroPedido, razaoSocial) {
+                try {
+                    // Obter o CNPJ da empresa do localStorage
+                    const cnpjSalvo = localStorage.getItem('cnpj_da_empresa');
+                    
+                    if (!cnpjSalvo) {
+                        console.error('CNPJ não encontrado no storage');
+                        return;
+                    }
+                    
+                    // Determinar a URL da API com base no CNPJ
+                    let apiUrl;
+                    if (cnpjSalvo === '08.951.388/0001-18') {
+                        apiUrl = `https://app-cek0.onrender.com/detalhes_pedido_mysql?numero=${numeroPedido}&razao_social=${encodeURIComponent(razaoSocial)}`;
+                    } else if (cnpjSalvo === '37.521.493/0001-15') {
+                        apiUrl = `https://app-cek0.onrender.com/detalhes_pedido_mysql_rj?numero=${numeroPedido}&razao_social=${encodeURIComponent(razaoSocial)}`;
+                    } else {
+                        apiUrl = `https://app-cek0.onrender.com/detalhes_pedido_mysql_cnpj?numero=${numeroPedido}&razao_social=${encodeURIComponent(razaoSocial)}&cnpj_comp=${cnpjSalvo}`;
+                    }
+                    
+                    // Fazer a requisição para obter os dados do MySQL
+                    const response = await fetch(apiUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Erro HTTP: ${response.status}`);
+                    }
+                    
+                    const mysqlData = await response.json();
+                    
+                    // Preencher a tabela com os dados do MySQL
+                    const mysqlTbody = document.getElementById('mysql-data');
+                    mysqlTbody.innerHTML = '';
+                    
+                    if (mysqlData && Object.keys(mysqlData).length > 0) {
+                        for (const [key, value] of Object.entries(mysqlData)) {
+                            const row = document.createElement('tr');
+                            
+                            const fieldCell = document.createElement('td');
+                            fieldCell.textContent = key;
+                            fieldCell.style.fontWeight = '600';
+                            
+                            const valueCell = document.createElement('td');
+                            valueCell.textContent = value !== null && value !== undefined ? value : 'N/A';
+                            
+                            row.appendChild(fieldCell);
+                            row.appendChild(valueCell);
+                            mysqlTbody.appendChild(row);
+                        }
+                    } else {
+                        mysqlTbody.innerHTML = '<tr><td colspan="2" style="text-align: center;">Nenhum dado adicional encontrado</td></tr>';
+                    }
+                    
+                    // Esconder loading e mostrar conteúdo
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('order-content').style.display = 'block';
+                    
+                } catch (error) {
+                    console.error('Erro ao carregar dados do MySQL:', error);
+                    
+                    // Mesmo em caso de erro, mostrar os dados básicos do pedido
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('order-content').style.display = 'block';
+                    
+                    // Mostrar mensagem de erro na tabela MySQL
+                    const mysqlTbody = document.getElementById('mysql-data');
+                    mysqlTbody.innerHTML = '<tr><td colspan="2" style="text-align: center; color: var(--danger-color);">Erro ao carregar dados adicionais</td></tr>';
+                }
             }
         });
     </script>
