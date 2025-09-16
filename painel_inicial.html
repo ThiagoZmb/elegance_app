@@ -1171,8 +1171,9 @@
 
         // Função para carregar e exibir dados do usuário - CORRIGIDA
         function carregarDadosUsuario() {
+           
             const userData = localStorage.getItem('user');
-
+             console.log("Dados brutos do localStorage:", userData);
             if (userData) {
                 try {
                     const user = JSON.parse(userData);
