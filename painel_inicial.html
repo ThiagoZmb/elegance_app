@@ -819,7 +819,7 @@
 
         if (cnpjSalvo === '08.951.388/0001-18') {
             // Se o CNPJ for o especificado, faz a requisição para o endpoint geral '/pedidos'
-            res = await fetch(`https://app-cek0.onrender.com/pedidos`);
+            res = await fetch(`https://app-cek0.onrender.com/dados_pedidos`);
         } else {
             // Caso contrário, faz a requisição para o endpoint específico '/pedidos_cnpj'
             res = await fetch(`https://app-cek0.onrender.com/pedidos_cnpj?cnpj_comp=${cnpjSalvo}`);
