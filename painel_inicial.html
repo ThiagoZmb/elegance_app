@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* Estilos existentes mantidos */
         * {
             margin: 0;
             padding: 0;
@@ -423,6 +424,11 @@
             color: var(--text-dark);
         }
 
+        .orders-table tr {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
         .orders-table tr:hover {
             background: var(--secondary-color);
         }
@@ -788,7 +794,15 @@
             return 'R$ ' + parseFloat(value).toFixed(2).replace('.', ',');
         }
 
-      
+        // Função para redirecionar para a página de detalhes do pedido
+        function redirectToOrderDetails(pedido) {
+            // Armazena os dados do pedido no localStorage para usar na página de detalhes
+            localStorage.setItem('pedidoSelecionado', JSON.stringify(pedido));
+            
+            // Redireciona para a página de detalhes
+            window.location.href = 'detalhes_pedido.html';
+        }
+
         // Função para carregar pedidos do banco de dados
         async function loadPedidos() {
             try {
@@ -804,26 +818,22 @@
                 const cnpjSalvo = localStorage.getItem('cnpj_da_empresa');
                 console.log(cnpjSalvo);
 
-
                 // Se não existir, trate o erro
-            if (!cnpjSalvo) {
-              console.error('CNPJ não encontrado no storage');
-              return;
-            }
+                if (!cnpjSalvo) {
+                    console.error('CNPJ não encontrado no storage');
+                    return;
+                }
 
+                let res; // Declarar a variável 'res' aqui para que ela possa ser usada nos blocos if/else
 
-        
-        let res; // Declarar a variável 'res' aqui para que ela possa ser usada nos blocos if/else
+                if (cnpjSalvo === '08.951.388/0001-18') {
+                    res = await fetch(`https://app-cek0.onrender.com/dados_pedidos`);
+                } else if(cnpjSalvo === '37.521.493/0001-15') {
+                    res = await fetch(`https://app-cek0.onrender.com/dados_pedidos_rj`);
+                } else {
+                    res = await fetch(`https://app-cek0.onrender.com/pedidos_cnpj?cnpj_comp=${cnpjSalvo}`);
+                }
 
-        if (cnpjSalvo === '08.951.388/0001-18') {
-            res = await fetch(`https://app-cek0.onrender.com/dados_pedidos`);
-        } else if(cnpjSalvo === '37.521.493/0001-15') {
-            res = await fetch(`https://app-cek0.onrender.com/dados_pedidos_rj`);
-        } else {
-            res = await fetch(`https://app-cek0.onrender.com/pedidos_cnpj?cnpj_comp=${cnpjSalvo}`);
-        }
-
-               
                 // Verificar se a resposta é válida
                 if (!res.ok) {
                     throw new Error(`Erro HTTP: ${res.status}`);
@@ -868,6 +878,11 @@
                             <td class="date-cell">${pedido.dataEntrega || '-'}</td>
                         `;
 
+                        // Adicionar evento de clique para abrir detalhes do pedido
+                        row.addEventListener('click', () => {
+                            redirectToOrderDetails(pedido);
+                        });
+
                         tbody.appendChild(row);
                     });
                 }
@@ -895,6 +910,7 @@
             }
         }
 
+        // Restante do código JavaScript permanece igual...
         // Atualizar cards de resumo
         function updateSummaryCards(pedidos) {
             
@@ -907,145 +923,126 @@
                 `+${todayOrders} novos pedidos` : 'Sem novos pedidos hoje';
             document.getElementById('today-change').className = todayOrders > 0 ? 
                 'card-change positive' : 'card-change';
-            
-
-
-
 
             // Pedidos em produção com tratamento robusto
-const productionOrders = pedidos.filter(p => {
-  // Verificar se p.situacao existe e não é nulo/undefined
-  if (!p.situacao) return false;
-  
-  // Converter para string, remover espaços e converter para minúsculas
-  const situacao = String(p.situacao).trim().toLowerCase();
-  
-  // Verificar se contém "em produção" (ou variações)
-  return situacao.includes('em produção') || 
-         situacao.includes('em producao') || // sem acento
-         situacao.includes('producao') ||    // apenas "produção"
-         situacao.includes('produção');      // apenas "produção" com acento
-}).length;
+            const productionOrders = pedidos.filter(p => {
+                // Verificar se p.situacao existe e não é nulo/undefined
+                if (!p.situacao) return false;
+                
+                // Converter para string, remover espaços e converter para minúsculas
+                const situacao = String(p.situacao).trim().toLowerCase();
+                
+                // Verificar se contém "em produção" (ou variações)
+                return situacao.includes('em produção') || 
+                    situacao.includes('em producao') || // sem acento
+                    situacao.includes('producao') ||    // apenas "produção"
+                    situacao.includes('produção');      // apenas "produção" com acento
+            }).length;
 
-// Atualizar o DOM com verificação de existência dos elementos
-const productionOrdersElement = document.getElementById('production-orders');
-const productionChangeElement = document.getElementById('production-change');
+            // Atualizar o DOM com verificação de existência dos elementos
+            const productionOrdersElement = document.getElementById('production-orders');
+            const productionChangeElement = document.getElementById('production-change');
 
-if (productionOrdersElement) {
-  productionOrdersElement.textContent = productionOrders;
-}
+            if (productionOrdersElement) {
+                productionOrdersElement.textContent = productionOrders;
+            }
 
-if (productionChangeElement) {
-  productionChangeElement.textContent = 'Em Produção';
-  productionChangeElement.className = 'card-change';
-}
+            if (productionChangeElement) {
+                productionChangeElement.textContent = 'Em Produção';
+                productionChangeElement.className = 'card-change';
+            }
 
-// Debug: mostrar os valores de situação para identificar o problema
-console.log('Situações encontradas:', [...new Set(pedidos.map(p => p.situacao))]);
-console.log('Pedidos em produção:', productionOrders);
+            // Debug: mostrar os valores de situação para identificar o problema
+            console.log('Situações encontradas:', [...new Set(pedidos.map(p => p.situacao))]);
+            console.log('Pedidos em produção:', productionOrders);
 
-
-
-
-            
-            
             // Pedidos prontos com tratamento robusto
-const readyOrders = pedidos.filter(p => {
-  // Verificar se p.situacao existe e não é nulo/undefined
-  if (!p.situacao) return false;
-  
-  // Converter para string, remover espaços e converter para minúsculas
-  const situacao = String(p.situacao).trim().toLowerCase();
-  
-  // Verificar se contém "pronto" (ou variações)
-  return situacao.includes('pronto') || 
-         situacao.includes('finalizado') ||
-         situacao.includes('concluído') ||
-         situacao.includes('concluido') ||    // sem acento
-         situacao.includes('acabado') ||
-         situacao === 'ok' ||                 // caso use apenas "OK"
-         situacao === 'finish' ||             // caso use inglês
-         situacao === 'done';                 // caso use inglês
-}).length;
+            const readyOrders = pedidos.filter(p => {
+                // Verificar se p.situacao existe e não é nulo/undefined
+                if (!p.situacao) return false;
+                
+                // Converter para string, remover espaços e converter para minúsculas
+                const situacao = String(p.situacao).trim().toLowerCase();
+                
+                // Verificar se contém "pronto" (ou variações)
+                return situacao.includes('pronto') || 
+                    situacao.includes('finalizado') ||
+                    situacao.includes('concluído') ||
+                    situacao.includes('concluido') ||    // sem acento
+                    situacao.includes('acabado') ||
+                    situacao === 'ok' ||                 // caso use apenas "OK"
+                    situacao === 'finish' ||             // caso use inglês
+                    situacao === 'done';                 // caso use inglês
+            }).length;
 
-// Atualizar o DOM com verificação de existência dos elementos
-const readyOrdersElement = document.getElementById('ready-orders');
-const readyChangeElement = document.getElementById('ready-change');
+            // Atualizar o DOM com verificação de existência dos elementos
+            const readyOrdersElement = document.getElementById('ready-orders');
+            const readyChangeElement = document.getElementById('ready-change');
 
-if (readyOrdersElement) {
-  readyOrdersElement.textContent = readyOrders;
-}
+            if (readyOrdersElement) {
+                readyOrdersElement.textContent = readyOrders;
+            }
 
-if (readyChangeElement) {
-  readyChangeElement.textContent = 'Pedidos prontos';
-  readyChangeElement.className = 'card-change';
-}
+            if (readyChangeElement) {
+                readyChangeElement.textContent = 'Pedidos prontos';
+                readyChangeElement.className = 'card-change';
+            }
 
-// Debug: mostrar os valores de situação para identificar o problema
-console.log('Situações encontradas (Prontos):', [...new Set(pedidos.map(p => p.situacao))]);
-console.log('Pedidos prontos:', readyOrders);
+            // Debug: mostrar os valores de situação para identificar o problema
+            console.log('Situações encontradas (Prontos):', [...new Set(pedidos.map(p => p.situacao))]);
+            console.log('Pedidos prontos:', readyOrders);
 
+            // Obter data atual (mês e ano)
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1; // Ajustado: Janeiro = 1 (para corresponder ao MySQL)
+            const currentYear = now.getFullYear();
 
+            // Filtrar pedidos do mês atual
+            const pedidosDoMes = pedidos.filter(p => {
+                // Verifica se o pedido tem uma data válida
+                if (!p.data) return false;
+                
+                // Converter formato dd/mm/yyyy (vindo do MySQL) para Date
+                const [dia, mes, ano] = p.data.split('/');
+                
+                // Validar se a divisão funcionou corretamente
+                if (!dia || !mes || !ano) return false;
+                
+                // Criar objeto Date (mes-1 porque Date usa 0-11)
+                const date = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+                
+                // Verifica se a data é válida
+                if (isNaN(date.getTime())) return false;
+                
+                // Comparar mês e ano (getMonth() + 1 para corresponder ao formato MySQL)
+                return (date.getMonth() + 1) === currentMonth && 
+                    date.getFullYear() === currentYear;
+            });
 
+            // Soma dos valores com tratamento para valores nulos
+            const revenue = pedidosDoMes.reduce((sum, p) => {
+                const valor = parseFloat(p.valor) || 0;
+                return sum + valor;
+            }, 0);
 
-            
-         // Obter data atual (mês e ano)
-const now = new Date();
-const currentMonth = now.getMonth() + 1; // Ajustado: Janeiro = 1 (para corresponder ao MySQL)
-const currentYear = now.getFullYear();
+            // Atualizar o DOM com verificação de existência dos elementos
+            const revenueElement = document.getElementById('revenue');
+            const revenueChangeElement = document.getElementById('revenue-change');
 
-// Filtrar pedidos do mês atual
-const pedidosDoMes = pedidos.filter(p => {
-  // Verifica se o pedido tem uma data válida
-  if (!p.data) return false;
-  
-  // Converter formato dd/mm/yyyy (vindo do MySQL) para Date
-  const [dia, mes, ano] = p.data.split('/');
-  
-  // Validar se a divisão funcionou corretamente
-  if (!dia || !mes || !ano) return false;
-  
-  // Criar objeto Date (mes-1 porque Date usa 0-11)
-  const date = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
-  
-  // Verifica se a data é válida
-  if (isNaN(date.getTime())) return false;
-  
-  // Comparar mês e ano (getMonth() + 1 para corresponder ao formato MySQL)
-  return (date.getMonth() + 1) === currentMonth && 
-         date.getFullYear() === currentYear;
-});
+            if (revenueElement) {
+                revenueElement.textContent = formatCurrency(revenue);
+            }
 
-// Soma dos valores com tratamento para valores nulos
-const revenue = pedidosDoMes.reduce((sum, p) => {
-  const valor = parseFloat(p.valor) || 0;
-  return sum + valor;
-}, 0);
+            if (revenueChangeElement) {
+                revenueChangeElement.textContent = 'Total do mês';
+                revenueChangeElement.className = 'card-change';
+            }
 
-// Atualizar o DOM com verificação de existência dos elementos
-const revenueElement = document.getElementById('revenue');
-const revenueChangeElement = document.getElementById('revenue-change');
+            // Debug: mostrar quantos pedidos foram encontrados
+            console.log(`Pedidos do mês ${currentMonth}/${currentYear}:`, pedidosDoMes.length);
+            console.log('Receita total:', revenue);
+        }
 
-if (revenueElement) {
-  revenueElement.textContent = formatCurrency(revenue);
-}
-
-if (revenueChangeElement) {
-  revenueChangeElement.textContent = 'Total do mês';
-  revenueChangeElement.className = 'card-change';
-}
-
-// Debug: mostrar quantos pedidos foram encontrados
-console.log(`Pedidos do mês ${currentMonth}/${currentYear}:`, pedidosDoMes.length);
-console.log('Receita total:', revenue);
-
-
-
-
-        }//Final na function
-
-
-        
         // Renderizar gráficos
         function renderCharts(pedidos) {
             // Gráfico de pizza - Distribuição de status
@@ -1173,58 +1170,45 @@ console.log('Receita total:', revenue);
             });
         }
 
-      
-       // Função para carregar e exibir dados do usuário
-    function carregarDadosUsuario() {
-  const userData = localStorage.getItem('user');
+        // Função para carregar e exibir dados do usuário
+        function carregarDadosUsuario() {
+            const userData = localStorage.getItem('user');
 
-  if (userData) {
-    // Tenta fazer o parse do JSON
-    try {
-      const user = JSON.parse(userData);
+            if (userData) {
+                // Tenta fazer o parse do JSON
+                try {
+                    const user = JSON.parse(userData);
 
-      // Preencher os elementos com os dados do usuário
-      document.getElementById('user-empresa').textContent = user.empresa || 'Empresa';
-      document.getElementById('user-name').textContent = user.nome || 'Usuário';
+                    // Preencher os elementos com os dados do usuário
+                    document.getElementById('user-empresa').textContent = user.empresa || 'Empresa';
+                    document.getElementById('user-name').textContent = user.nome || 'Usuário';
 
-      // Atualizar avatar com a primeira letra do nome (se o nome existir)
-      const firstLetter = user.nome ? user.nome.charAt(0).toUpperCase() : '';
-      document.getElementById('user-avatar').textContent = firstLetter;
-      
-    } catch (e) {
-      // Se houver um erro no parse do JSON (dados corrompidos)
-      console.error('Erro ao processar dados do usuário no localStorage:', e);
-      // Opcional: remover dados inválidos
-      localStorage.removeItem('user');
-      // Redirecionar para login ou mostrar mensagem de erro
-      window.location.href = '/login'; 
-    }
-  } else {
-    // Se não há dados do usuário, redirecionar para a página de login
-    console.warn('Usuário não encontrado no localStorage. Redirecionando para login...');
-    //window.location.href = '/login'; 
-  }
-}
+                    // Atualizar avatar com a primeira letra do nome (se o nome existir)
+                    const firstLetter = user.nome ? user.nome.charAt(0).toUpperCase() : '';
+                    document.getElementById('user-avatar').textContent = firstLetter;
+                    
+                } catch (e) {
+                    // Se houver um erro no parse do JSON (dados corrompidos)
+                    console.error('Erro ao processar dados do usuário no localStorage:', e);
+                    // Opcional: remover dados inválidos
+                    localStorage.removeItem('user');
+                    // Redirecionar para login ou mostrar mensagem de erro
+                    window.location.href = '/login'; 
+                }
+            } else {
+                // Se não há dados do usuário, redirecionar para a página de login
+                console.warn('Usuário não encontrado no localStorage. Redirecionando para login...');
+                //window.location.href = '/login'; 
+            }
+        }
 
-
-
-
-
-
-
-
-
-
-
-        
         // Inicialização quando o DOM estiver carregado
         document.addEventListener('DOMContentLoaded', () => {
             carregarDadosUsuario();
-           
             loadPedidos();
             setupSearch();
             
-            //document.getElementById('refresh-btn').addEventListener('click', checkAuthAndLoadPedidos);
+            document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
         });
     </script>
 </body>
