@@ -246,3 +246,110 @@ app.get('/pedidos_cnpj', async (req, res) => {
     res.status(500).json({ error: 'Erro de servidor' });
   }
 });
+
+
+
+
+
+
+
+// Endpoint para buscar dados dos pedidos
+app.get('/detalhe_pedidos', async (req, res) => {
+  try {
+    const conn = await mysql.createConnection(dbConfig);
+    
+    // Query para buscar os pedidos
+   const [rows] = await conn.execute(`
+      
+      SELECT * FROM ped_orc_lista_itens WHERE ped_orc_lista_itens.NUMERO='" & Numero_Pedido & "'  AND  ped_orc_lista_itens.TIPO='Pedido' 
+      
+      SELECT 
+        p.NUMERO as numero,
+        p.RAZAO_SOCIAL as cliente,
+        p.CLIENTE_FINAL as clienteFinal,
+        DATE_FORMAT(p.DATA, '%d/%m/%Y') as data,
+        DATE_FORMAT(p.DATA_PRONTO, '%d/%m/%Y') as prontoEm,
+        p.TOTAL as valor,
+        p.OBS_GERAL as observacao,
+        p.SITUACAO as situacao,
+        p.FINANCEIRO as financeiro,
+        DATE_FORMAT(p.DATA_ENTREGA, '%d/%m/%Y') as dataEntrega
+      FROM ped_orc p
+      WHERE p.TIPO='Pedido'
+      ORDER BY p.DATA DESC
+      
+    `);
+    
+    await conn.end();
+    res.json(rows);
+  } catch (err) {
+    console.error('Erro ao buscar pedidos:', err);
+    res.status(500).json({ error: 'Erro de servidor' });
+  }
+});
+
+
+
+
+
+app.get('/itens_pedido', async (req, res) => {
+  try {
+    const { numero } = req.query;
+    if (!numero) {
+      return res.status(400).json({ error: 'Número do pedido é obrigatório' });
+    }
+
+    const conn = await mysql.createConnection(dbConfig);
+    
+    // Query para buscar os itens do pedido
+    // Note: This is a hypothetical query. Adjust according to your database schema.
+    const [rows] = await conn.execute(`
+      SELECT 
+        item,
+        qtd,
+        tipo_produto,
+        perfil,
+        acabamento_perfil,
+        cor_perfil,
+        puxador,
+        qtd_puxador,
+        acabamento_puxador,
+        posicao_puxador,
+        tam_puxador,
+        qtd_furos,
+        pos_furos,
+        revestimento,
+        acabamento_revestimento,
+        cor_revestimento,
+        altura,
+        largura,
+        kit_sistema_correr,
+        qtd_sistema_correr,
+        amortecedor,
+        qtd_amortecedor,
+        trilho_sup,
+        qtd_trilho_sup,
+        tam_trilho_sup,
+        trilho_inf,
+        qtd_trilho_inf,
+        tam_trilho_inf,
+        acessorios,
+        produto,
+        modelo_material,
+        acabamento,
+        cor,
+        profundidade,
+        observacao,
+        unitario,
+        total
+      FROM ped_orc_itens
+      WHERE NUMERO = ?
+    `, [numero]);
+    
+    await conn.end();
+    res.json(rows);
+  } catch (err) {
+    console.error('Erro ao buscar itens do pedido:', err);
+    res.status(500).json({ error: 'Erro de servidor' });
+  }
+});
