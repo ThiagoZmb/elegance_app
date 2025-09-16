@@ -655,10 +655,10 @@
             try {
                 const pedido = JSON.parse(pedidoData);
                 const numeroPedido = pedido.numero;
-                const clienteFinal = pedido.clienteFinal || pedido.cliente;
+                const cliente = pedido.cliente;
                 
                 // Montar o nome do arquivo: NUMERO_CLIENTE.pdf
-                const nomeArquivo = `${numeroPedido}_${clienteFinal}.pdf`;
+                const nomeArquivo = `${numeroPedido}_${cliente}.pdf`;
                 
                 // Tentar diferentes URLs possíveis para acessar o FTP via HTTP
                 const possiveisUrls = [
