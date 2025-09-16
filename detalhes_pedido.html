@@ -322,10 +322,16 @@
     <div class="container">
         <header>
             <h1>Detalhes do Pedido</h1>
-            <button class="back-button" onclick="window.history.back()">
-                <i class="fas fa-arrow-left"></i>
-                Voltar
-            </button>
+            <div style="display: flex; gap: 10px;">
+                <button class="back-button" onclick="downloadPDF()">
+                    <i class="fas fa-download"></i>
+                    Download PDF
+                </button>
+                <button class="back-button" onclick="window.history.back()">
+                    <i class="fas fa-arrow-left"></i>
+                    Voltar
+                </button>
+            </div>
         </header>
 
         <div class="order-details">
@@ -636,6 +642,39 @@
                 return html || tipo;
             }
         });
+
+        // Função para download do PDF
+        function downloadPDF() {
+            const pedidoData = localStorage.getItem('pedidoSelecionado');
+            
+            if (!pedidoData) {
+                alert('Dados do pedido não encontrados');
+                return;
+            }
+            
+            try {
+                const pedido = JSON.parse(pedidoData);
+                const numeroPedido = pedido.numero;
+                
+                // Fazer requisição para gerar/baixar o PDF
+                const url = `https://app-cek0.onrender.com/pedido_pdf/${numeroPedido}`;
+                
+                // Criar um link temporário para download
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `pedido_${numeroPedido}.pdf`;
+                link.target = '_blank';
+                
+                // Adicionar ao DOM, clicar e remover
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+            } catch (error) {
+                console.error('Erro ao fazer download do PDF:', error);
+                alert('Erro ao fazer download do PDF');
+            }
+        }
     </script>
 </body>
 </html>
