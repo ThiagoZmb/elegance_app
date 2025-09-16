@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* Estilos anteriores mantidos */
         * {
             margin: 0;
             padding: 0;
@@ -661,11 +662,11 @@
     <div class="container">
         <!-- Header Moderno -->
         <header>
-            <div class="logo" id="user-empresa">Luiz Cruz</div>
+            <div class="logo" id="user-empresa">Carregando...</div>
             <div class="header-right">
                 <div class="user-profile">
-                    <div class="user-avatar" id="user-avatar">T</div>
-                    <span id="user-name">Thiago</span>
+                    <div class="user-avatar" id="user-avatar">?</div>
+                    <span id="user-name">Carregando...</span>
                 </div>
             </div>
         </header>
@@ -1170,55 +1171,44 @@
 
         // Função para carregar e exibir dados do usuário - CORRIGIDA
         function carregarDadosUsuario() {
-  const userData = localStorage.getItem('user');
+            const userData = localStorage.getItem('user');
 
-  if (userData) {
-    // Tenta fazer o parse do JSON
-    try {
-      const user = JSON.parse(userData);
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    console.log("Dados do usuário recuperados:", user);
 
-      // Preencher os elementos com os dados do usuário
-      document.getElementById('user-empresa').textContent = user.empresa || 'Empresa';
-      document.getElementById('user-name').textContent = user.nome || 'Usuário';
+                    // Preencher os elementos com os dados do usuário
+                    if (user.empresa) {
+                        document.getElementById('user-empresa').textContent = user.empresa;
+                    }
+                    
+                    if (user.nome) {
+                        document.getElementById('user-name').textContent = user.nome;
+                        
+                        // Atualizar avatar com a primeira letra do nome
+                        const firstLetter = user.nome.charAt(0).toUpperCase();
+                        document.getElementById('user-avatar').textContent = firstLetter;
+                    }
+                    
+                } catch (e) {
+                    console.error('Erro ao processar dados do usuário no localStorage:', e);
+                    localStorage.removeItem('user');
+                    window.location.href = '/login'; 
+                }
+            } else {
+                console.warn('Usuário não encontrado no localStorage. Redirecionando para login...');
+                window.location.href = '/login'; 
+            }
+        }
 
-      // Atualizar avatar com a primeira letra do nome (se o nome existir)
-      const firstLetter = user.nome ? user.nome.charAt(0).toUpperCase() : '';
-      document.getElementById('user-avatar').textContent = firstLetter;
-      
-    } catch (e) {
-      // Se houver um erro no parse do JSON (dados corrompidos)
-      console.error('Erro ao processar dados do usuário no localStorage:', e);
-      // Opcional: remover dados inválidos
-      localStorage.removeItem('user');
-      // Redirecionar para login ou mostrar mensagem de erro
-      window.location.href = '/login'; 
-    }
-  } else {
-    // Se não há dados do usuário, redirecionar para a página de login
-    console.warn('Usuário não encontrado no localStorage. Redirecionando para login...');
-    //window.location.href = '/login'; 
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-        
         // Inicialização quando o DOM estiver carregado
         document.addEventListener('DOMContentLoaded', () => {
             carregarDadosUsuario();
-           
             loadPedidos();
             setupSearch();
             
-            //document.getElementById('refresh-btn').addEventListener('click', checkAuthAndLoadPedidos);
+            document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
         });
     </script>
 </body>
