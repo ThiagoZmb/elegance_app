@@ -816,7 +816,7 @@
                 });
 
                 const cnpjSalvo = localStorage.getItem('cnpj_da_empresa');
-                console.log("CNPJ recuperado:", cnpjSalvo);
+               
 
                 // Se não existir, trate o erro
                 if (!cnpjSalvo) {
@@ -951,9 +951,7 @@
                 productionChangeElement.className = 'card-change';
             }
 
-            // Debug: mostrar os valores de situação para identificar o problema
-            console.log('Situações encontradas:', [...new Set(pedidos.map(p => p.situacao))]);
-            console.log('Pedidos em produção:', productionOrders);
+         
 
             // Pedidos prontos com tratamento robusto
             const readyOrders = pedidos.filter(p => {
@@ -987,9 +985,6 @@
                 readyChangeElement.className = 'card-change';
             }
 
-            // Debug: mostrar os valores de situação para identificar o problema
-            console.log('Situações encontradas (Prontos):', [...new Set(pedidos.map(p => p.situacao))]);
-            console.log('Pedidos prontos:', readyOrders);
 
             // Obter data atual (mês e ano)
             const now = new Date();
@@ -1037,9 +1032,7 @@
                 revenueChangeElement.className = 'card-change';
             }
 
-            // Debug: mostrar quantos pedidos foram encontrados
-            console.log(`Pedidos do mês ${currentMonth}/${currentYear}:`, pedidosDoMes.length);
-            console.log('Receita total:', revenue);
+           
         }
 
         // Renderizar gráficos
