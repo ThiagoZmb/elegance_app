@@ -292,62 +292,68 @@ app.get('/detalhe_pedidos', async (req, res) => {
 
 
 
+// Endpoint para buscar itens do pedido
 app.get('/itens_pedido', async (req, res) => {
-  try {
-    const { numero } = req.query;
-    if (!numero) {
-      return res.status(400).json({ error: 'Número do pedido é obrigatório' });
-    }
+  const { numero } = req.query;
 
+  if (!numero) {
+    return res.status(400).json({ error: 'Número do pedido é obrigatório' });
+  }
+
+  try {
     const conn = await mysql.createConnection(dbConfig);
     
-    // Query para buscar os itens do pedido
-    // Note: This is a hypothetical query. Adjust according to your database schema.
-    const [rows] = await conn.execute(`
+    // Buscar itens principais
+    const [itens] = await conn.execute(`
       SELECT 
-       ITEM,
-        QTD,
-        TIPO_PRODUTO,
-        PERFIL,
-        ACABAMENTO_PERFIL,
-        COR_PERFIL,
-        PUXADOR,
-        QTD_PUXADOR,
-        ACABAMENTO_PUXADOR,
-        POSICAO_PUXADOR,
-        TAM_PUXADOR,
-        QTD_FUROS,
-        POS_FUROS,
-        REVESTIMENTO,
-        ACABAMENTO_REVESTIMENTO,
-        COR_REVESTIMENTO,
-        ALTURA,
-        LARGURA,
-        KIT_SISTEMA_CORRER,
-        QTD_SISTEMA_CORRER,
-        AMORTECEDOR,
-        QTD_AMORTECEDOR,
-        TRILHO_SUP,
-        QTD_TRILHO_SUP,
-        TAM_TRILHO_SUP,
-        TRILHO_INF,
-        QTD_TRILHO_INF,
-        TAM_TRILHO_INF,
-        ACESSORIOS,
-        PRODUTO,
-        MODELO_MATERIAL,
-        ACABAMENTO,
-        COR,
-        PROFUNDIDADE,
-        OBSERVACAO,
-        UNITARIO,
-        TOTAL
-      FROM ped_orc_itens_v4
-      WHERE NUMERO = ?
+        item, 
+        tipo_produto, 
+        qtd, 
+        observacao, 
+        unitario, 
+        total,
+        unitario_m,
+        total_m
+      FROM ped_orc_lista_itens 
+      WHERE numero = ? AND tipo = 'Pedido'
+      ORDER BY item
     `, [numero]);
-    
+
+    // Para cada item, buscar detalhes específicos
+    for (let item of itens) {
+      if (item.tipo_produto !== 'Metalons') {
+        // Buscar detalhes na tabela ped_orc_itens_v4
+        const [detalhes] = await conn.execute(`
+          SELECT * FROM ped_orc_itens_v4 
+          WHERE numero = ? AND tipo = 'Pedido' AND item_pedido = ?
+        `, [numero, item.item]);
+        
+        if (detalhes.length > 0) {
+          item.detalhes = detalhes[0];
+        }
+
+        // Buscar complementos
+        const [complementos] = await conn.execute(`
+          SELECT * FROM ped_orc_complementos 
+          WHERE numero = ? AND tipo = 'Pedido' AND item_pedido = ?
+        `, [numero, item.item]);
+        
+        item.complementos = complementos;
+      } else {
+        // Buscar detalhes na tabela ped_orc_serralheria para metalons
+        const [detalhes] = await conn.execute(`
+          SELECT * FROM ped_orc_serralheria 
+          WHERE numero = ? AND tipo = 'Pedido' AND item_pedido = ?
+        `, [numero, item.item]);
+        
+        if (detalhes.length > 0) {
+          item.detalhes = detalhes[0];
+        }
+      }
+    }
+
     await conn.end();
-    res.json(rows);
+    res.json(itens);
   } catch (err) {
     console.error('Erro ao buscar itens do pedido:', err);
     res.status(500).json({ error: 'Erro de servidor' });
