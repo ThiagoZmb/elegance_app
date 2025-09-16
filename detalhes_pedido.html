@@ -644,7 +644,7 @@
         });
 
         // Função para download do PDF
-        function downloadPDF() {
+       function downloadPDF() {
             const pedidoData = localStorage.getItem('pedidoSelecionado');
             
             if (!pedidoData) {
@@ -655,15 +655,18 @@
             try {
                 const pedido = JSON.parse(pedidoData);
                 const numeroPedido = pedido.numero;
+                const clienteFinal = pedido.clienteFinal || pedido.cliente;
+                
+                // Montar o nome do arquivo: NUMERO_CLIENTE.pdf
+                const nomeArquivo = `${numeroPedido}_${clienteFinal}.pdf`;
                 
                 // URL do servidor FTP (convertida para HTTP para acesso via browser)
-                // Assumindo que o arquivo PDF tem o nome no formato: pedido_NUMERO.pdf
-                const url = `https://elegancea2.uhserver.com/Elegance/PedidosPDF/pedido_${numeroPedido}.pdf`;
+                const url = `https://elegancea2.uhserver.com/Elegance/PedidosPDF/${encodeURIComponent(nomeArquivo)}`;
                 
                 // Criar um link temporário para download
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = `pedido_${numeroPedido}.pdf`;
+                link.download = nomeArquivo;
                 link.target = '_blank';
                 
                 // Adicionar ao DOM, clicar e remover
