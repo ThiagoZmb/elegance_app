@@ -469,6 +469,8 @@
             
             async function loadItemsData(numeroPedido) {
                 try {
+                    console.log('Carregando itens para pedido:', numeroPedido);
+                    
                     // Fazer a requisição para obter os itens do pedido
                     const response = await fetch(`https://app-cek0.onrender.com/itens_pedido?numero=${numeroPedido}`);
                     
@@ -477,6 +479,7 @@
                     }
                     
                     const itensData = await response.json();
+                    console.log('Dados recebidos:', itensData);
                     
                     // Preencher a tabela com os itens do pedido
                     const itemsTbody = document.getElementById('items-data');
@@ -484,16 +487,18 @@
                     
                     if (itensData && itensData.length > 0) {
                         itensData.forEach(item => {
+                            console.log('Processando item:', item);
+                            
                             const row = document.createElement('tr');
                             
-                            // Coluna Item
+                            // Coluna Item - usando ITEM (maiúsculo)
                             const itemCell = document.createElement('td');
-                            itemCell.textContent = item.item || '';
+                            itemCell.textContent = item.ITEM || '';
                             row.appendChild(itemCell);
-                            console.log(item.item);
-                            // Coluna QTD
+                            
+                            // Coluna QTD - usando QTD (maiúsculo)
                             const qtdCell = document.createElement('td');
-                            qtdCell.textContent = item.qtd || '';
+                            qtdCell.textContent = item.QTD || '';
                             row.appendChild(qtdCell);
                             
                             // Coluna Descrição
@@ -502,19 +507,19 @@
                             descCell.innerHTML = formatItemDescription(item);
                             row.appendChild(descCell);
                             
-                            // Coluna Observação
+                            // Coluna Observação - usando OBSERVACAO (maiúsculo)
                             const obsCell = document.createElement('td');
-                            obsCell.textContent = item.observacao || '';
+                            obsCell.textContent = item.OBSERVACAO || '';
                             row.appendChild(obsCell);
                             
-                            // Coluna Unitário
+                            // Coluna Unitário - usando UNITARIO (maiúsculo)
                             const unitCell = document.createElement('td');
-                            unitCell.textContent = item.unitario ? 'R$ ' + parseFloat(item.unitario).toFixed(2).replace('.', ',') : '';
+                            unitCell.textContent = item.UNITARIO ? 'R$ ' + parseFloat(item.UNITARIO).toFixed(2).replace('.', ',') : '';
                             row.appendChild(unitCell);
                             
-                            // Coluna Total
+                            // Coluna Total - usando TOTAL (maiúsculo)
                             const totalCell = document.createElement('td');
-                            totalCell.textContent = item.total ? 'R$ ' + parseFloat(item.total).toFixed(2).replace('.', ',') : '';
+                            totalCell.textContent = item.TOTAL ? 'R$ ' + parseFloat(item.TOTAL).toFixed(2).replace('.', ',') : '';
                             row.appendChild(totalCell);
                             
                             itemsTbody.appendChild(row);
@@ -542,7 +547,7 @@
             
             function formatItemDescription(item) {
                 let html = '';
-                const tipo = item.tipo_produto || '';
+                const tipo = item.TIPO_PRODUTO || '';
                 
                 html += `<p class="main-info">${tipo}</p>`;
                 
