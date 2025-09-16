@@ -1166,63 +1166,173 @@
         function carregarDadosUsuario() {
             console.log("=== DEBUG DADOS USUARIO ===");
             
-            // Recuperar dados do localStorage
-            const userData = JSON.parse(localStorage.getItem('user')) || null;
-            const cnpjEmpresa = localStorage.getItem('cnpj_da_empresa') || null;
+            // Limpar qualquer cache que possa interferir
+            const elementsToUpdate = {
+                empresa: document.getElementById('user-empresa'),
+                nome: document.getElementById('user-name'), 
+                avatar: document.getElementById('user-avatar')
+            };
             
-            console.log("Dados do user:", userData);
+            // Verificar se os elementos existem
+            Object.entries(elementsToUpdate).forEach(([key, element]) => {
+                if (!element) {
+                    console.error(`Elemento ${key} não encontrado!`);
+                } else {
+                    console.log(`Elemento ${key} encontrado:`, element);
+                }
+            });
+            
+            // Verificar todos os itens no localStorage
+            console.log("Todos os itens no localStorage:");
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                console.log(`${key}:`, value);
+            }
+            
+            // Recuperar dados do localStorage com diferentes tentativas
+            let userData = null;
+            let cnpjEmpresa = localStorage.getItem('cnpj_da_empresa') || null;
+            
+            // Tentar recuperar dados do usuário de diferentes formas
+            try {
+                const userDataString = localStorage.getItem('user');
+                if (userDataString && userDataString !== 'null' && userDataString !== 'undefined') {
+                    userData = JSON.parse(userDataString);
+                }
+            } catch (e) {
+                console.error("Erro ao fazer parse dos dados do usuário:", e);
+            }
+            
+            console.log("Dados do user recuperados:", userData);
             console.log("CNPJ da empresa:", cnpjEmpresa);
             
-            // Se tem dados do usuário, usar eles
-            if (userData && userData.nome && userData.empresa) {
-                console.log("Usando dados completos do usuário");
+            // Determinar nome da empresa baseado no CNPJ primeiro
+            let nomeEmpresa = "Empresa";
+            if (cnpjEmpresa === '08.951.388/0001-18') {
+                nomeEmpresa = "Elegance Esquadrias";
+            } else if (cnpjEmpresa === '37.521.493/0001-15') {
+                nomeEmpresa = "Elegance RJ";
+            } else if (userData && userData.empresa) {
+                nomeEmpresa = userData.empresa;
+            }
+            
+            // Nome do usuário
+            let nomeUsuario = "Usuário";
+            let avatarLetra = "U";
+            
+            if (userData && userData.nome) {
+                nomeUsuario = userData.nome;
+                avatarLetra = userData.nome.charAt(0).toUpperCase();
+            }
+            
+            // Atualizar a interface
+            console.log("Atualizando interface com:");
+            console.log("- Empresa:", nomeEmpresa);
+            console.log("- Usuário:", nomeUsuario);
+            console.log("- Avatar:", avatarLetra);
+            
+            // Forçar atualização dos elementos - método mais agressivo
+            if (elementsToUpdate.empresa) {
+                elementsToUpdate.empresa.innerHTML = '';
+                elementsToUpdate.empresa.textContent = nomeEmpresa;
+                elementsToUpdate.empresa.setAttribute('data-updated', 'true');
+                console.log("Empresa atualizada no DOM:", elementsToUpdate.empresa.textContent);
+            }
+            
+            if (elementsToUpdate.nome) {
+                elementsToUpdate.nome.innerHTML = '';
+                elementsToUpdate.nome.textContent = nomeUsuario;
+                elementsToUpdate.nome.setAttribute('data-updated', 'true');
+                console.log("Nome atualizado no DOM:", elementsToUpdate.nome.textContent);
+            }
+            
+            if (elementsToUpdate.avatar) {
+                elementsToUpdate.avatar.innerHTML = '';
+                elementsToUpdate.avatar.textContent = avatarLetra;
+                elementsToUpdate.avatar.setAttribute('data-updated', 'true');
+                console.log("Avatar atualizado no DOM:", elementsToUpdate.avatar.textContent);
+            }
+            
+            // Verificar se os elementos foram realmente atualizados após um pequeno delay
+            setTimeout(() => {
+                console.log("=== VERIFICAÇÃO FINAL ===");
+                console.log("Empresa no DOM:", document.getElementById('user-empresa')?.textContent);
+                console.log("Nome no DOM:", document.getElementById('user-name')?.textContent);
+                console.log("Avatar no DOM:", document.getElementById('user-avatar')?.textContent);
                 
-                // Nome da empresa
-                document.getElementById('user-empresa').textContent = userData.empresa;
+                // Se ainda não atualizou, tentar forçar novamente
+                const empresaFinal = document.getElementById('user-empresa')?.textContent;
+                const nomeFinal = document.getElementById('user-name')?.textContent;
                 
-                // Nome do usuário
-                document.getElementById('user-name').textContent = userData.nome;
-                
-                // Avatar com primeira letra
-                const firstLetter = userData.nome.charAt(0).toUpperCase();
-                document.getElementById('user-avatar').textContent = firstLetter;
-                
-                console.log("UI atualizada com:", {
-                    empresa: userData.empresa,
-                    nome: userData.nome,
-                    avatar: firstLetter
-                });
-                
-            } else {
-                console.warn("Dados do usuário incompletos ou não encontrados");
-                
-                // Fallback com dados limitados
-                if (cnpjEmpresa) {
-                    // Determinar nome da empresa baseado no CNPJ
-                    let nomeEmpresa = "Empresa";
-                    if (cnpjEmpresa === '08.951.388/0001-18') {
-                        nomeEmpresa = "Elegance Esquadrias";
-                    } else if (cnpjEmpresa === '37.521.493/0001-15') {
-                        nomeEmpresa = "Elegance RJ";
+                if (empresaFinal === 'Carregando...' || empresaFinal === 'Luiz Cruz') {
+                    console.log("Forçando atualização da empresa novamente...");
+                    const el = document.getElementById('user-empresa');
+                    if (el) {
+                        el.textContent = nomeEmpresa;
+                        el.style.color = 'white'; // Garantir que está visível
                     }
-                    
-                    document.getElementById('user-empresa').textContent = nomeEmpresa;
-                    console.log("Empresa definida por CNPJ:", nomeEmpresa);
                 }
                 
-                // Nome genérico para usuário
-                document.getElementById('user-name').textContent = "Usuário";
-                document.getElementById('user-avatar').textContent = "U";
-            }
+                if (nomeFinal === 'Carregando...' || nomeFinal === 'Luiz Cruz') {
+                    console.log("Forçando atualização do nome novamente...");
+                    const el = document.getElementById('user-name');
+                    if (el) {
+                        el.textContent = nomeUsuario;
+                        el.style.color = 'white'; // Garantir que está visível
+                    }
+                }
+            }, 100);
         }
 
         // Inicialização quando o DOM estiver carregado
         document.addEventListener('DOMContentLoaded', () => {
-            carregarDadosUsuario();
-            loadPedidos();
+            console.log("=== INICIANDO PAINEL ===");
+            
+            // Aguardar um pequeno delay para garantir que o DOM está totalmente carregado
+            setTimeout(() => {
+                carregarDadosUsuario();
+            }, 100);
+            
+            // Carregar dados após carregar usuário
+            setTimeout(() => {
+                loadPedidos();
+            }, 200);
+            
             setupSearch();
             
             document.getElementById('refresh-btn').addEventListener('click', loadPedidos);
+        });
+
+        // Também tentar executar assim que o script for carregado
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(carregarDadosUsuario, 50);
+            });
+        } else {
+            // DOM já está carregado
+            setTimeout(carregarDadosUsuario, 50);
+        }
+
+        // Verificação adicional para garantir que os dados do usuário não sejam sobrescritos
+        window.addEventListener('load', () => {
+            console.log("=== WINDOW LOAD EVENT ===");
+            setTimeout(() => {
+                // Verificar se os dados ainda estão corretos
+                const empresaAtual = document.getElementById('user-empresa')?.textContent;
+                const nomeAtual = document.getElementById('user-name')?.textContent;
+                
+                console.log("Valores atuais após load:");
+                console.log("- Empresa:", empresaAtual);
+                console.log("- Nome:", nomeAtual);
+                
+                // Se ainda estiver com valores padrão, tentar novamente
+                if (empresaAtual === 'Carregando...' || nomeAtual === 'Carregando...' || 
+                    empresaAtual === 'Luiz Cruz' || nomeAtual === 'Luiz Cruz') {
+                    console.log("Detectados valores incorretos, recarregando dados do usuário...");
+                    carregarDadosUsuario();
+                }
+            }, 500);
         });
     </script>
 </body>
