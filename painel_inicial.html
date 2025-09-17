@@ -829,9 +829,9 @@
                 // Determinar dados da empresa
                 let companyName = 'Empresa';
                 if (cnpjEmpresa === '08.951.388/0001-18') {
-                    companyName = 'Elegance Esquadrias';
+                    companyName = userData.empresa;
                 } else if (cnpjEmpresa === '37.521.493/0001-15') {
-                    companyName = 'Elegance RJ';
+                    companyName = userData.empresa;
                 } else if (userData && userData.empresa) {
                     companyName = userData.empresa;
                 }
