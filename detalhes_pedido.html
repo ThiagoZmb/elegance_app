@@ -643,70 +643,70 @@
             }
         });
 
-        // Função para download do PDF
-        function downloadPDF() {
-            const pedidoData = localStorage.getItem('pedidoSelecionado');
-            
-            if (!pedidoData) {
-                alert('Dados do pedido não encontrados');
+       function downloadPDF() {
+    const pedidoData = localStorage.getItem('pedidoSelecionado');
+    
+    if (!pedidoData) {
+        alert('Dados do pedido não encontrados');
+        return;
+    }
+    
+    try {
+        const pedido = JSON.parse(pedidoData);
+        const numeroPedido = pedido.numero;
+        const cliente = pedido.cliente;
+        
+        // Montar o nome do arquivo: NUMERO_CLIENTE.pdf
+        const nomeArquivo = `${numeroPedido}_${cliente}.pdf`;
+        
+        // Tentar diferentes URLs possíveis para acessar o FTP via HTTP
+        // REMOVIDO o encodeURIComponent do nome do arquivo
+        const possiveisUrls = [
+            `http://ftp.uhserver.com/elegancea2/Elegance/PedidosPDF/${nomeArquivo}`,
+            `https://ftp.uhserver.com/elegancea2/Elegance/PedidosPDF/${nomeArquivo}`,
+            `http://elegancea2.uhserver.com/Elegance/PedidosPDF/${nomeArquivo}`,
+            `https://elegancea2.uhserver.com/Elegance/PedidosPDF/${nomeArquivo}`,
+            `ftp://elegancea2@ftp.uhserver.com/Elegance/PedidosPDF/${nomeArquivo}`
+        ];
+        
+        // Função para tentar cada URL
+        function tentarDownload(urls, index = 0) {
+            if (index >= urls.length) {
+                alert('Não foi possível acessar o arquivo PDF. Verifique se o arquivo existe no servidor.');
                 return;
             }
             
-            try {
-                const pedido = JSON.parse(pedidoData);
-                const numeroPedido = pedido.numero;
-                const cliente = pedido.cliente;
-                
-                // Montar o nome do arquivo: NUMERO_CLIENTE.pdf
-                const nomeArquivo = `${numeroPedido}_${cliente}.pdf`;
-                
-                // Tentar diferentes URLs possíveis para acessar o FTP via HTTP
-                const possiveisUrls = [
-                    `http://ftp.uhserver.com/elegancea2/Elegance/PedidosPDF/${encodeURIComponent(nomeArquivo)}`,
-                    `https://ftp.uhserver.com/elegancea2/Elegance/PedidosPDF/${encodeURIComponent(nomeArquivo)}`,
-                    `http://elegancea2.uhserver.com/Elegance/PedidosPDF/${encodeURIComponent(nomeArquivo)}`,
-                    `https://elegancea2.uhserver.com/Elegance/PedidosPDF/${encodeURIComponent(nomeArquivo)}`,
-                    `ftp://elegancea2@ftp.uhserver.com/Elegance/PedidosPDF/${encodeURIComponent(nomeArquivo)}`
-                ];
-                
-                // Função para tentar cada URL
-                function tentarDownload(urls, index = 0) {
-                    if (index >= urls.length) {
-                        alert('Não foi possível acessar o arquivo PDF. Verifique se o arquivo existe no servidor.');
-                        return;
-                    }
-                    
-                    const url = urls[index];
-                    console.log(`Tentando URL: ${url}`);
-                    
-                    // Criar um link temporário para download
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = nomeArquivo;
-                    link.target = '_blank';
-                    
-                    // Tentar verificar se a URL existe antes de fazer o download
-                    fetch(url, { method: 'HEAD', mode: 'no-cors' })
-                        .then(() => {
-                            // Se chegou aqui, provavelmente a URL existe
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                        })
-                        .catch(() => {
-                            // Se não funcionou, tentar a próxima URL
-                            tentarDownload(urls, index + 1);
-                        });
-                }
-                
-                // Iniciar as tentativas
-                tentarDownload(possiveisUrls);
-                
-            } catch (error) {
-                console.error('Erro ao fazer download do PDF:', error);
-                alert('Erro ao fazer download do PDF');
-            }
+            const url = urls[index];
+            console.log(`Tentando URL: ${url}`);
+            
+            // Criar um link temporário para download
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = nomeArquivo;
+            link.target = '_blank';
+            
+            // Tentar verificar se a URL existe antes de fazer o download
+            fetch(url, { method: 'HEAD', mode: 'no-cors' })
+                .then(() => {
+                    // Se chegou aqui, provavelmente a URL existe
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                })
+                .catch(() => {
+                    // Se não funcionou, tentar a próxima URL
+                    tentarDownload(urls, index + 1);
+                });
         }
+        
+        // Iniciar as tentativas
+        tentarDownload(possiveisUrls);
+        
+    } catch (error) {
+        console.error('Erro ao fazer download do PDF:', error);
+        alert('Erro ao fazer download do PDF');
+    }
+}
     </script>
 </body>
 </html>
