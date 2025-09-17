@@ -827,15 +827,15 @@
                 }
 
                 // Determinar dados da empresa
-                //let companyName = 'Empresa';
-                let companyName = 'userData.empresa;
-                //if (cnpjEmpresa === '08.951.388/0001-18') {
-                    //companyName = userData.empresa;
-                //} else if (cnpjEmpresa === '37.521.493/0001-15') {
-                    //companyName = userData.empresa;
-                //} else if (userData && userData.empresa) {
-                    //companyName = userData.empresa;
-                //}
+                let companyName = 'Empresa';
+                //let companyName = 'userData.empresa;
+                if (cnpjEmpresa === '08.951.388/0001-18') {
+                    companyName = userData.empresa;
+                } else if (cnpjEmpresa === '37.521.493/0001-15') {
+                    companyName = userData.empresa;
+                } else if (userData && userData.empresa) {
+                    companyName = userData.empresa;
+                }
 
                 // Determinar dados do usuário
                 let userName = 'Usuário';
