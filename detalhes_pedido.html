@@ -296,6 +296,134 @@
             margin: 25px 0;
         }
 
+        /* Modal para o PDF */
+        .pdf-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pdf-modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .pdf-modal h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .pdf-modal p {
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .pdf-modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .pdf-modal-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .pdf-modal-button.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .pdf-modal-button.primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .pdf-modal-button.secondary {
+            background-color: var(--secondary-color);
+            color: var(--text-dark);
+        }
+
+        .pdf-modal-button.secondary:hover {
+            background-color: #e9ecef;
+        }
+
+        .pdf-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .pdf-status.info {
+            background-color: rgba(23, 162, 184, 0.1);
+            color: var(--info-color);
+            border-left: 4px solid var(--info-color);
+        }
+
+        .pdf-status.success {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .pdf-status.error {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .pdf-status i {
+            margin-right: 10px;
+        }
+
+        .pdf-links {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .pdf-links h3 {
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: var(--text-dark);
+        }
+
+        .pdf-link {
+            display: block;
+            padding: 10px;
+            margin: 8px 0;
+            background-color: var(--secondary-color);
+            border-radius: 5px;
+            text-decoration: none;
+            color: var(--primary-color);
+            font-size: 14px;
+            word-break: break-all;
+            transition: background-color 0.3s;
+        }
+
+        .pdf-link:hover {
+            background-color: #e9ecef;
+        }
+
         @media (max-width: 768px) {
             .order-header {
                 flex-direction: column;
@@ -314,6 +442,10 @@
             .items-table th,
             .items-table td {
                 padding: 8px 6px;
+            }
+
+            .pdf-modal-buttons {
+                flex-direction: column;
             }
         }
     </style>
@@ -421,6 +553,25 @@
                 <i class="fas fa-exclamation-circle" style="font-size: 48px; margin-bottom: 20px;"></i>
                 <h3>Erro ao carregar detalhes do pedido</h3>
                 <p>Volte à página anterior e tente novamente.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Download de PDF -->
+    <div class="pdf-modal" id="pdfModal">
+        <div class="pdf-modal-content">
+            <h2><i class="fas fa-file-pdf"></i> Download do PDF</h2>
+            <div id="pdfStatus" class="pdf-status info">
+                <i class="fas fa-spinner fa-spin"></i>
+                <span>Verificando disponibilidade do PDF...</span>
+            </div>
+            <div id="pdfLinks" class="pdf-links" style="display: none;">
+                <h3>Links alternativos para tentativa manual:</h3>
+                <div id="pdfLinksContainer"></div>
+            </div>
+            <div class="pdf-modal-buttons">
+                <button class="pdf-modal-button primary" onclick="closePdfModal()">Fechar</button>
+                <button class="pdf-modal-button secondary" onclick="retryDownload()" id="retryButton" style="display: none;">Tentar Novamente</button>
             </div>
         </div>
     </div>
@@ -643,41 +794,113 @@
             }
         });
 
-       function downloadPDF() {
-   const pedidoData = localStorage.getItem('pedidoSelecionado');
-    
-    if (!pedidoData) {
-        alert('Dados do pedido não encontrados');
-        return;
-    }
-    
-    try {
-        const pedido = JSON.parse(pedidoData);
-        const numeroPedido = pedido.numero;
-        const cliente = pedido.cliente;
-        
-        // Montar o nome do arquivo: NUMERO_CLIENTE.pdf
-        const nomeArquivo = `${numeroPedido}_${cliente}.pdf`;
-        
-        // URLs para testar
-        const urls = [
-            `https://elegancea2.uhserver.com/Elegance/PedidosPDF/${nomeArquivo}`,
-            `http://elegancea2.uhserver.com/Elegance/PedidosPDF/${nomeArquivo}`,
-            `https://ftp.uhserver.com/elegancea2/Elegance/PedidosPDF/${nomeArquivo}`,
-            `http://ftp.uhserver.com/elegancea2/Elegance/PedidosPDF/${nomeArquivo}`
-        ];
-        
-        // Abrir todas as URLs em abas separadas (uma deve funcionar)
-        urls.forEach(url => {
-            console.log(`Tentando abrir: ${url}`);
-            window.open(url, '_blank');
-        });
-        
-    } catch (error) {
-        console.error('Erro ao abrir PDF:', error);
-        alert('Erro ao abrir PDF');
-    }
-}
+        // Função para abrir o modal de PDF
+        function openPdfModal() {
+            document.getElementById('pdfModal').style.display = 'flex';
+        }
+
+        // Função para fechar o modal de PDF
+        function closePdfModal() {
+            document.getElementById('pdfModal').style.display = 'none';
+        }
+
+        // Função para tentar novamente o download
+        function retryDownload() {
+            document.getElementById('retryButton').style.display = 'none';
+            document.getElementById('pdfLinks').style.display = 'none';
+            downloadPDF();
+        }
+
+        // Função principal para download do PDF
+        async function downloadPDF() {
+            const pedidoData = localStorage.getItem('pedidoSelecionado');
+            
+            if (!pedidoData) {
+                alert('Dados do pedido não encontrados');
+                return;
+            }
+            
+            try {
+                const pedido = JSON.parse(pedidoData);
+                const numeroPedido = pedido.numero;
+                const cliente = pedido.cliente;
+                
+                // Montar o nome do arquivo: NUMERO_CLIENTE.pdf
+                const nomeArquivo = `${numeroPedido}_${cliente}.pdf`;
+                
+                // URLs para testar
+                const urls = [
+                    `https://elegancea2.uhserver.com/Elegance/PedidosPDF/${nomeArquivo}`,
+                    `http://elegancea2.uhserver.com/Elegance/PedidosPDF/${nomeArquivo}`,
+                    `https://ftp.uhserver.com/elegancea2/Elegance/PedidosPDF/${nomeArquivo}`,
+                    `http://ftp.uhserver.com/elegancea2/Elegance/PedidosPDF/${nomeArquivo}`
+                ];
+                
+                // Abrir o modal
+                openPdfModal();
+                const statusElement = document.getElementById('pdfStatus');
+                statusElement.className = 'pdf-status info';
+                statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Verificando disponibilidade do PDF...</span>';
+                
+                // Tentar cada URL sequencialmente
+                for (let i = 0; i < urls.length; i++) {
+                    const url = urls[i];
+                    statusElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>Tentando acessar: ${url}</span>`;
+                    
+                    try {
+                        // Verificar se o arquivo existe
+                        const response = await fetch(url, { method: 'HEAD' });
+                        
+                        if (response.ok) {
+                            // Arquivo encontrado, abrir em nova aba
+                            statusElement.className = 'pdf-status success';
+                            statusElement.innerHTML = '<i class="fas fa-check-circle"></i><span>PDF encontrado! Abrindo...</span>';
+                            
+                            // Abrir o PDF após um breve delay para mostrar a mensagem
+                            setTimeout(() => {
+                                window.open(url, '_blank');
+                                document.getElementById('retryButton').style.display = 'none';
+                            }, 1000);
+                            
+                            return;
+                        }
+                    } catch (error) {
+                        console.error(`Erro ao acessar ${url}:`, error);
+                        // Continuar para a próxima URL
+                    }
+                }
+                
+                // Se nenhuma URL funcionou
+                statusElement.className = 'pdf-status error';
+                statusElement.innerHTML = '<i class="fas fa-exclamation-circle"></i><span>Não foi possível encontrar o PDF em nenhum servidor.</span>';
+                
+                // Mostrar links para tentativa manual
+                const linksContainer = document.getElementById('pdfLinksContainer');
+                linksContainer.innerHTML = '';
+                
+                urls.forEach(url => {
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.target = '_blank';
+                    link.className = 'pdf-link';
+                    link.textContent = url;
+                    link.onclick = () => closePdfModal();
+                    linksContainer.appendChild(link);
+                });
+                
+                document.getElementById('pdfLinks').style.display = 'block';
+                document.getElementById('retryButton').style.display = 'inline-block';
+                
+            } catch (error) {
+                console.error('Erro ao abrir PDF:', error);
+                
+                const statusElement = document.getElementById('pdfStatus');
+                statusElement.className = 'pdf-status error';
+                statusElement.innerHTML = '<i class="fas fa-exclamation-circle"></i><span>Erro ao tentar abrir o PDF.</span>';
+                
+                document.getElementById('retryButton').style.display = 'inline-block';
+            }
+        }
     </script>
 </body>
 </html>
