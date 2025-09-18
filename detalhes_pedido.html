@@ -1,12 +1,28 @@
-
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes do Pedido - Elegance Dashboard</title>
+    <title>Gerador PDF - Elegance</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #8B0000;
+            --primary-light: rgba(139, 0, 0, 0.1);
+            --secondary-color: #f8f9fa;
+            --text-dark: #2c3e50;
+            --text-light: #6c757d;
+            --white: #ffffff;
+            --border-color: #e9ecef;
+            --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.06);
+            --shadow-heavy: 0 10px 40px rgba(0, 0, 0, 0.15);
+            --gradient-primary: linear-gradient(135deg, #8B0000 0%, #600000 100%);
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -14,31 +30,9 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        :root {
-            --primary-color: #8B0000;
-            --primary-light: rgba(139, 0, 0, 0.1);
-            --primary-dark: #600000;
-            --secondary-color: #f8f9fa;
-            --accent-color: #ff6b6b;
-            --text-dark: #2c3e50;
-            --text-light: #6c757d;
-            --white: #ffffff;
-            --border-color: #e9ecef;
-            --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.06);
-            --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.1);
-            --shadow-heavy: 0 10px 40px rgba(0, 0, 0, 0.15);
-            --gradient-primary: linear-gradient(135deg, #8B0000 0%, #600000 100%);
-            --gradient-card: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --info-color: #17a2b8;
-        }
-
         body {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             color: var(--text-dark);
-            overflow-x: hidden;
             min-height: 100vh;
             padding: 20px;
         }
@@ -55,235 +49,335 @@
         header {
             background: var(--gradient-primary);
             color: white;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 30px 40px;
+            text-align: center;
         }
 
-        .back-button {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 50px;
-            cursor: pointer;
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .form-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: var(--shadow-light);
+        }
+
+        .form-section h3 {
+            margin-bottom: 25px;
+            color: var(--text-dark);
+            font-size: 1.4rem;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-weight: 500;
+            gap: 12px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .item-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-light);
+            border: 2px solid var(--border-color);
             transition: all 0.3s ease;
         }
 
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.3);
+        .item-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
 
-        .order-details {
-            padding: 30px;
-        }
-
-        .order-header {
+        .item-card h4 {
+            margin-bottom: 20px;
+            color: var(--text-dark);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            justify-content: space-between;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 0, 0, 0.3);
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--success-color), #218838);
+            padding: 12px 20px;
+            font-size: 14px;
+            margin: 20px 0;
+        }
+
+        .btn-remove {
+            background: linear-gradient(135deg, var(--danger-color), #c82333);
+            padding: 8px 15px;
+            font-size: 12px;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+        }
+
+        .btn-container {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px 0;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .preview-section {
+            background: var(--secondary-color);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border: 2px dashed var(--border-color);
+        }
+
+        .pdf-preview {
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 30px;
+            margin-top: 20px;
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            line-height: 1.3;
+            max-height: 800px;
+            overflow-y: auto;
+        }
+
+        .pdf-header {
+            text-align: left;
+            margin-bottom: 25px;
             padding-bottom: 20px;
             border-bottom: 1px solid var(--border-color);
         }
 
-        .order-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .order-status {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .status-em-producao {
-            background-color: rgba(23, 162, 184, 0.1);
-            color: var(--info-color);
-        }
-
-        .status-pronto {
-            background-color: rgba(255, 193, 7, 0.1);
-            color: var(--warning-color);
-        }
-
-        .status-entregue {
-            background-color: rgba(40, 167, 69, 0.1);
-            color: var(--success-color);
-        }
-
-        .status-retirado {
-            background-color: rgba(108, 117, 125, 0.1);
-            color: var(--text-light);
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .info-card {
-            background: var(--gradient-card);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow-light);
-            border: 1px solid var(--border-color);
-        }
-
-        .info-card h3 {
-            font-size: 16px;
-            color: var(--text-light);
+        .pdf-company-info {
             margin-bottom: 15px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .info-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .info-label {
-            font-weight: 500;
-            color: var(--text-light);
-        }
-
-        .info-value {
-            font-weight: 600;
+        .pdf-company-info h2 {
+            font-size: 14px;
+            font-weight: bold;
             color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .pdf-company-info p {
+            font-size: 10px;
+            margin: 2px 0;
+        }
+
+        .pdf-order-number {
             text-align: right;
+            margin-top: -60px;
+            margin-bottom: 20px;
+        }
+
+        .pdf-order-number h3 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .pdf-order-number .number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .pdf-client-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+            font-size: 11px;
+        }
+
+        .pdf-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 9px;
+        }
+
+        .pdf-items-table th {
+            background: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 4px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 9px;
+        }
+
+        .pdf-items-table td {
+            border: 1px solid var(--border-color);
+            padding: 8px 4px;
+            vertical-align: top;
+            font-size: 8px;
+            line-height: 1.2;
+        }
+
+        .pdf-items-table .item-desc {
+            max-width: 300px;
+            font-size: 8px;
+        }
+
+        .pdf-items-table .item-desc .main-info {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .pdf-items-table .item-desc .detail {
+            margin-bottom: 2px;
+        }
+
+        .pdf-items-table .item-desc .size {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .pdf-totals {
+            text-align: right;
+            margin-top: 25px;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .pdf-totals .total-line {
+            margin: 5px 0;
+        }
+
+        .pdf-totals .final-total {
+            font-weight: bold;
+            font-size: 12px;
+            margin-top: 8px;
         }
 
         .obs-section {
-            margin-bottom: 30px;
+            margin: 20px 0;
+            padding: 15px 0;
+        }
+
+        .obs-section h4 {
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 11px;
         }
 
         .obs-content {
-            background: var(--secondary-color);
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 10px;
-        }
-
-        .items-table-container {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow-light);
             border: 1px solid var(--border-color);
-            margin-top: 20px;
-            overflow-x: auto;
+            padding: 10px;
+            min-height: 30px;
         }
 
-        .items-table-container h3 {
-            font-size: 18px;
-            color: var(--text-dark);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        .items-table th {
-            background: var(--secondary-color);
-            padding: 12px 10px;
-            text-align: left;
-            font-weight: 600;
-            color: var(--text-dark);
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .items-table td {
-            padding: 12px 10px;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-dark);
-            vertical-align: top;
-        }
-
-        .items-table tr:hover {
-            background: var(--secondary-color);
-        }
-
-        .item-details {
-            max-width: 400px;
-        }
-
-        .item-details p {
-            margin-bottom: 5px;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        .item-details .main-info {
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 8px;
-        }
-
-        .financial-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .financial-a-receber {
-            background-color: rgba(220, 53, 69, 0.1);
-            color: var(--danger-color);
-        }
-
-        .financial-recebido {
-            background-color: rgba(40, 167, 69, 0.1);
-            color: var(--success-color);
-        }
-
-        .loading-overlay {
-            position: absolute;
+        .modal {
+            display: none;
+            position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.8);
-            display: flex;
-            align-items: center;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
             justify-content: center;
-            z-index: 100;
-            border-radius: 20px;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow-heavy);
         }
 
         .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(139, 0, 0, 0.2);
-            border-top: 5px solid var(--primary-color);
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin: 20px auto;
         }
 
         @keyframes spin {
@@ -291,30 +385,63 @@
             100% { transform: rotate(360deg); }
         }
 
-        .section-divider {
-            height: 2px;
-            background: var(--border-color);
-            margin: 25px 0;
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out;
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+
+        .toast.error {
+            background: var(--danger-color);
+        }
+
+        .toast.warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .toast.info {
+            background: #17a2b8;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
         }
 
         @media (max-width: 768px) {
-            .order-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
+            .content {
+                padding: 20px;
             }
             
-            .info-grid {
+            .form-grid, .item-grid {
                 grid-template-columns: 1fr;
             }
             
-            .items-table {
-                font-size: 12px;
+            .pdf-client-info {
+                grid-template-columns: 1fr;
             }
             
-            .items-table th,
-            .items-table td {
-                padding: 8px 6px;
+            .pdf-order-number {
+                margin-top: 0;
+                text-align: left;
             }
         }
     </style>
@@ -322,363 +449,850 @@
 <body>
     <div class="container">
         <header>
-            <h1>Detalhes do Pedido</h1>
-            <div style="display: flex; gap: 10px;">
-                <button class="back-button" onclick="downloadPDF()">
-                    <i class="fas fa-download"></i>
-                    Download PDF
-                </button>
-                <button class="back-button" onclick="window.history.back()">
-                    <i class="fas fa-arrow-left"></i>
-                    Voltar
-                </button>
-            </div>
+            <h1>Gerador PDF - Elegance</h1>
+            <p>Sistema de Geração de Pedidos em PDF</p>
         </header>
 
-        <div class="order-details">
-            <div id="loading" style="text-align: center; padding: 40px;">
-                <div class="loading-spinner" style="margin: 0 auto 20px;"></div>
-                <p>Carregando detalhes do pedido...</p>
-            </div>
-
-            <div id="order-content" style="display: none;">
-                <div class="order-header">
-                    <h2 class="order-title">Pedido #<span id="order-number"></span></h2>
-                    <span class="order-status" id="order-status"></span>
-                </div>
-
-                <div class="info-grid">
-                    <div class="info-card">
-                        <h3>Informações do Cliente</h3>
-                        <div class="info-item">
-                            <span class="info-label">Cliente:</span>
-                            <span class="info-value" id="client-name"></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Cliente Final:</span>
-                            <span class="info-value" id="client-final"></span>
-                        </div>
+        <div class="content">
+            <!-- Dados do Pedido -->
+            <div class="form-section">
+                <h3><i class="fas fa-clipboard-list"></i> Dados do Pedido</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="numeroPedido">Número do Pedido</label>
+                        <input type="text" id="numeroPedido" placeholder="Ex: 22556" oninput="buscarDadosPedido()">
                     </div>
-
-                    <div class="info-card">
-                        <h3>Datas</h3>
-                        <div class="info-item">
-                            <span class="info-label">Data do Pedido:</span>
-                            <span class="info-value" id="order-date"></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Pronto em:</span>
-                            <span class="info-value" id="ready-date"></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Data de Entrega:</span>
-                            <span class="info-value" id="delivery-date"></span>
-                        </div>
+                    <div class="form-group">
+                        <label for="dataPedido">Data do Pedido</label>
+                        <input type="datetime-local" id="dataPedido">
                     </div>
-
-                    <div class="info-card">
-                        <h3>Valores</h3>
-                        <div class="info-item">
-                            <span class="info-label">Valor do Pedido:</span>
-                            <span class="info-value" id="order-value"></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Situação Financeira:</span>
-                            <span class="info-value" id="financial-status"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="obs-section">
-                    <h3>Observações</h3>
-                    <div class="obs-content" id="order-obs"></div>
-                </div>
-
-                <div class="section-divider"></div>
-
-                <div class="items-table-container">
-                    <h3><i class="fas fa-list-alt"></i> Itens do Pedido</h3>
-                    <div style="overflow-x: auto;">
-                        <table class="items-table">
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th>QTD</th>
-                                    <th>Descrição</th>
-                                    <th>Observação</th>
-                                    <th>Unitário</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody id="items-data">
-                                <!-- Dados dos itens serão preenchidos aqui -->
-                            </tbody>
-                        </table>
+                    <div class="form-group">
+                        <label for="dataEntrega">Pronto em</label>
+                        <input type="date" id="dataEntrega">
                     </div>
                 </div>
             </div>
 
-            <div id="error-message" style="display: none; text-align: center; padding: 40px; color: var(--danger-color);">
-                <i class="fas fa-exclamation-circle" style="font-size: 48px; margin-bottom: 20px;"></i>
-                <h3>Erro ao carregar detalhes do pedido</h3>
-                <p>Volte à página anterior e tente novamente.</p>
+            <!-- Dados do Cliente -->
+            <div class="form-section">
+                <h3><i class="fas fa-user"></i> Dados do Cliente</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="razaoSocial">Cliente</label>
+                        <input type="text" id="razaoSocial" placeholder="Nome do cliente">
+                    </div>
+                    <div class="form-group">
+                        <label for="clienteFinal">Cliente Final</label>
+                        <input type="text" id="clienteFinal" placeholder="Cliente final (opcional)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Itens do Pedido -->
+            <div class="form-section">
+                <h3><i class="fas fa-list"></i> Itens do Pedido</h3>
+                <p style="color: var(--text-light); margin-bottom: 20px;">
+                    Os itens serão carregados automaticamente da base de dados quando você inserir o número do pedido.
+                </p>
+                
+                <div id="itensContainer">
+                    <div id="loading-items" style="text-align: center; padding: 40px; display: none;">
+                        <div class="loading-spinner" style="width: 40px; height: 40px; margin: 0 auto 15px;"></div>
+                        <p>Carregando itens do pedido...</p>
+                    </div>
+                    <div id="no-items" style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-info-circle" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>Digite o número do pedido para carregar os itens automaticamente</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Valores Totais -->
+            <div class="form-section">
+                <h3><i class="fas fa-calculator"></i> Valores</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="subtotal">Subtotal</label>
+                        <input type="number" id="subtotal" step="0.01" placeholder="0.00" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="desconto">Desconto (%)</label>
+                        <input type="number" id="desconto" step="0.01" placeholder="0" oninput="calcularTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label for="total">Total</label>
+                        <input type="number" id="total" step="0.01" placeholder="0.00" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Observações Gerais -->
+            <div class="form-section">
+                <h3><i class="fas fa-sticky-note"></i> Observações Gerais</h3>
+                <div class="form-group">
+                    <textarea id="observacaoGeral" placeholder="Digite as observações gerais do pedido..."></textarea>
+                </div>
+            </div>
+
+            <!-- Botões de Ação -->
+            <div class="btn-container">
+                <button type="button" class="btn" onclick="gerarPreview()">
+                    <i class="fas fa-eye"></i> Pré-visualizar
+                </button>
+                <button type="button" class="btn" onclick="gerarPDF()">
+                    <i class="fas fa-download"></i> Gerar PDF
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="carregarExemplo()">
+                    <i class="fas fa-file-import"></i> Carregar Exemplo
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="limparFormulario()">
+                    <i class="fas fa-trash"></i> Limpar Tudo
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="mostrarAjuda()">
+                    <i class="fas fa-question-circle"></i> Ajuda
+                </button>
+            </div>
+
+            <!-- Pré-visualização -->
+            <div class="preview-section" id="previewSection" style="display: none;">
+                <h3><i class="fas fa-file-alt"></i> Pré-visualização do PDF</h3>
+                <div id="pdfPreview" class="pdf-preview"></div>
             </div>
         </div>
     </div>
 
+    <!-- Modal de Loading -->
+    <div id="loadingModal" class="modal">
+        <div class="modal-content">
+            <h3>Gerando PDF...</h3>
+            <div class="loading-spinner"></div>
+            <p>Aguarde enquanto processamos seu pedido.</p>
+        </div>
+    </div>
+
     <script>
+        // Variáveis globais
+        let dadosPedido = {};
+        let itensPedido = [];
+        let timeoutId;
+
+        // Inicializar
         document.addEventListener('DOMContentLoaded', function() {
-            // Recuperar dados do pedido do localStorage
-            const pedidoData = localStorage.getItem('pedidoSelecionado');
+            const agora = new Date();
+            const dataAtual = agora.toISOString().slice(0, 16);
+            document.getElementById('dataPedido').value = dataAtual;
+        });
+
+        // Função para formatar data
+        function formatarData(dataString) {
+            if (!dataString) return '';
             
-            if (pedidoData) {
-                try {
-                    const pedido = JSON.parse(pedidoData);
-                    
-                    // Preencher os dados na página
-                    document.getElementById('order-number').textContent = pedido.numero;
-                    document.getElementById('client-name').textContent = pedido.cliente;
-                    document.getElementById('client-final').textContent = pedido.clienteFinal || 'Não informado';
-                    document.getElementById('order-date').textContent = pedido.data;
-                    document.getElementById('ready-date').textContent = pedido.prontoEm || 'Não informado';
-                    document.getElementById('delivery-date').textContent = pedido.dataEntrega || 'Não informado';
-                    document.getElementById('order-value').textContent = 'R$ ' + parseFloat(pedido.valor || 0).toFixed(2).replace('.', ',');
-                    
-                    // Configurar status com a classe apropriada
-                    const statusElement = document.getElementById('order-status');
-                    statusElement.textContent = pedido.situacao;
-                    const situacaoClass = `status-${pedido.situacao.toLowerCase().replace(' ', '-')}`;
-                    statusElement.classList.add(situacaoClass);
-                    
-                    // Configurar situação financeira
-                    const financialElement = document.getElementById('financial-status');
-                    financialElement.textContent = pedido.financeiro;
-                    const financialClass = `financial-${pedido.financeiro.toLowerCase().replace(' ', '-')}`;
-                    financialElement.classList.add(financialClass);
-                    
-                    document.getElementById('order-obs').textContent = pedido.observacao || 'Nenhuma observação registrada.';
-                    
-                    // Carregar dados dos itens do pedido
-                    loadItemsData(pedido.numero);
-                    
-                } catch (error) {
-                    console.error('Erro ao processar dados do pedido:', error);
-                    showError();
-                }
+            const data = new Date(dataString);
+            if (isNaN(data.getTime())) return dataString;
+            
+            return data.toLocaleDateString('pt-BR');
+        }
+
+        // Função para formatar descrição do item para PDF
+        function formatarDescricaoParaPDF(item) {
+            const tipo = item.TIPO_PRODUTO || '';
+            let descricao = '';
+            
+            if (tipo === 'Metalons') {
+                descricao = `${tipo} - ${item.produto || ''}\n`;
+                descricao += `Material: ${item.modelo_material || ''}\n`;
+                descricao += `Acabamento: ${item.acabamento || ''}\n`;
+                descricao += `Altura: ${item.altura || ''}mm\n`;
+                descricao += `Largura: ${item.largura || ''}mm\n`;
+                descricao += `Profundidade: ${item.profundidade || ''}mm`;
             } else {
-                showError();
+                descricao = `${tipo}\n`;
+                descricao += `Perfil: ${item.perfil || ''}\n`;
+                descricao += `Cor: ${item.cor_perfil || ''}\n`;
+                descricao += `Altura: ${item.altura || ''}mm\n`;
+                descricao += `Largura: ${item.largura || ''}mm\n`;
+                descricao += `Puxador: ${item.puxador || ''}\n`;
+                descricao += `Revestimento: ${item.revestimento || ''}`;
             }
             
-            function showError() {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('error-message').style.display = 'block';
+            return descricao;
+        }
+
+        // Função para formatar descrição do item para visualização
+        function formatarDescricaoItem(item) {
+            const tipo = item.TIPO_PRODUTO || '';
+            let descricao = `<div class="main-info">${tipo}</div>`;
+            
+            if (tipo === 'Metalons') {
+                descricao += `<div class="detail">${item.produto || ''}</div>`;
+                descricao += `<div class="detail">Material: ${item.modelo_material || ''}</div>`;
+                descricao += `<div class="detail">Acabamento: ${item.acabamento || ''}</div>`;
+                descricao += `<div class="size">${item.altura || ''} x ${item.largura || ''} x ${item.profundidade || ''} mm</div>`;
+            } else {
+                descricao += `<div class="detail">Perfil: ${item.perfil || ''} - ${item.cor_perfil || ''}</div>`;
+                descricao += `<div class="detail">Puxador: ${item.puxador || ''}</div>`;
+                descricao += `<div class="detail">Revestimento: ${item.revestimento || ''}</div>`;
+                descricao += `<div class="size">${item.altura || ''} x ${item.largura || ''} mm</div>`;
             }
             
-            async function loadItemsData(numeroPedido) {
+            return descricao;
+        }
+
+        // Função para formatar moeda
+        function formatarMoeda(valor) {
+            return parseFloat(valor || 0).toLocaleString('pt-BR', { 
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2 
+            });
+        }
+
+        // Função para validar dados
+        function validarDados(dados) {
+            const erros = [];
+            
+            if (!dados.numeroPedido) erros.push('Número do pedido é obrigatório');
+            if (!dados.razaoSocial) erros.push('Cliente é obrigatório');
+            if (!dados.dataPedido) erros.push('Data do pedido é obrigatória');
+            if (!dados.itens || dados.itens.length === 0) erros.push('O pedido deve ter pelo menos um item');
+            
+            return erros;
+        }
+
+        // Função para mostrar toast
+        function mostrarToast(mensagem, tipo) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${tipo}`;
+            toast.textContent = mensagem;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        // Função para download alternativo de PDF
+        function downloadPDFAlternativo(dados) {
+            const conteudo = document.getElementById('pdfPreview').innerHTML;
+            const janela = window.open('', '_blank');
+            janela.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Pedido ${dados.numeroPedido}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; font-size: 12px; padding: 20px; }
+                        .pdf-header { margin-bottom: 20px; }
+                        .pdf-client-info { margin-bottom: 20px; }
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; }
+                        .pdf-totals { text-align: right; margin-top: 20px; }
+                    </style>
+                </head>
+                <body>
+                    ${conteudo}
+                </body>
+                </html>
+            `);
+            
+            setTimeout(() => {
+                janela.print();
+            }, 250);
+        }
+
+        // Buscar dados do pedido na API
+        async function buscarDadosPedido() {
+            const numeroPedido = document.getElementById('numeroPedido').value.trim();
+            
+            if (!numeroPedido) {
+                mostrarMensagem('no-items');
+                limparDadosPedido();
+                return;
+            }
+
+            mostrarMensagem('loading-items');
+            
+            try {
+                // Buscar dados básicos do pedido
+                const responsePedido = await fetch(`https://app-cek0.onrender.com/pedidos?numero=${numeroPedido}`);
+                if (!responsePedido.ok) {
+                    throw new Error('Pedido não encontrado');
+                }
+                
+                const pedidosData = await responsePedido.json();
+                if (!pedidosData || pedidosData.length === 0) {
+                    throw new Error('Pedido não encontrado');
+                }
+                
+                dadosPedido = pedidosData[0];
+                
+                // Preencher dados do pedido
+                preencherDadosPedido(dadosPedido);
+                
+                // Buscar itens do pedido
+                const responseItens = await fetch(`https://app-cek0.onrender.com/itens_pedido?numero=${numeroPedido}`);
+                if (!responseItens.ok) {
+                    throw new Error('Erro ao carregar itens');
+                }
+                
+                itensPedido = await responseItens.json();
+                
+                // Renderizar itens
+                renderizarItens(itensPedido);
+                calcularTotal();
+                
+                esconderMensagens();
+                
+            } catch (error) {
+                console.error('Erro ao buscar dados do pedido:', error);
+                mostrarErro(`Erro: ${error.message}`);
+                limparDadosPedido();
+            }
+        }
+
+        function preencherDadosPedido(pedido) {
+            document.getElementById('razaoSocial').value = pedido.RAZAO_SOCIAL || pedido.cliente || '';
+            document.getElementById('clienteFinal').value = pedido.CLIENTE_FINAL || pedido.clienteFinal || '';
+            
+            if (pedido.DATA) {
+                const data = new Date(pedido.DATA);
+                document.getElementById('dataPedido').value = data.toISOString().slice(0, 16);
+            }
+            
+            if (pedido.DATA_PRONTO) {
+                const dataEntrega = new Date(pedido.DATA_PRONTO);
+                document.getElementById('dataEntrega').value = dataEntrega.toISOString().slice(0, 10);
+            }
+            
+            document.getElementById('observacaoGeral').value = pedido.OBS_GERAL || '';
+            document.getElementById('desconto').value = pedido.DESCONTO_ADICIONAL || pedido.DESCONTO || 0;
+        }
+
+        function renderizarItens(itens) {
+            const container = document.getElementById('itensContainer');
+            container.innerHTML = '';
+            
+            if (!itens || itens.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-exclamation-circle" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>Nenhum item encontrado para este pedido</p>
+                    </div>
+                `;
+                return;
+            }
+
+            itens.forEach((item, index) => {
+                const itemCard = document.createElement('div');
+                itemCard.className = 'item-card';
+                itemCard.id = `item-${index + 1}`;
+                
+                itemCard.innerHTML = criarCardItem(item, index + 1);
+                container.appendChild(itemCard);
+            });
+        }
+
+        function criarCardItem(item, numeroItem) {
+            const tipo = item.TIPO_PRODUTO || '';
+            const isMetalons = tipo === 'Metalons';
+            
+            return `
+                <h4>
+                    <span><i class="fas fa-cube"></i> Item ${numeroItem}</span>
+                    <span style="font-size: 12px; color: var(--text-light);">${tipo}</span>
+                </h4>
+                <div class="item-grid">
+                    <div class="form-group">
+                        <label>Quantidade</label>
+                        <input type="number" value="${item.QTD || 1}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Produto</label>
+                        <input type="text" value="${tipo}" readonly>
+                    </div>
+                    ${!isMetalons ? `
+                        <div class="form-group">
+                            <label>Altura (mm)</label>
+                            <input type="text" value="${item.altura || ''}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Largura (mm)</label>
+                            <input type="text" value="${item.largura || ''}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Perfil</label>
+                            <input type="text" value="${item.perfil || ''}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Cor</label>
+                            <input type="text" value="${item.cor_perfil || ''}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Puxador</label>
+                            <input type="text" value="${item.puxador || ''}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Revestimento</label>
+                            <input type="text" value="${item.revestimento || ''}" readonly>
+                        </div>
+                    ` : `
+                        <div class="form-group">
+                            <label>Produto</label>
+                            <input type="text" value="${item.produto || ''}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Material</label>
+                            <input type="text" value="${item.modelo_material || ''}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Acabamento</label>
+                            <input type="text" value="${item.acabamento || ''}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Altura (mm)</label>
+                            <input type="text" value="${item.altura || ''}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Largura (mm)</label>
+                            <input type="text" value="${item.largura || ''}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Profundidade (mm)</label>
+                            <input type="text" value="${item.profundidade || ''}" readonly>
+                        </div>
+                    `}
+                    <div class="form-group">
+                        <label>Valor Unitário (R$)</label>
+                        <input type="text" value="${formatarMoeda(item.UNITARIO || 0)}" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Observações do Item</label>
+                    <textarea readonly>${item.OBSERVACAO || ''}</textarea>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label><strong>Total do Item: R$ ${formatarMoeda((item.QTD || 1) * (item.UNITARIO || 0))}</strong></label>
+                </div>
+            `;
+        }
+
+        function mostrarMensagem(tipo) {
+            esconderMensagens();
+            const elemento = document.getElementById(tipo);
+            if (elemento) {
+                elemento.style.display = 'block';
+            }
+        }
+
+        function mostrarErro(mensagem) {
+            const container = document.getElementById('itensContainer');
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: var(--danger-color);">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 15px;"></i>
+                    <p>${mensagem}</p>
+                </div>
+            `;
+        }
+
+        function esconderMensagens() {
+            ['loading-items', 'no-items'].forEach(id => {
+                const elemento = document.getElementById(id);
+                if (elemento) {
+                    elemento.style.display = 'none';
+                }
+            });
+        }
+
+        function limparDadosPedido() {
+            document.getElementById('razaoSocial').value = '';
+            document.getElementById('clienteFinal').value = '';
+            document.getElementById('observacaoGeral').value = '';
+            document.getElementById('dataEntrega').value = '';
+            document.getElementById('desconto').value = 0;
+            document.getElementById('subtotal').value = '0.00';
+            document.getElementById('total').value = '0.00';
+            itensPedido = [];
+        }
+
+        function calcularTotal() {
+            let subtotal = 0;
+            
+            itensPedido.forEach(item => {
+                const qtd = parseFloat(item.QTD || 1);
+                const unitario = parseFloat(item.UNITARIO || 0);
+                subtotal += qtd * unitario;
+            });
+            
+            document.getElementById('subtotal').value = subtotal.toFixed(2);
+            
+            const desconto = parseFloat(document.getElementById('desconto').value) || 0;
+            const total = subtotal * (1 - desconto / 100);
+            
+            document.getElementById('total').value = total.toFixed(2);
+        }
+
+        function coletarDadosPedido() {
+            return {
+                numeroPedido: document.getElementById('numeroPedido').value,
+                dataPedido: document.getElementById('dataPedido').value,
+                dataEntrega: document.getElementById('dataEntrega').value,
+                razaoSocial: document.getElementById('razaoSocial').value,
+                clienteFinal: document.getElementById('clienteFinal').value,
+                observacaoGeral: document.getElementById('observacaoGeral').value,
+                subtotal: parseFloat(document.getElementById('subtotal').value) || 0,
+                desconto: parseFloat(document.getElementById('desconto').value) || 0,
+                total: parseFloat(document.getElementById('total').value) || 0,
+                itens: itensPedido
+            };
+        }
+
+        function gerarPreview() {
+            const dados = coletarDadosPedido();
+            
+            if (!dados.numeroPedido || !dados.razaoSocial) {
+                alert('Dados do pedido não encontrados. Verifique o número do pedido.');
+                return;
+            }
+
+            const preview = document.getElementById('pdfPreview');
+            
+            let html = `
+                <div class="pdf-header">
+                    <div class="pdf-company-info">
+                        <h2>Elegance Indústria e Comércio de Artefatos Alumínio LTDA/Me</h2>
+                        <p>Tel: (27) 3326-7213</p>
+                        <p>E-mail: elegance@elegancealuminio.com.br</p>
+                    </div>
+                    <div class="pdf-order-number">
+                        <h3>Pedido nº:</h3>
+                        <div class="number">${dados.numeroPedido}</div>
+                    </div>
+                </div>
+                
+                <div class="pdf-client-info">
+                    <div>
+                        <strong>Cliente:</strong> ${dados.razaoSocial}<br>
+                        ${dados.clienteFinal ? `<strong>Cliente Final:</strong> ${dados.clienteFinal}` : ''}
+                    </div>
+                    <div>
+                        <strong>Data do pedido:</strong> ${formatarData(dados.dataPedido)}<br>
+                        ${dados.dataEntrega ? `<strong>Pronto em:</strong> ${formatarData(dados.dataEntrega)}` : ''}
+                    </div>
+                </div>
+                
+                <table class="pdf-items-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%;">Item</th>
+                            <th style="width: 5%;">Qtd</th>
+                            <th style="width: 8%;">Imagem</th>
+                            <th style="width: 45%;">Descrição</th>
+                            <th style="width: 20%;">Observação</th>
+                            <th style="width: 8%;">Unitário</th>
+                            <th style="width: 9%;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            dados.itens.forEach((item, index) => {
+                const descricao = formatarDescricaoItem(item);
+                const unitario = parseFloat(item.UNITARIO || 0);
+                const qtd = parseFloat(item.QTD || 1);
+                const total = unitario * qtd;
+                
+                html += `
+                    <tr>
+                        <td style="text-align: center; font-weight: bold;">${index + 1}</td>
+                        <td style="text-align: center; font-weight: bold;">${qtd}</td>
+                        <td style="text-align: center;"></td>
+                        <td class="item-desc">${descricao}</td>
+                        <td style="font-size: 8px;">${item.OBSERVACAO || ''}</td>
+                        <td style="text-align: right;">R$ ${formatarMoeda(unitario)}</td>
+                        <td style="text-align: right;">R$ ${formatarMoeda(total)}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+                
+                <div class="pdf-totals">
+                    <div class="total-line"><strong>Subtotal:</strong> R$ ${formatarMoeda(dados.subtotal)}</div>
+                    ${dados.desconto > 0 ? `<div class="total-line"><strong>Desconto:</strong> ${dados.desconto}%</div>` : ''}
+                    <div class="final-total"><strong>Total:</strong> R$ ${formatarMoeda(dados.total)}</div>
+                </div>
+            `;
+            
+            if (dados.observacaoGeral) {
+                html += `
+                    <div class="obs-section">
+                        <h4>Observações Gerais</h4>
+                        <div class="obs-content">${dados.observacaoGeral}</div>
+                    </div>
+                `;
+            }
+            
+            preview.innerHTML = html;
+            document.getElementById('previewSection').style.display = 'block';
+        }
+
+        function gerarPDF() {
+            gerarPDFCompleto();
+        }
+
+        function gerarPDFCompleto() {
+            const dados = coletarDadosPedido();
+            const erros = validarDados(dados);
+            
+            if (erros.length > 0) {
+                alert('Erros encontrados:\n' + erros.join('\n'));
+                return;
+            }
+            
+            document.getElementById('loadingModal').style.display = 'flex';
+            
+            setTimeout(() => {
                 try {
-                    console.log('Carregando itens para pedido:', numeroPedido);
-                    
-                    // Fazer a requisição para obter os itens do pedido
-                    const response = await fetch(`https://app-cek0.onrender.com/itens_pedido?numero=${numeroPedido}`);
-                    
-                    if (!response.ok) {
-                        throw new Error(`Erro HTTP: ${response.status}`);
+                    const { jsPDF } = window.jspdf;
+                    if (!jsPDF) {
+                        throw new Error('jsPDF não disponível');
                     }
                     
-                    const itensData = await response.json();
-                    console.log('Dados recebidos:', itensData);
+                    const doc = new jsPDF();
                     
-                    // Preencher a tabela com os itens do pedido
-                    const itemsTbody = document.getElementById('items-data');
-                    itemsTbody.innerHTML = '';
+                    // Configurações
+                    const margin = 10;
+                    let y = 20;
                     
-                    if (itensData && itensData.length > 0) {
-                        itensData.forEach(item => {
-                            console.log('Processando item:', item);
-                            
-                            const row = document.createElement('tr');
-                            
-                            // Coluna Item - usando ITEM (maiúsculo)
-                            const itemCell = document.createElement('td');
-                            itemCell.textContent = item.ITEM || '';
-                            row.appendChild(itemCell);
-                            
-                            // Coluna QTD - usando QTD (maiúsculo)
-                            const qtdCell = document.createElement('td');
-                            qtdCell.textContent = item.QTD || '';
-                            row.appendChild(qtdCell);
-                            
-                            // Coluna Descrição
-                            const descCell = document.createElement('td');
-                            descCell.className = 'item-details';
-                            descCell.innerHTML = formatItemDescription(item);
-                            row.appendChild(descCell);
-                            
-                            // Coluna Observação - usando OBSERVACAO (maiúsculo)
-                            const obsCell = document.createElement('td');
-                            obsCell.textContent = item.OBSERVACAO || '';
-                            row.appendChild(obsCell);
-                            
-                            // Coluna Unitário - usando UNITARIO (maiúsculo)
-                            const unitCell = document.createElement('td');
-                            unitCell.textContent = item.UNITARIO ? 'R$ ' + parseFloat(item.UNITARIO).toFixed(2).replace('.', ',') : '';
-                            row.appendChild(unitCell);
-                            
-                            // Coluna Total - usando TOTAL (maiúsculo)
-                            const totalCell = document.createElement('td');
-                            totalCell.textContent = item.TOTAL ? 'R$ ' + parseFloat(item.TOTAL).toFixed(2).replace('.', ',') : '';
-                            row.appendChild(totalCell);
-                            
-                            itemsTbody.appendChild(row);
-                        });
-                    } else {
-                        itemsTbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Nenhum item encontrado para este pedido</td></tr>';
+                    // Cabeçalho da empresa
+                    doc.setFontSize(12);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Elegance Indústria e Comércio de Artefatos Alumínio LTDA/Me", margin, y);
+                    y += 5;
+                    
+                    doc.setFontSize(10);
+                    doc.setFont("helvetica", "normal");
+                    doc.text("Tel: (27) 3326-7213", margin, y);
+                    y += 4;
+                    doc.text("E-mail: elegance@elegancealuminio.com.br", margin, y);
+                    
+                    // Número do pedido
+                    doc.setFontSize(12);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Pedido nº:", 150, 25);
+                    doc.setFontSize(18);
+                    doc.text(dados.numeroPedido, 150, 35);
+                    
+                    y = 50;
+                    
+                    // Dados do cliente
+                    doc.setFontSize(10);
+                    doc.setFont("helvetica", "bold");
+                    doc.text(`Cliente: ${dados.razaoSocial}`, margin, y);
+                    doc.text(`Data do pedido: ${formatarData(dados.dataPedido)}`, 120, y);
+                    y += 6;
+                    
+                    if (dados.clienteFinal) {
+                        doc.text(`Cliente Final: ${dados.clienteFinal}`, margin, y);
+                    }
+                    if (dados.dataEntrega) {
+                        doc.text(`Pronto em: ${formatarData(dados.dataEntrega)}`, 120, y);
                     }
                     
-                    // Esconder loading e mostrar conteúdo
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('order-content').style.display = 'block';
+                    y += 15;
+                    
+                    // Tabela de itens
+                    const headers = ['Item', 'Qtd', 'Imagem', 'Descrição', 'Observação', 'Unitário', 'Total'];
+                    const colWidths = [10, 10, 15, 85, 35, 25, 25];
+                    let currentX = margin;
+                    
+                    // Cabeçalho da tabela
+                    doc.setFontSize(8);
+                    doc.setFont("helvetica", "bold");
+                    headers.forEach((header, i) => {
+                        doc.rect(currentX, y, colWidths[i], 8);
+                        doc.text(header, currentX + 2, y + 5);
+                        currentX += colWidths[i];
+                    });
+                    
+                    y += 8;
+                    
+                    // Dados dos itens
+                    doc.setFont("helvetica", "normal");
+                    dados.itens.forEach((item, index) => {
+                        currentX = margin;
+                        const observacao = item.OBSERVACAO || '';
+                        const rowHeight = Math.max(15, Math.ceil(observacao.length / 25) * 4 + 8);
+                        
+                        // Verificar quebra de página
+                        if (y + rowHeight > 270) {
+                            doc.addPage();
+                            y = 20;
+                        }
+                        
+                        // Item
+                        doc.rect(currentX, y, colWidths[0], rowHeight);
+                        doc.text(String(index + 1), currentX + 2, y + 5);
+                        currentX += colWidths[0];
+                        
+                        // Quantidade
+                        doc.rect(currentX, y, colWidths[1], rowHeight);
+                        doc.text(String(item.QTD || 1), currentX + 2, y + 5);
+                        currentX += colWidths[1];
+                        
+                        // Imagem (vazio)
+                        doc.rect(currentX, y, colWidths[2], rowHeight);
+                        currentX += colWidths[2];
+                        
+                        // Descrição
+                        doc.rect(currentX, y, colWidths[3], rowHeight);
+                        const descricaoTexto = formatarDescricaoParaPDF(item);
+                        const linhasDesc = doc.splitTextToSize(descricaoTexto, colWidths[3] - 4);
+                        doc.text(linhasDesc, currentX + 2, y + 5);
+                        currentX += colWidths[3];
+                        
+                        // Observação
+                        doc.rect(currentX, y, colWidths[4], rowHeight);
+                        const linhasObs = doc.splitTextToSize(observacao, colWidths[4] - 4);
+                        doc.text(linhasObs, currentX + 2, y + 5);
+                        currentX += colWidths[4];
+                        
+                        // Unitário
+                        doc.rect(currentX, y, colWidths[5], rowHeight);
+                        doc.text(`R$ ${formatarMoeda(item.UNITARIO || 0)}`, currentX + 2, y + 5);
+                        currentX += colWidths[5];
+                        
+                        // Total
+                        doc.rect(currentX, y, colWidths[6], rowHeight);
+                        const totalItem = (parseFloat(item.QTD || 1) * parseFloat(item.UNITARIO || 0));
+                        doc.text(`R$ ${formatarMoeda(totalItem)}`, currentX + 2, y + 5);
+                        
+                        y += rowHeight;
+                    });
+                    
+                    // Observações gerais
+                    if (dados.observacaoGeral) {
+                        y += 10;
+                        doc.setFont("helvetica", "bold");
+                        doc.text("Observação:", margin, y);
+                        y += 5;
+                        doc.rect(margin, y, 190, 15);
+                        doc.setFont("helvetica", "normal");
+                        const obsLines = doc.splitTextToSize(dados.observacaoGeral, 185);
+                        doc.text(obsLines, margin + 2, y + 5);
+                        y += 20;
+                    }
+                    
+                    // Totais
+                    y += 10;
+                    doc.setFont("helvetica", "bold");
+                    doc.text(`Subtotal: R$ ${formatarMoeda(dados.subtotal)}`, 150, y);
+                    y += 5;
+                    if (dados.desconto > 0) {
+                        doc.text(`Desconto: ${dados.desconto} %`, 150, y);
+                        y += 5;
+                    }
+                    doc.text(`Total: R$ ${formatarMoeda(dados.total)}`, 150, y);
+                    
+                    // Salvar PDF
+                    const nomeArquivo = `${dados.numeroPedido}_${dados.razaoSocial.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+                    doc.save(nomeArquivo);
+                    
+                    document.getElementById('loadingModal').style.display = 'none';
+                    mostrarToast('PDF gerado com sucesso!', 'success');
                     
                 } catch (error) {
-                    console.error('Erro ao carregar itens do pedido:', error);
+                    console.error('Erro no jsPDF, tentando método alternativo:', error);
                     
-                    // Mesmo em caso de erro, mostrar os dados básicos do pedido
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('order-content').style.display = 'block';
-                    
-                    // Mostrar mensagem de erro na tabela de itens
-                    const itemsTbody = document.getElementById('items-data');
-                    itemsTbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--danger-color);">Erro ao carregar itens do pedido</td></tr>';
+                    try {
+                        downloadPDFAlternativo(dados);
+                        mostrarToast('PDF gerado via método alternativo (impressão)', 'warning');
+                    } catch (errorAlt) {
+                        console.error('Erro no método alternativo:', errorAlt);
+                        mostrarToast('Erro ao gerar PDF: ' + error.message, 'error');
+                    } finally {
+                        document.getElementById('loadingModal').style.display = 'none';
+                    }
                 }
-            }
+            }, 500);
+        }
+
+        function carregarExemplo() {
+            // Preencher com dados de exemplo
+            document.getElementById('numeroPedido').value = '22556';
+            document.getElementById('dataPedido').value = '2023-10-15T10:30';
+            document.getElementById('dataEntrega').value = '2023-10-20';
+            document.getElementById('razaoSocial').value = 'Exemplo Cliente Ltda';
+            document.getElementById('clienteFinal').value = 'João Silva';
+            document.getElementById('observacaoGeral').value = 'Entregar de segunda a sexta, das 8h às 18h.';
+            document.getElementById('desconto').value = '5';
             
-            function formatItemDescription(item) {
-                let html = '';
-                const tipo = item.TIPO_PRODUTO || '';
-                const detalhes = item.detalhes || {};
-                const complementos = item.complementos || [];
-                
-                if (tipo !== "Metalons") {
-                    // Para itens que não são metalons
-                    if (tipo === "Porta de giro" || tipo === "Porta basculante" || tipo === "Frente de gaveta" || 
-                        tipo === "Porta de correr" || tipo === "Serviço" || tipo === "Perfil" || 
-                        tipo === "Puxador" || tipo === "Trilhos" || tipo === "Revestimento") {
-                    
-                        // PERFIL
-                        if (detalhes.perfil) {
-                            html += `Perfil: ${detalhes.perfil}`;
-                            if (detalhes.acabamento_perfil) html += ` ${detalhes.acabamento_perfil}`;
-                            if (detalhes.cor_perfil) html += ` | Cor: ${detalhes.cor_perfil}`;
-                            html += '<br>';
-                        }
-
-                        // PUXADOR
-                        if (detalhes.puxador && detalhes.qtd_puxador) {
-                            html += `Puxador: ${detalhes.qtd_puxador} - ${detalhes.puxador}`;
-                            if (detalhes.acabamento_puxador) html += ` ${detalhes.acabamento_puxador}`;
-                            html += '<br>';
-                            if (detalhes.posicao_puxador) html += `Posição: ${detalhes.posicao_puxador}<br>`;
-                            if (detalhes.tam_puxador) html += `Tamanho: ${detalhes.tam_puxador} mm<br>`;
-                        }
-
-                        // FUROS
-                        if (detalhes.qtd_furos) {
-                            html += `Furos: ${detalhes.qtd_furos}`;
-                            if (detalhes.pos_furos) html += ` ${detalhes.pos_furos}`;
-                            html += '<br>';
-                        }
-
-                        // REVESTIMENTO
-                        if (detalhes.revestimento) {
-                            html += `Revestimento: ${detalhes.revestimento}`;
-                            if (detalhes.acabamento_revestimento) html += ` ${detalhes.acabamento_revestimento}`;
-                            html += '<br>';
-                        }
-
-                        // TAMANHOS principais
-                        if (detalhes.altura && detalhes.largura) {
-                            html += `<strong>Tamanho: H=${detalhes.altura} x L=${detalhes.largura} mm</strong><br>`;
-                        }
-
-                        // COMPLEMENTOS
-                        complementos.forEach(complemento => {
-                            html += '<br>';
-                            if (complemento.classe === "Sistema de correr") {
-                                html += `Complemento: ${complemento.complemento}<br>Qtd: ${complemento.qtd}`;
-                            } else if (complemento.classe === "Amortecedores") {
-                                html += `Complemento: ${complemento.complemento}<br>Qtd: ${complemento.qtd}`;
-                            } else if (complemento.classe === "Trilho superior" || complemento.classe === "Trilho inferior") {
-                                html += `Complemento: ${complemento.complemento}<br>Qtd: ${complemento.qtd}`;
-                                if (complemento.tamanho) html += `<br>Tamanho: ${complemento.tamanho} mm`;
-                            } else {
-                                html += `Complemento: ${complemento.complemento}<br>Qtd: ${complemento.qtd}`;
-                            }
-                        });
-
-                        // Para portas de correr com múltiplas portas
-                        if (tipo === "Porta de correr") {
-                            for (let i = 1; i <= 6; i++) {
-                                const largura = detalhes[`largura${i}`];
-                                if (largura) {
-                                    html += `<br><strong>PORTA ${i}: H=${detalhes.altura} x L=${largura} mm</strong>`;
-                                    if (detalhes[`puxador${i}`]) html += `<br>Puxador: ${detalhes[`puxador${i}`]} -`;
-                                    if (detalhes[`posicao${i}`]) html += `<br>Posição: ${detalhes[`posicao${i}`]}`;
-                                    if (detalhes[`tamanho${i}`]) html += `<br>Tamanho: ${detalhes[`tamanho${i}`]} mm`;
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    // Para metalons
-                    if (detalhes.produto) html += `Produto: ${detalhes.produto}<br>`;
-                    if (detalhes.modelo_material) html += `Material: ${detalhes.modelo_material}<br>`;
-                    if (detalhes.acabamento) html += `Acabamento: ${detalhes.acabamento}<br>`;
-                    if (detalhes.cor) html += `Cor: ${detalhes.cor}<br>`;
-                    
-                    if (detalhes.altura && detalhes.largura && detalhes.profundidade) {
-                        html += `Tamanho: H=${detalhes.altura} x L=${detalhes.largura} x P=${detalhes.profundidade} mm`;
-                    }
+            // Simular itens de exemplo
+            itensPedido = [
+                {
+                    TIPO_PRODUTO: 'Janela',
+                    QTD: 2,
+                    UNITARIO: 250.50,
+                    OBSERVACAO: 'Instalar com silicone neutro',
+                    perfil: 'Linha Premium',
+                    cor_perfil: 'Branco',
+                    altura: 1200,
+                    largura: 800,
+                    puxador: 'Cromado',
+                    revestimento: 'Sem revestimento'
+                },
+                {
+                    TIPO_PRODUTO: 'Metalons',
+                    QTD: 1,
+                    UNITARIO: 180.75,
+                    OBSERVACAO: 'Montar com parafusos inox',
+                    produto: 'Metalon 2x2',
+                    modelo_material: 'Aço',
+                    acabamento: 'Zincado',
+                    altura: 2000,
+                    largura: 50,
+                    profundidade: 50
                 }
-                
-                return html || tipo;
-            }
-        });
+            ];
+            
+            renderizarItens(itensPedido);
+            calcularTotal();
+            mostrarToast('Exemplo carregado com sucesso!', 'success');
+        }
 
-       function downloadPDF() {
-   const pedidoData = localStorage.getItem('pedidoSelecionado');
-    
-    if (!pedidoData) {
-        alert('Dados do pedido não encontrados');
-        return;
-    }
-    
-    try {
-        const pedido = JSON.parse(pedidoData);
-        const numeroPedido = pedido.numero;
-        const cliente = pedido.cliente;
-        
-        // Montar o nome do arquivo: NUMERO_CLIENTE.pdf
-        const nomeArquivo = `${numeroPedido}_${cliente}.pdf`;
-        
-        // URLs para testar
-        const urls = [
-            `https://elegancea2.uhserver.com/Elegance/PedidosPDF/${nomeArquivo}`,
-            `http://elegancea2.uhserver.com/Elegance/PedidosPDF/${nomeArquivo}`,
-            `https://ftp.uhserver.com/elegancea2/Elegance/PedidosPDF/${nomeArquivo}`,
-            `http://ftp.uhserver.com/elegancea2/Elegance/PedidosPDF/${nomeArquivo}`
-        ];
-        
-        // Abrir todas as URLs em abas separadas (uma deve funcionar)
-        urls.forEach(url => {
-            console.log(`Tentando abrir: ${url}`);
-            window.open(url, '_blank');
-        });
-        
-    } catch (error) {
-        console.error('Erro ao abrir PDF:', error);
-        alert('Erro ao abrir PDF');
-    }
-}
+        function limparFormulario() {
+            document.getElementById('numeroPedido').value = '';
+            document.getElementById('dataPedido').value = '';
+            document.getElementById('dataEntrega').value = '';
+            document.getElementById('razaoSocial').value = '';
+            document.getElementById('clienteFinal').value = '';
+            document.getElementById('observacaoGeral').value = '';
+            document.getElementById('desconto').value = '0';
+            document.getElementById('subtotal').value = '0.00';
+            document.getElementById('total').value = '0.00';
+            
+            itensPedido = [];
+            document.getElementById('itensContainer').innerHTML = '';
+            document.getElementById('previewSection').style.display = 'none';
+            
+            mostrarMensagem('no-items');
+            mostrarToast('Formulário limpo com sucesso!', 'success');
+        }
+
+        function mostrarAjuda() {
+            alert('Sistema de Geração de PDF - Elegance\n\n' +
+                  '1. Digite o número do pedido para carregar os dados automaticamente\n' +
+                  '2. Verifique e edite os dados se necessário\n' +
+                  '3. Use "Pré-visualizar" para ver como ficará o PDF\n' +
+                  '4. Clique em "Gerar PDF" para baixar o documento\n\n' +
+                  'Em caso de problemas, entre em contato com o suporte técnico.');
+        }
     </script>
 </body>
 </html>
